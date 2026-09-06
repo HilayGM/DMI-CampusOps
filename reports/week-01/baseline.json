@@ -1,23 +1,22 @@
 {
-  "_instructions": "Eliminen este campo cuando terminen. Los demás campos deben contener evidencia real y commitSha debe ser un SHA Git completo de 40 caracteres.",
   "schemaVersion": 1,
   "week": 1,
-  "commitSha": "REEMPLAZAR_CON_SHA_DEL_COMMIT_DE_CODIGO_Y_DOCUMENTOS",
-  "generatedAt": "REEMPLAZAR_CON_FECHA_HORA_ISO_8601",
+  "commitSha": "c48146c1533a8b575cbfeb27199734f8fbf9056c",
+  "generatedAt": "2026-09-05T18:26:22-06:00",
   "checks": [
     {
       "id": "falla-controlada",
       "status": "fail",
       "scenarioType": "failure",
       "command": "npm run test:smoke",
-      "evidence": "REEMPLAZAR_CON_SINTOMA_OBSERVADO_Y_CAUSA_IDENTIFICADA"
+      "evidence": "Síntoma: la prueba `renders the reproducible baseline and resolves backend state` falló en course-tests/smoke.test.tsx:16 porque esperaba el texto `available` y recibió `Backend: offline`. Causa: para provocar la falla se cambió temporalmente en App.tsx la rama exitosa de getBackendHealth de setStatus('available') a setStatus('offline'); no se modificó ninguna prueba."
     },
     {
       "id": "correccion-verificada",
       "status": "pass",
       "scenarioType": "nominal",
       "command": "npm run test:smoke",
-      "evidence": "REEMPLAZAR_CON_RESULTADO_OBSERVABLE_DESPUES_DE_CORREGIR"
+      "evidence": "Se restauró en App.tsx la rama exitosa a setStatus('available'), sin cambiar course-tests/smoke.test.tsx. El mismo comando terminó con PASS, 1 suite aprobada y 1 prueba aprobada; el resultado observable confirma que el estado mostrado después de una respuesta exitosa vuelve a ser `Backend: available`."
     }
   ]
 }
