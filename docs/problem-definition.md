@@ -1,39 +1,39 @@
 # Definición del problema — CampusOps
 
-> Sustituyan todas las indicaciones entre corchetes por el trabajo del equipo.
-
 ## Problema
 
-[¿Qué problema del campus ficticio atiende CampusOps y por qué importa?]
+En el campus ficticio, los reportes de fallas de mantenimiento llegan por canales aislados y no dejan una trazabilidad común de su prioridad, asignación, atención y cierre. CampusOps concentra incidencias sintéticas de infraestructura para que la persona reportante sepa qué ocurrió, el técnico atienda sólo lo asignado y coordinación pueda priorizar y comprobar la resolución.
 
 ## Alcance
 
 ### Incluye
 
-- [Elemento incluido 1]
-- [Elemento incluido 2]
+- Crear y consultar incidencias sintéticas con categoría, descripción, ubicación manual y evidencia preparada para el ejercicio.
+- Clasificar prioridad, asignar o reasignar un técnico, registrar diagnóstico e historial, y avanzar por los estados `open`, `assigned`, `in_progress`, `resolved` y `closed`.
+- Permitir que el técnico consulte trabajo asignado y deje cambios pendientes sin conexión para sincronizarlos sin pérdida silenciosa.
 
 ### No incluye
 
-- [Elemento excluido 1]
-- [Elemento excluido 2]
+- Atención de emergencias, despacho en tiempo real o sustitución de los protocolos institucionales de seguridad.
+- Uso de personas, credenciales, planos, ubicaciones o fotografías reales; el producto sólo maneja datos y cuentas sintéticas.
+- Chat en tiempo real, pagos, reconocimiento de imágenes, panel web administrativo completo y publicación pública en tiendas durante esta primera versión.
 
 ## Actores y responsabilidades
 
-- **Reportante:** [responsabilidad]
-- **Técnico:** [responsabilidad]
-- **Coordinador:** [responsabilidad]
+- **Reportante:** crea una incidencia con datos sintéticos, consulta sus reportes y agrega información posterior; no asigna técnicos ni cierra casos.
+- **Técnico:** consulta sólo incidencias que tiene asignadas, inicia la atención, registra diagnóstico/notas/evidencia y marca una resolución; no cierra ni modifica un caso reasignado a otra persona.
+- **Coordinador:** consulta el conjunto de incidencias, prioriza, asigna o reasigna técnicos, revisa historial y evidencias, y cierra o reabre una resolución.
 
 ## Flujo principal
 
-1. Reportar: [descripción]
-2. Asignar: [descripción]
-3. Atender: [descripción]
-4. Cerrar: [descripción]
+1. Reportar: el reportante registra categoría, descripción y ubicación manual; el sistema crea el caso en `open` y guarda el evento en el historial.
+2. Asignar: el coordinador define prioridad y un técnico; el caso pasa de `open` a `assigned` y la asignación queda trazada.
+3. Atender: el técnico asignado inicia el trabajo (`in_progress`), adjunta diagnóstico/notas/evidencia sintética y marca `resolved`; si está sin conexión, la operación queda en una cola persistente para sincronizarse después.
+4. Cerrar: el coordinador revisa la resolución e historial y cambia el caso a `closed`; si falta evidencia o la resolución no es válida, lo reabre a `assigned` con un técnico asignado.
 
 ## Criterios de aceptación verificables
 
-1. [Dado/cuando/entonces o condición observable]
-2. [Dado/cuando/entonces o condición observable]
-3. [Dado/cuando/entonces o condición observable]
-
+1. Dada una incidencia nueva con categoría, descripción y ubicación manual válidas, cuando el reportante la envía, entonces se crea con estado `open` y el historial muestra el evento de creación.
+2. Dada una incidencia `open`, cuando el coordinador le asigna un técnico y una prioridad, entonces queda `assigned`, muestra el técnico asignado y conserva la asignación en el historial.
+3. Dada una incidencia `assigned` al técnico A, cuando A registra diagnóstico y la marca resuelta, entonces pasa por `in_progress` a `resolved`; sólo el coordinador puede cambiarla a `closed` o reabrirla a `assigned`.
+4. Dado que el técnico trabaja sin conexión y coordinación reasigna la incidencia, cuando el técnico sincroniza su cambio pendiente, entonces la app conserva la operación, señala el conflicto y no sobrescribe silenciosamente la reasignación.

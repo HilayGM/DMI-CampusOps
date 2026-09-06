@@ -1,14 +1,11 @@
 # Registro de riesgos — CampusOps
 
-> Registren exactamente tres riesgos y ordénenlos del más al menos prioritario.
-
 | Prioridad | Riesgo | Probabilidad | Impacto | Mitigación | Cómo comprobar la mitigación |
 |---:|---|---|---|---|---|
-| 1 | [riesgo] | [baja/media/alta y motivo] | [bajo/medio/alto y motivo] | [acción] | [evidencia observable] |
-| 2 | [riesgo] | [baja/media/alta y motivo] | [bajo/medio/alto y motivo] | [acción] | [evidencia observable] |
-| 3 | [riesgo] | [baja/media/alta y motivo] | [bajo/medio/alto y motivo] | [acción] | [evidencia observable] |
+| 1 | Un técnico cambia estado o agrega evidencia sin conexión mientras coordinación reasigna el mismo caso, y la sincronización sobrescribe la nueva asignación o descarta el cambio pendiente. | Alta: la operación offline y la reasignación son parte explícita del flujo y pueden ocurrir de forma concurrente. | Alto: se puede enviar a un técnico a atender un caso que ya no le corresponde, perder trazabilidad o mostrar un estado falso. | Persistir en cada operación su identificador, incidencia, versión base, autor y clave de idempotencia; al detectar cambio concurrente, conservar la intención, detener la aplicación automática y mostrar un conflicto resoluble. | Una prueba con cambio local de `work` y reasignación remota conserva ambos datos, marca el conflicto y mantiene la operación pendiente después de reiniciar la app. |
+| 2 | Un perfil sin autorización cierra, reasigna o modifica una incidencia ajena porque la interfaz sólo ocultó un botón. | Media: hay tres perfiles y las transiciones tienen permisos distintos, por lo que un control sólo visual puede omitirse al crecer el código. | Alto: altera el historial de mantenimiento y permite decisiones de coordinación por una persona no autorizada. | Validar rol, propietario de asignación y transición permitida en el servicio además de la UI; probar explícitamente que un técnico no modifica una incidencia reasignada. | Pruebas negativas reciben rechazo al intentar cerrar como técnico o editar un caso reasignado, mientras las transiciones permitidas dejan un evento de historial. |
+| 3 | La app solicita permisos amplios o registra datos reales de ubicación, fotos o credenciales durante el desarrollo. | Media: cámara y ubicación son recursos atractivos para una app de incidencias, y una configuración rápida podría pedirlos al iniciar. | Alto: expone información sensible y contradice el límite académico de usar sólo datos sintéticos. | Pedir cámara únicamente al adjuntar, ubicación únicamente al solicitarla, preferir selector del sistema y sanitizar logs; mantener ubicación manual como alternativa. | Revisión de permisos y prueba de denegación muestran que la app continúa con ubicación manual, no solicita ubicación en segundo plano y los logs no incluyen datos personales ni coordenadas reales. |
 
 ## Riesgo que atenderíamos primero
 
-[Indiquen cuál y justifiquen la decisión.]
-
+Atenderíamos primero el riesgo de conflicto offline por reasignación. Tiene probabilidad alta porque combina dos operaciones obligatorias del caso y su impacto puede producir pérdida silenciosa o una asignación incorrecta. Además, su mitigación define desde temprano el modelo de operación, historial y sincronización; resolverla tarde obligaría a rehacer los flujos de técnico y coordinación. Los riesgos de autorización y privacidad también son de impacto alto, pero se pueden comprobar como controles delimitados sobre una base que ya conserva correctamente las operaciones pendientes.
