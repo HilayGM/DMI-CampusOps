@@ -33,10 +33,10 @@ En el campus ficticio, los reportes de fallas de mantenimiento llegan por canale
 
 ## Criterios de aceptación verificables
 
-1. Dada una incidencia nueva con categoría, descripción y ubicación manual válidas, cuando el reportante la envía, entonces se crea con estado `open` y el historial muestra el evento de creación.
-2. Dada una incidencia `open`, cuando el coordinador le asigna un técnico y una prioridad, entonces queda `assigned`, muestra el técnico asignado y conserva la asignación en el historial.
-3. Dada una incidencia `assigned` al técnico A, cuando A registra diagnóstico y la marca resuelta, entonces pasa por `in_progress` a `resolved`; sólo el coordinador puede cambiarla a `closed` o reabrirla a `assigned`.
-4. Dado que el técnico trabaja sin conexión y coordinación reasigna la incidencia, cuando el técnico sincroniza su cambio pendiente, entonces la app conserva la operación, señala el conflicto y no sobrescribe silenciosamente la reasignación.
+1. **AC-01.** Dada una incidencia nueva con categoría, descripción y ubicación manual válidas, cuando el reportante la envía, entonces se crea con estado `open` y el historial muestra el evento de creación.
+2. **AC-02.** Dada una incidencia `open`, cuando el coordinador le asigna un técnico y una prioridad, entonces queda `assigned`, muestra el técnico asignado y conserva la asignación en el historial.
+3. **AC-03.** Dada una incidencia `assigned` al técnico A, cuando A registra diagnóstico y la marca resuelta, entonces pasa por `in_progress` a `resolved`; sólo el coordinador puede cambiarla a `closed` o reabrirla a `assigned`.
+4. **AC-04.** Dado que el técnico trabaja sin conexión y coordinación reasigna la incidencia, cuando el técnico sincroniza su cambio pendiente, entonces la app conserva la operación, señala el conflicto y no sobrescribe silenciosamente la reasignación.
 
 ## Trazabilidad de actores y criterios
 
@@ -44,8 +44,8 @@ La tabla relaciona los actores y flujos con los criterios numerados de la secci�
 
 | Actor(es) | Acción o flujo | Estado / condición | Criterio de aceptación relacionado |
 | --- | --- | --- | --- |
-| Reportante | Crear una incidencia con categoría, descripción y ubicación manual válidas. | `open` | Criterio 1: la incidencia se crea abierta y el historial registra el evento de creación. |
-| Coordinador | Asignar un técnico y una prioridad a una incidencia abierta. | `open` → `assigned` | Criterio 2: el técnico asignado es visible y la asignación queda registrada en el historial. |
-| Técnico asignado | Iniciar la atención, registrar el diagnóstico y marcar la incidencia como resuelta. | `assigned` → `in_progress` → `resolved` | Criterio 3: la atención y resolución corresponden al técnico asignado; éste no realiza el cierre reservado al coordinador. |
-| Coordinador | Revisar la resolución y cerrar el caso o reabrirlo con un técnico asignado. | Cierre: `resolved` → `closed`. Reapertura: `resolved` o `closed` → `assigned`, con técnico asignado. | Criterio 3: sólo el coordinador puede cerrar o reabrir la incidencia. |
-| Técnico y coordinador | Sincronizar un cambio pendiente del técnico realizado sin conexión después de una reasignación de coordinación. | Condición de conflicto entre el cambio local y la reasignación remota. | Criterio 4: se conserva la operación pendiente, se señala el conflicto y no se sobrescribe silenciosamente la reasignación. |
+| Reportante | Crear una incidencia con categoría, descripción y ubicación manual válidas. | `open` | AC-01: la incidencia se crea abierta y el historial registra el evento de creación. |
+| Coordinador | Asignar un técnico y una prioridad a una incidencia abierta. | `open` → `assigned` | AC-02: el técnico asignado es visible y la asignación queda registrada en el historial. |
+| Técnico asignado | Iniciar la atención, registrar el diagnóstico y marcar la incidencia como resuelta. | `assigned` → `in_progress` → `resolved` | AC-03: la atención y resolución corresponden al técnico asignado; éste no realiza el cierre reservado al coordinador. |
+| Coordinador | Revisar la resolución y cerrar el caso o reabrirlo con un técnico asignado. | Cierre: `resolved` → `closed`. Reapertura: `resolved` o `closed` → `assigned`, con técnico asignado. | AC-03: sólo el coordinador puede cerrar o reabrir la incidencia. |
+| Técnico y coordinador | Sincronizar un cambio pendiente del técnico realizado sin conexión después de una reasignación de coordinación. | Condición de conflicto entre el cambio local y la reasignación remota. | AC-04: se conserva la operación pendiente, se señala el conflicto y no se sobrescribe silenciosamente la reasignación. |
