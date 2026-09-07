@@ -1,5 +1,4 @@
 {
-  "_instructions": "Eliminen este campo cuando terminen. Conserven exactamente tres integrantes y usen SHA Git completos de commits creados por cada persona.",
   "schemaVersion": 1,
   "week": 1,
   "teamId": "09",
@@ -9,7 +8,8 @@
       "commitShas": [
         "2c47dc491687c5c7d8173a06ad2935e27226de60",
         "c48146c1533a8b575cbfeb27199734f8fbf9056c",
-        "fa5134756a0c9dbfa29a555b7f15efafed8f0986"
+        "fa5134756a0c9dbfa29a555b7f15efafed8f0986",
+        "147208e12bbe5392cf9c3250a1b34bed271828c3"
       ],
       "files": [
         "evidence/week-01/engineering.json",
@@ -17,12 +17,14 @@
         "docs/problem-definition.md",
         "docs/risk-register.md"
       ],
-      "tests": [],
+      "tests": [
+        "make feedback"
+      ],
       "reviews": [],
-      "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
-      "command": "REEMPLAZAR_CON_EL_COMANDO_EJECUTADO",
-      "observedResult": "REEMPLAZAR_CON_LO_QUE_OCURRIO",
-      "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
+      "prediction": "Esperaba que la línea base conservara el tipado, lint, prueba de humo, auditoría con umbral crítico y bundle Android después de documentar el alcance, riesgos y evidencia de diagnóstico.",
+      "command": "make feedback",
+      "observedResult": "La comprobación terminó correctamente: typecheck, lint y npm run test:smoke aprobaron; la auditoría informó una vulnerabilidad moderada, que no rebasa el umbral crítico configurado, y Expo exportó el bundle Android.",
+      "explanation": "Mi aportación definió el alcance, flujo, criterios de aceptación y riesgos iniciales de CampusOps, además de registrar la falla controlada y la decisión de ingeniería. La comprobación confirmó que esos documentos y la evidencia no alteraron el comportamiento reproducible del starter."
     },
     {
       "studentId": "3523110443",
@@ -32,12 +34,14 @@
       "files": [
         "docs/risk-register.md"
       ],
-      "tests": [],
+      "tests": [
+        "npm run test:smoke"
+      ],
       "reviews": [],
-      "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
-      "command": "REEMPLAZAR_CON_EL_COMANDO_EJECUTADO",
-      "observedResult": "REEMPLAZAR_CON_LO_QUE_OCURRIO",
-      "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
+      "prediction": "Esperaba que la prueba de humo siguiera aprobando porque mi cambio precisó responsables y revisión de evidencia en el registro de riesgos, sin modificar el comportamiento de la aplicación.",
+      "command": "npm run test:smoke",
+      "observedResult": "PASS course-tests/smoke.test.tsx: la suite aprobó con 1 prueba aprobada, 0 snapshots y duración de 1.938 s.",
+      "explanation": "Mi aportación actualizó docs/risk-register.md: conservó exactamente tres riesgos, añadió responsables de mitigación y precisó quién revisa la evidencia de cada mitigación. La prueba confirmó que la documentación no introdujo una regresión en la línea base."
     },
     {
       "studentId": "3523110806",
@@ -50,13 +54,13 @@
         "docs/problem-definition.md"
       ],
       "tests": [
-        "npm test -- --ci --runInBand course-tests/public/week-01.test.ts"
+        "npm run test:smoke"
       ],
       "reviews": [],
       "prediction": "Esperaba que la prueba pública de la Semana 01 validara correctamente la definición del problema y la trazabilidad agregada entre actores, acciones, estados o condiciones y criterios de aceptación.",
-      "command": "npm test -- --ci --runInBand course-tests/public/week-01.test.ts",
-      "observedResult": "La prueba no llegó a ejecutarse porque el entorno indicó que Node.js v22.22.0 no estaba instalado o no podía encontrarse.",
-      "explanation": "Mi aportación consistió en agregar al final de docs/problem-definition.md la sección de trazabilidad de actores y criterios, relacionando cada actor con sus acciones, estados o condiciones y los criterios de aceptación existentes. El comando de validación no alcanzó a ejecutar Jest debido a un problema de configuración del entorno con Node.js, no por un fallo detectado en el documento."
+      "command": "npm run test:smoke",
+      "observedResult": "PASS course-tests/smoke.test.tsx: la suite aprobó con 1 prueba aprobada, 0 snapshots y duración de 1.938 s.",
+      "explanation": "Mi aportación consistió en agregar al final de docs/problem-definition.md la sección de trazabilidad de actores y criterios, relacionando cada actor con sus acciones, estados o condiciones y los criterios de aceptación existentes. La prueba de humo aprobada confirmó que el documento no provocó una regresión en la línea base."
     }
   ]
 }

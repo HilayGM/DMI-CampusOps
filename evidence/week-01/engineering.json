@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 1,
-  "commitSha": "c48146c1533a8b575cbfeb27199734f8fbf9056c",
+  "commitSha": "147208e12bbe5392cf9c3250a1b34bed271828c3",
   "decision": "Para el punto de partida de CampusOps, mostraremos un estado de salud observable (`checking`, `available` u `offline`) obtenido mediante el adaptador `getBackendHealth`, en vez de declarar una disponibilidad fija en la pantalla. La decisión mantiene la interfaz verificable sin acoplarla al transporte y deja explícito que una respuesta exitosa cambia el estado a `available`.",
   "alternatives": [
     "Mostrar una etiqueta estática como 'Backend disponible' sin consultar ni representar el resultado de una operación de salud.",
