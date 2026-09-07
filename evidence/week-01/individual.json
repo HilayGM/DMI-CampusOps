@@ -16,15 +16,15 @@
       "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
     },
     {
-      "studentId": "REEMPLAZAR_INTEGRANTE_2",
-      "commitShas": ["REEMPLAZAR_CON_SHA_COMPLETO"],
-      "files": ["REEMPLAZAR_CON_ARCHIVO_TRABAJADO"],
-      "tests": [],
+      "studentId": "3523110806 - Oscar Martinez Martinez",
+      "commitShas": ["08148afa49baf8b7873da8050dc3a6be92dd6980"],
+      "files": ["docs/problem-definition.md"],
+      "tests": ["npm test -- --ci --runInBand course-tests/public/week-01.test.ts"],
       "reviews": [],
-      "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
-      "command": "REEMPLAZAR_CON_EL_COMANDO_EJECUTADO",
-      "observedResult": "REEMPLAZAR_CON_LO_QUE_OCURRIO",
-      "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
+      "prediction": "Esperaba que la prueba pública de la Semana 01 validara correctamente la definición del problema y la trazabilidad agregada entre actores, acciones, estados o condiciones y criterios de aceptación.",
+      "command": "npm test -- --ci --runInBand course-tests/public/week-01.test.ts",
+      "observedResult": "La prueba no llegó a ejecutarse porque el entorno indicó que Node.js v22.22.0 no estaba instalado o no podía encontrarse.",
+      "explanation": "Mi aportación consistió en agregar al final de docs/problem-definition.md la sección de trazabilidad de actores y criterios, relacionando cada actor con sus acciones, estados o condiciones y los criterios de aceptación existentes. El comando de validación no alcanzó a ejecutar Jest debido a un problema de configuración del entorno con Node.js, no por un fallo detectado en el documento."
     },
     {
       "studentId": "REEMPLAZAR_INTEGRANTE_3",
