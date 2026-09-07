@@ -2,12 +2,21 @@
   "_instructions": "Eliminen este campo cuando terminen. Conserven exactamente tres integrantes y usen SHA Git completos de commits creados por cada persona.",
   "schemaVersion": 1,
   "week": 1,
-  "teamId": "REEMPLAZAR_CON_ID_DEL_EQUIPO",
+  "teamId": "09",
   "members": [
     {
-      "studentId": "REEMPLAZAR_INTEGRANTE_1",
-      "commitShas": ["REEMPLAZAR_CON_SHA_COMPLETO"],
-      "files": ["REEMPLAZAR_CON_ARCHIVO_TRABAJADO"],
+      "studentId": "3523110349",
+      "commitShas": [
+        "2c47dc491687c5c7d8173a06ad2935e27226de60",
+        "c48146c1533a8b575cbfeb27199734f8fbf9056c",
+        "fa5134756a0c9dbfa29a555b7f15efafed8f0986"
+      ],
+      "files": [
+        "evidence/week-01/engineering.json",
+        "reports/week-01/baseline.json",
+        "docs/problem-definition.md",
+        "docs/risk-register.md"
+      ],
       "tests": [],
       "reviews": [],
       "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
@@ -16,26 +25,38 @@
       "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
     },
     {
-      "studentId": "3523110806 - Oscar Martinez Martinez",
-      "commitShas": ["08148afa49baf8b7873da8050dc3a6be92dd6980"],
-      "files": ["docs/problem-definition.md"],
-      "tests": ["npm test -- --ci --runInBand course-tests/public/week-01.test.ts"],
+      "studentId": "3523110443",
+      "commitShas": [
+        "eed628c7a2c2972a36cea37ebecb17ae3991f147"
+      ],
+      "files": [
+        "docs/risk-register.md"
+      ],
+      "tests": [],
+      "reviews": [],
+      "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
+      "command": "REEMPLAZAR_CON_EL_COMANDO_EJECUTADO",
+      "observedResult": "REEMPLAZAR_CON_LO_QUE_OCURRIO",
+      "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": [
+        "cc9057818ed52910273db79213a1546af7323074",
+        "08148afa49baf8b7873da8050dc3a6be92dd6980"
+      ],
+      "files": [
+        "evidence/week-01/individual.json",
+        "docs/problem-definition.md"
+      ],
+      "tests": [
+        "npm test -- --ci --runInBand course-tests/public/week-01.test.ts"
+      ],
       "reviews": [],
       "prediction": "Esperaba que la prueba pública de la Semana 01 validara correctamente la definición del problema y la trazabilidad agregada entre actores, acciones, estados o condiciones y criterios de aceptación.",
       "command": "npm test -- --ci --runInBand course-tests/public/week-01.test.ts",
       "observedResult": "La prueba no llegó a ejecutarse porque el entorno indicó que Node.js v22.22.0 no estaba instalado o no podía encontrarse.",
       "explanation": "Mi aportación consistió en agregar al final de docs/problem-definition.md la sección de trazabilidad de actores y criterios, relacionando cada actor con sus acciones, estados o condiciones y los criterios de aceptación existentes. El comando de validación no alcanzó a ejecutar Jest debido a un problema de configuración del entorno con Node.js, no por un fallo detectado en el documento."
-    },
-    {
-      "studentId": "REEMPLAZAR_INTEGRANTE_3",
-      "commitShas": ["REEMPLAZAR_CON_SHA_COMPLETO"],
-      "files": ["REEMPLAZAR_CON_ARCHIVO_TRABAJADO"],
-      "tests": [],
-      "reviews": [],
-      "prediction": "REEMPLAZAR_CON_LO_QUE_ESPERABA_OBSERVAR",
-      "command": "REEMPLAZAR_CON_EL_COMANDO_EJECUTADO",
-      "observedResult": "REEMPLAZAR_CON_LO_QUE_OCURRIO",
-      "explanation": "REEMPLAZAR_CON_LA_EXPLICACION_TECNICA"
     }
   ]
 }
