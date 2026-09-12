@@ -1,0 +1,55 @@
+graph TD
+    subgraph UI ["UI (Interfaz de Usuario)"]
+        UI_Pantallas["Pantallas de la App (React Native)"]
+        UI_Perfiles["Vistas de Perfiles (Reportante, Técnico, Coordinador)"]
+    end
+
+    subgraph Application ["Aplicación (Casos de Uso)"]
+        App_Incidencias["Flujos de Incidencias"]
+        App_Sesion["Flujos de Sesión"]
+    end
+
+    subgraph Domain ["Dominio (Reglas de Negocio)"]
+        Dom_Incidencias["Entidades: Incidencias"]
+        Dom_Sesion["Entidades: Sesión"]
+        Dom_Perfiles["Perfiles de Usuario (Reglas de Acceso)"]
+        Dom_Interfaces["Puertos (Interfaces de Repositorios y Servicios)"]
+    end
+
+    subgraph Infrastructure ["Infraestructura (Detalles y Proveedores)"]
+        Infra_Persistencia["Persistencia (Almacenamiento Local)"]
+        Infra_Ubicacion["Ubicación (Proveedor GPS / Mapas)"]
+        Infra_API["Backend (Sincronización / Red)"]
+    end
+
+    %% Dependencias principales (Clean Architecture)
+    UI --> Application
+    Application --> Domain
+    Infrastructure --> Domain
+
+    %% Detalle de dependencias internas
+    UI_Pantallas --> App_Incidencias
+    UI_Perfiles --> App_Sesion
+
+    App_Incidencias --> Dom_Incidencias
+    App_Incidencias --> Dom_Interfaces
+    
+    App_Sesion --> Dom_Sesion
+    App_Sesion --> Dom_Perfiles
+    App_Sesion --> Dom_Interfaces
+
+    %% Inversión de dependencias: La infraestructura implementa las interfaces del dominio
+    Infra_Persistencia -.->|Implementa| Dom_Incidencias
+    Infra_Ubicacion -.->|Implementa| Dom_Sesion
+    Infra_API -.->|Implementa| App_Incidencias
+    Infra_API -.->|Implementa| App_Sesion
+
+    %% Ubicación de Responsabilidades Específicas
+    Infra_Persistencia --> Dom_Incidencias
+    App_Incidencias -.->|Depende| Infra_Persistencia
+
+    Infra_Ubicacion --> Dom_Sesion
+    App_Sesion -.->|Depende| Infra_Ubicacion
+
+    Infra_API --> App_Incidencias
+    Infra_API --> App_Sesion
