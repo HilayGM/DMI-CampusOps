@@ -26,7 +26,6 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
 
   useEffect(() => {
     let active = true;
-    setBackendStatus('checking');
     async function checkHealth() {
       try {
         await checkBackendHealth();
@@ -41,8 +40,12 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
 
   useEffect(() => {
     let active = true;
-    setQuery({ status: 'loading' });
     async function load() {
+      // Wait one microtask before transitioning. This keeps the effect
+      // asynchronous and makes an obsolete request cancellable.
+      await Promise.resolve();
+      if (!active) return;
+      setQuery({ status: 'loading' });
       try {
         const result: QueryState = selectedId === null
           ? { status: 'list', items: await incidents.list() }

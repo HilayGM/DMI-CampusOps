@@ -37,7 +37,7 @@ test('the composed app supports list, correct detail and return while backend is
   jest.mocked(getBackendHealth).mockRejectedValue(new Error('backend offline'));
   const view = await render(<App />);
   expect(view.getByText('CampusOps')).toBeTruthy();
-  await waitFor(() => expect(view.getByTestId('backend-status')).toHaveTextContent('offline'));
+  await waitFor(() => expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: offline'));
   expect(await view.findByText('Luminaria de práctica apagada')).toBeTruthy();
   expect(view.getByText('Fuga simulada en lavabo')).toBeTruthy();
   await fireEvent.press(view.getByRole('button', { name: 'Abrir incidencia: Conexión intermitente de laboratorio' }));
@@ -57,9 +57,9 @@ test('list works while backend health remains checking', async () => {
     <CampusOpsScreen incidents={createIncidentQueries(defaultRepository)} checkBackendHealth={() => health.promise} />,
   );
   expect(await view.findByText(sample.title)).toBeTruthy();
-  expect(view.getByTestId('backend-status')).toHaveTextContent('checking');
+  expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: checking');
   await act(async () => { health.resolve(undefined); });
-  expect(view.getByTestId('backend-status')).toHaveTextContent('available');
+  expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: available');
 });
 
 test('shows loading and then an empty list', async () => {
@@ -138,7 +138,7 @@ test('Android back returns from detail and removes the listener', async () => {
   await fireEvent.press(await view.findByRole('button', { name: `Abrir incidencia: ${sample.title}` }));
   expect(await view.findByText(sample.description)).toBeTruthy();
   const handler = listener.mock.calls.find(([event]) => event === 'hardwareBackPress')![1];
-  await act(async () => { expect(handler()).toBe(true); });
+  await act(async () => { expect(handler({} as never)).toBe(true); });
   expect(await view.findByText('Incidencias ficticias')).toBeTruthy();
   expect(remove).toHaveBeenCalledTimes(1);
 });
