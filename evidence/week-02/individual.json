@@ -46,21 +46,30 @@
     {
       "studentId": "3523110806",
       "commitShas": [
-        "cc9057818ed52910273db79213a1546af7323074",
-        "08148afa49baf8b7873da8050dc3a6be92dd6980"
+        
       ],
       "files": [
-        "evidence/week-01/individual.json",
-        "docs/problem-definition.md"
+       "App.tsx",
+       "src/campusops/domain/Incident.ts",
+       "src/campusops/application/ports/IncidentRepository.ts",
+       "src/campusops/application/ports/BackendHealthPort.ts",
+       "src/campusops/application/incidentQueries.ts",
+       "src/campusops/infrastructure/InMemoryIncidentRepository.ts",
+       "src/campusops/ui/CampusOpsScreen.tsx",
+       "src/campusops/ui/IncidentListScreen.tsx",
+       "src/campusops/ui/IncidentDetailScreen.tsx",
+       "src/composition/campusOpsDependencies.ts",
+       "src/campusops/__tests__/incidentQueries.test.ts",
+       "src/campusops/__tests__/incidentNavigation.test.tsx"
       ],
       "tests": [
-        "npm run test:smoke"
+       "UNA_COMPROBACION_REAL_DE_TU_IMPLEMENTACION"
       ],
       "reviews": [],
-      "prediction": "Esperaba que la prueba pública de la Semana 01 validara correctamente la definición del problema y la trazabilidad agregada entre actores, acciones, estados o condiciones y criterios de aceptación.",
-      "command": "npm run test:smoke",
-      "observedResult": "PASS course-tests/smoke.test.tsx: la suite aprobó con 1 prueba aprobada, 0 snapshots y duración de 1.938 s.",
-      "explanation": "Mi aportación consistió en agregar al final de docs/problem-definition.md la sección de trazabilidad de actores y criterios, relacionando cada actor con sus acciones, estados o condiciones y los criterios de aceptación existentes. La prueba de humo aprobada confirmó que el documento no provocó una regresión en la línea base."
+      "prediction": "Esperaba que al separar la consulta de incidencias mediante IncidentRepository y conectar InMemoryIncidentRepository desde Composition, la UI pudiera mostrar la lista y el detalle de incidencias sintéticas sin importar directamente Infrastructure, manteniendo además desacoplada la comprobación de salud mediante BackendHealthPort.",
+      "command": "",
+      "observedResult": "La UI no importa Infrastructure, Application no importa InMemoryIncidentRepository y Domain no depende de React Native ni Expo. InMemoryIncidentRepository devuelve incidencias sintéticas y la consulta de un identificador inexistente devuelve null. La lista, el detalle y la navegación de regreso quedaron implementados. Las comprobaciones directas de lógica e imports pasaron; Jest, TypeScript y ESLint quedaron pendientes por falta de dependencias instaladas.",
+      "explanation": "Implementé el esqueleto ejecutable de CampusOps separando Domain, Application, Infrastructure, UI y Composition. Definí los puertos IncidentRepository y BackendHealthPort, implementé InMemoryIncidentRepository con datos sintéticos y conecté las dependencias desde Composition. La UI consume operaciones de Application sin depender directamente de Infrastructure y permite consultar la lista de incidencias, abrir su detalle y regresar a la lista."
     }
   ]
 }
