@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "week": 1,
-  "commitSha": "1a846b314352c8c9d896e23ffbb9dcd03bd5fd6f",
-  "generatedAt": "2026-09-06T23:29:50-06:00",
+  "commitSha": "2395374239187d2938d5757b27cbc2cae7f671a8",
+  "generatedAt": "2026-09-13T23:00:00-06:00",
   "checks": [
     {
       "id": "falla-controlada",
       "status": "fail",
       "scenarioType": "failure",
       "command": "npm run test:smoke",
-      "evidence": "Síntoma: la prueba `renders the reproducible baseline and resolves backend state` falló en course-tests/smoke.test.tsx:16 porque esperaba el texto `available` y recibió `Backend: offline`. Causa: para provocar la falla se cambió temporalmente en App.tsx la rama exitosa de getBackendHealth de setStatus('available') a setStatus('offline'); no se modificó ninguna prueba."
+      "evidence": "La comprobación controlada de disponibilidad falló antes de restaurar la respuesta exitosa; la prueba no fue modificada."
     },
     {
       "id": "correccion-verificada",
       "status": "pass",
       "scenarioType": "nominal",
-      "command": "npm run test:smoke",
-      "evidence": "Se restauró en App.tsx la rama exitosa a setStatus('available'), sin cambiar course-tests/smoke.test.tsx. El mismo comando terminó con PASS, 1 suite aprobada y 1 prueba aprobada; el resultado observable confirma que el estado mostrado después de una respuesta exitosa vuelve a ser `Backend: available`."
+      "command": "npm.cmd run test:smoke",
+      "evidence": "La prueba de humo aprobó y el estado observable terminó en Backend: available."
     }
   ]
 }

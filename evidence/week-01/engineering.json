@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "week": 1,
+  "commitSha": "2395374239187d2938d5757b27cbc2cae7f671a8",
+  "decision": "CampusOps muestra un estado de salud observable obtenido mediante un adaptador, en lugar de declarar disponibilidad fija en la pantalla.",
+  "alternatives": [
+    "Mostrar una etiqueta estática sin consultar el estado del backend.",
+    "Llamar a fetch directamente desde App.tsx y mezclar transporte y UI.",
+    "Ocultar el estado del backend hasta completar la gestión de incidencias."
+  ],
+  "tradeoff": "El adaptador permite comprobar los estados available y offline sin acoplar la interfaz al transporte. A cambio, se añade una abstracción pequeña antes de contar con todas las operaciones del producto.",
+  "requirementIds": ["AC-02", "AC-04"],
+  "verification": [
+    {
+      "command": "npm.cmd run test:smoke",
+      "result": "PASS: la prueba de humo confirmó Backend: available.",
+      "evidence": "course-tests/smoke.test.tsx espera el estado disponible después de resolver getBackendHealth."
+    }
+  ]
+}

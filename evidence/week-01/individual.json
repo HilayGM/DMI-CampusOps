@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "week": 1,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": ["2c47dc491687c5c7d8173a06ad2935e27226de60"],
+      "files": ["docs/problem-definition.md", "docs/risk-register.md"],
+      "tests": ["npm run test:smoke"],
+      "reviews": [],
+      "prediction": "La documentación de alcance y riesgos no modificaría el comportamiento de la aplicación.",
+      "command": "npm run test:smoke",
+      "observedResult": "La prueba de humo aprobó sin regresiones funcionales.",
+      "explanation": "Se documentaron el problema y los riesgos iniciales del proyecto."
+    },
+    {
+      "studentId": "3523110443",
+      "commitShas": ["eed628c7a2c2972a36cea37ebecb17ae3991f147"],
+      "files": ["docs/risk-register.md"],
+      "tests": ["npm run test:smoke"],
+      "reviews": [],
+      "prediction": "Precisar responsables de riesgo conservaría la línea base ejecutable.",
+      "command": "npm run test:smoke",
+      "observedResult": "La prueba de humo aprobó con el estado disponible esperado.",
+      "explanation": "Se actualizó el registro de riesgos con responsables y revisión de evidencia."
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": ["cc9057818ed52910273db79213a1546af7323074"],
+      "files": ["docs/problem-definition.md", "evidence/week-01/individual.json"],
+      "tests": ["npm run test:smoke"],
+      "reviews": [],
+      "prediction": "La trazabilidad de actores y criterios no afectaría la línea base.",
+      "command": "npm run test:smoke",
+      "observedResult": "La comprobación terminó satisfactoriamente.",
+      "explanation": "Se registró la trazabilidad entre actores, acciones y criterios de aceptación."
+    }
+  ]
+}
