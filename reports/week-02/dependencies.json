@@ -1,0 +1,9 @@
+{
+  "architecture_validation": "Validación de límites: sin conexiones directas de UI a infraestructura",
+  "discrepancy_simulation": {
+    "simulated_error": "Se introdujo un import directo desde un componente de la interfaz hacia la capa de infraestructura.",
+    "effect": "La prueba automatizada falló al detectar una dependencia dirigida incorrecta, lo que acoplaría la vista con los detalles técnicos de persistencia.",
+    "correction": "Se removió el import y se respetó la inversión de dependencias a través de interfaces."
+  },
+  "status": "PASS"
+}

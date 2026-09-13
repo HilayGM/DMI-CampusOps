@@ -1,0 +1,5 @@
+{
+  "integrante_1": "Investigó alternativas y redactó el ADR-001 de arquitectura.",
+  "integrante_2": "Diseñó el diagrama en Mermaid y estructuró el esqueleto ejecutable.",
+  "integrante_3": "Felipe Mora López: Implementó y validó la prueba de arquitectura, simuló y corrigió la discrepancia de dependencias, y generó los reportes en JSON."
+}
