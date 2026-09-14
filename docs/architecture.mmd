@@ -1,0 +1,10 @@
+flowchart TD
+  UI[UI]
+  APP[Application]
+  DOMAIN[Domain]
+  INFRA[Infrastructure]
+
+  UI --> APP
+  APP --> DOMAIN
+  APP --> INFRA
+  INFRA --> DOMAIN

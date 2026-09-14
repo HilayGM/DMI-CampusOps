@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "week": 2,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": [
+        "2c47dc491687c5c7d8173a06ad2935e27226de60",
+        "c48146c1533a8b575cbfeb27199734f8fbf9056c",
+        "fa5134756a0c9dbfa29a555b7f15efafed8f0986",
+        "147208e12bbe5392cf9c3250a1b34bed271828c3"
+      ],
+      "files": [
+        "docs/architecture.mmd",
+        "docs/adr/ADR-001-architecture.md",
+        "evidence/week-02/engineering.json"
+      ],
+      "tests": [
+        "npm run test -- course-tests/public/week-02.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "Esperaba que el dibujo y el ADR describieran las cuatro capas y que la prueba pública pudiera encontrar la alternativa y el trade-off de la decisión.",
+      "command": "npm run test -- course-tests/public/week-02.test.ts",
+      "observedResult": "PASS: la suite de Semana 02 aprobó su prueba de arquitectura.",
+      "explanation": "Definí los límites de UI, application, domain e infrastructure, documenté las alternativas y dejé explícito el costo de mantener una matriz parcial mientras el esqueleto crece."
+    },
+    {
+      "studentId": "3523110443",
+      "commitShas": [
+        "eed628c7a2c2972a36cea37ebc17ae3991f147"
+      ],
+      "files": [
+        "course-tests/public/week-02-architecture.test.ts",
+        "reports/week-02/dependencies.json"
+      ],
+      "tests": [
+        "npm run test -- course-tests/public/week-02-architecture.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "Esperaba que la prueba estática detectara cualquier importación domain -> ui o ui -> infrastructure y que el estado corregido pasara sin modificar src.",
+      "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
+      "observedResult": "PASS: 1 suite y 2 pruebas aprobadas; no se encontraron violaciones en src.",
+      "explanation": "Implementé la comprobación de imports relativos y la simulación controlada del borde domain -> ui. La discrepancia se registró como falla esperada y la versión entregada conserva el código sin ese import inválido."
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": [
+        "cc9057818ed52910273db79213a1546af7323074",
+        "08148afa49baf8b7873da8050dc3a6be92dd6980"
+      ],
+      "files": [
+        "evidence/week-02/individual.json",
+        "evidence/week-02/engineering.json",
+        "reports/week-02/dependencies.json"
+      ],
+      "tests": [
+        "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "Esperaba que el reporte enlazara un caso de falla y uno de frontera, y que la evidencia individual conservara exactamente tres integrantes con señales reproducibles.",
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "observedResult": "PASS: 2 suites, 3 pruebas aprobadas y evidencia JSON preparada con un caso failure y uno boundary.",
+      "explanation": "Compilé los reportes de evidencia y registré la discrepancia controlada, la corrección y la verificación final. También consolidé las contribuciones de los tres integrantes sin alterar la carpeta .github ni el código de la aplicación."
+    }
+  ]
+}

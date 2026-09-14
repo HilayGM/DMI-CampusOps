@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "week": 2,
+  "commitSha": "fc8045e980ea9984fbdda6c703b42833493b0507",
+  "decision": "Representar los límites de UI, application, domain e infrastructure en Mermaid y comprobar dos bordes de alto riesgo con una prueba estática que resuelve imports relativos dentro de src. La prueba no ejecuta módulos ni depende de que todas las capas ya tengan implementación.",
+  "alternatives": [
+    "Permitir todos los imports y depender únicamente de revisión manual del dibujo.",
+    "Introducir aliases y un contenedor de dependencias antes de contar con casos de uso implementados.",
+    "Aplicar una matriz pequeña de límites verificables desde el esqueleto actual."
+  ],
+  "tradeoff": "La matriz detecta acoplamiento accidental temprano y mantiene la prueba reproducible con el repositorio, pero sólo cubre domain -> ui y ui -> infrastructure; futuras capas y reglas deberán ampliarse cuando existan casos de uso reales.",
+  "requirementIds": ["AC-01", "AC-03", "AC-05"],
+  "verification": [
+    {
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "result": "PASS: 2 suites y 3 pruebas aprobadas.",
+      "evidence": "La prueba pública confirmó la presencia de las cuatro capas en docs/architecture.mmd y la justificación del ADR; la prueba arquitectónica recorrió src y confirmó que no existen los dos bordes prohibidos."
+    },
+    {
+      "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
+      "result": "PASS: la regla incluye el caso controlado domain -> ui.",
+      "evidence": "La segunda prueba de la suite verifica que el borde simulado está en la matriz de rechazo, documentando la discrepancia sin dejar una importación inválida en src."
+    }
+  ]
+}

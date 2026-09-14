@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "week": 2,
+  "commitSha": "fc8045e980ea9984fbdda6c703b42833493b0507",
+  "generatedAt": "2026-09-13T00:00:00-06:00",
+  "checks": [
+    {
+      "id": "discrepancia-domain-ui-controlada",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
+      "evidence": "Simulación controlada: una dependencia domain -> ui está declarada como borde prohibido; si se agrega ese import a un módulo domain, la prueba debe reportarlo como violación. La importación inválida no se conserva en el código entregado."
+    },
+    {
+      "id": "imports-respetan-limites",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "evidence": "PASS: 2 suites, 3 pruebas aprobadas. La prueba recorrió los imports relativos de src y no encontró domain -> ui ni ui -> infrastructure; la prueba pública también validó el dibujo y el ADR."
+    }
+  ]
+}
