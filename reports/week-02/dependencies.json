@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "week": 2,
+  "commitSha": "c1bff1759cced57cfca113d56ed6e092e315c656",
+  "generatedAt": "2026-09-13T23:00:00-06:00",
+  "checks": [
+    {
+      "id": "dependencias-principales",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd run typecheck",
+      "evidence": "El proyecto compila con Expo, React Native, TypeScript y Jest configurados."
+    },
+    {
+      "id": "repositorio-desconocido",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts",
+      "evidence": "La consulta devuelve null para un identificador inexistente y propaga fallos del adaptador."
+    }
+  ]
+}

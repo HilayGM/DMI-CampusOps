@@ -24,7 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # A pull request normally checks out a synthetic merge commit.
+          # Evidence must instead be checked against the submitted head SHA.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
       - name: Use Node.js 22.22.0
         uses: actions/setup-node@v4
         with:
