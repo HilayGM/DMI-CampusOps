@@ -46,7 +46,7 @@ test('source imports respect the declared architecture boundaries', () => {
     const imports = sourceText.matchAll(/(?:import|export)[\s\S]*?from\s*['"]([^'"]+)['"]/g);
 
     for (const match of imports) {
-      const importedFile = resolveImport(sourceFile, match[1]);
+      const importedFile = resolveImport(sourceFile, match[1] ?? '');
       const importedLayer = importedFile ? layerOf(importedFile) : null;
       if (!importedLayer) continue;
       for (const [fromLayer, toLayer] of forbiddenEdges) {
