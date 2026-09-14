@@ -24,7 +24,7 @@
       "studentId": "3523110443",
       "commitShas": [
         "e98b187d999844af5125f684fbf4cd986a73daef",
-        "eed628c7a2c2972a36cea37ebc17ae3991f147"
+        "eed628c7a2c2972a36cea37ebecb17ae3991f147"
       ],
       "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd", "course-tests/public/week-02-architecture.test.ts", "reports/week-02/dependencies.json"],
       "tests": ["npm.cmd run lint", "npm run test -- course-tests/public/week-02-architecture.test.ts"],
