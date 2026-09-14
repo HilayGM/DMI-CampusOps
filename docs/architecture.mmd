@@ -1,10 +1,81 @@
-flowchart TD
-  UI[UI]
-  APP[Application]
-  DOMAIN[Domain]
-  INFRA[Infrastructure]
+flowchart LR
+  %% Flecha normal: dependencia de codigo, incluidos imports de tipos y referencias locales.
+  %% Flecha discontinua "implementa": cumplimiento de un puerto, no llamada HTTP.
+  %% Las props se entregan desde App; UI no importa proveedores concretos.
+  %% Los bloques de perfiles y limites futuros son contexto, sin servicios funcionales conectados.
 
-  UI --> APP
-  APP --> DOMAIN
-  APP --> INFRA
-  INFRA --> DOMAIN
+  subgraph Actors["Perfiles contemplados - sin autorizacion implementada"]
+    Reporter["Reportante"]
+    Technician["Técnico"]
+    Coordinator["Coordinador"]
+  end
+
+  subgraph Composition["Composition - src/composition y raiz App.tsx"]
+    AppRoot["App.tsx - montaje"]
+    Dependencies["campusOpsDependencies.ts - construye dependencias"]
+    HealthCheck["checkBackendHealth - adaptacion en el mismo archivo"]
+  end
+
+  subgraph UI["UI - incidencias implementadas"]
+    CampusOpsScreen["CampusOpsScreen - props, salud y navegacion"]
+    IncidentList["IncidentListScreen"]
+    IncidentDetail["IncidentDetailScreen"]
+  end
+
+  subgraph Application["Application - consultas y puertos"]
+    IncidentQueries["incidentQueries - createIncidentQueries / IncidentQueries"]
+    IncidentRepositoryPort["IncidentRepository - list / getById"]
+    BackendHealthPort["BackendHealthPort - funcion Promise void"]
+  end
+
+  subgraph Domain["Domain - TypeScript puro"]
+    Incident["Incident - modelo de incidencias"]
+    Contracts["src/campusops/contracts.ts - vocabulario publico"]
+  end
+
+  subgraph Infrastructure["Infrastructure - proveedores concretos"]
+    InMemoryRepository["InMemoryIncidentRepository - tres fixtures en memoria"]
+    CourseBackendHealth["src/api/courseBackend.ts - getBackendHealth /health"]
+  end
+
+  AppRoot --> Dependencies
+  AppRoot -->|"monta e inyecta props"| CampusOpsScreen
+  Dependencies -->|"crea instancia"| InMemoryRepository
+  Dependencies -->|"construye consultas"| IncidentQueries
+  Dependencies -->|"incluye funcion"| HealthCheck
+  HealthCheck -->|"espera resultado"| CourseBackendHealth
+  HealthCheck -.->|"implementa el tipo de funcion"| BackendHealthPort
+
+  CampusOpsScreen -->|"contrato de funciones recibidas"| IncidentQueries
+  CampusOpsScreen -->|"tipo de funcion recibida"| BackendHealthPort
+  CampusOpsScreen --> IncidentList
+  CampusOpsScreen --> IncidentDetail
+  CampusOpsScreen -->|"tipo"| Incident
+  IncidentList -->|"tipo"| Incident
+  IncidentDetail -->|"tipo"| Incident
+  IncidentDetail -->|"estados y categorias"| Contracts
+
+  IncidentQueries -->|"delega en puerto inyectado"| IncidentRepositoryPort
+  IncidentQueries -->|"tipo"| Incident
+  IncidentRepositoryPort -->|"tipo"| Incident
+  InMemoryRepository -.->|"implementa"| IncidentRepositoryPort
+  InMemoryRepository -->|"tipo"| Incident
+  Incident -->|"estados y categorias"| Contracts
+
+  subgraph Future["Limites previstos - NO implementados en Semana 02"]
+    SessionBoundary["Sesión - limite futuro / no implementado"]
+    PersistenceBoundary["Persistencia - limite futuro / no implementado"]
+    LocationBoundary["Ubicación y proveedor - limite futuro / no implementado"]
+  end
+
+  subgraph Legend["Leyenda"]
+    LegendCode["Flecha continua: dependencia de codigo o tipos"]
+    LegendPort["Flecha discontinua implementa: cumplimiento del puerto"]
+    LegendFuture["Fondo amarillo: responsabilidad futura no implementada"]
+    LegendActors["Perfiles: contexto del diseño, sin permisos funcionales"]
+  end
+
+  classDef future fill:#fff4ce,stroke:#8a6500,stroke-dasharray:5 5,color:#332600;
+  classDef context fill:#f1f5f9,stroke:#64748b,color:#0f172a;
+  class SessionBoundary,PersistenceBoundary,LocationBoundary,LegendFuture future;
+  class Reporter,Technician,Coordinator,LegendActors context;

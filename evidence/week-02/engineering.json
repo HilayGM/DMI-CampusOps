@@ -1,25 +1,31 @@
 {
   "schemaVersion": 1,
   "week": 2,
-  "commitSha": "fc8045e980ea9984fbdda6c703b42833493b0507",
-  "decision": "Representar los límites de UI, application, domain e infrastructure en Mermaid y comprobar dos bordes de alto riesgo con una prueba estática que resuelve imports relativos dentro de src. La prueba no ejecuta módulos ni depende de que todas las capas ya tengan implementación.",
+  "commitSha": "c846e0c238ab9f953f699fae078c7944797c5c78",
+  "decision": "El esqueleto de CampusOps separa Domain, Application, Infrastructure, UI y Composition. La UI recibe consultas y puertos por propiedades; Composition es el único punto que crea InMemoryIncidentRepository.",
   "alternatives": [
-    "Permitir todos los imports y depender únicamente de revisión manual del dibujo.",
-    "Introducir aliases y un contenedor de dependencias antes de contar con casos de uso implementados.",
-    "Aplicar una matriz pequeña de límites verificables desde el esqueleto actual."
+    "Consultar los datos ficticios directamente desde cada pantalla de React Native.",
+    "Importar InMemoryIncidentRepository desde la UI y crear el adaptador dentro de componentes.",
+    "Esperar al backend real y no disponer de una lista ejecutable durante el diseño.",
+    "Permitir todos los imports y depender únicamente de revisión manual del dibujo."
   ],
-  "tradeoff": "La matriz detecta acoplamiento accidental temprano y mantiene la prueba reproducible con el repositorio, pero sólo cubre domain -> ui y ui -> infrastructure; futuras capas y reglas deberán ampliarse cuando existan casos de uso reales.",
-  "requirementIds": ["AC-01", "AC-03", "AC-05"],
+  "tradeoff": "Los puertos añaden archivos y una capa de composición para un conjunto pequeño de datos, pero permiten reemplazar el adaptador sin que la UI conozca Infrastructure y dejan probar las consultas con repositorios alternativos. La matriz estática detecta acoplamiento accidental temprano, aunque deberá ampliarse cuando aparezcan nuevas capas.",
+  "requirementIds": ["AC-01", "AC-02", "AC-03", "AC-05"],
   "verification": [
     {
-      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
-      "result": "PASS: 2 suites y 3 pruebas aprobadas.",
-      "evidence": "La prueba pública confirmó la presencia de las cuatro capas en docs/architecture.mmd y la justificación del ADR; la prueba arquitectónica recorrió src y confirmó que no existen los dos bordes prohibidos."
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts",
+      "result": "PASS: 3 suites y 16 pruebas aprobaron; se verificaron lista, detalle, regreso, errores y el contrato público de Semana 02.",
+      "evidence": "Las pruebas ejercen createIncidentQueries con InMemoryIncidentRepository y con un repositorio alternativo; CampusOpsScreen no importa Infrastructure."
     },
     {
       "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
-      "result": "PASS: la regla incluye el caso controlado domain -> ui.",
-      "evidence": "La segunda prueba de la suite verifica que el borde simulado está en la matriz de rechazo, documentando la discrepancia sin dejar una importación inválida en src."
+      "result": "PASS: la prueba estática confirmó los límites y el caso controlado domain -> ui.",
+      "evidence": "El recorrido de imports relativos en src no encontró domain -> ui ni ui -> infrastructure; la discrepancia se documenta sin conservar una importación inválida."
+    },
+    {
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "result": "PASS: 2 suites y 3 pruebas aprobadas.",
+      "evidence": "La prueba pública confirmó las cuatro capas y el ADR; la prueba arquitectónica comprobó los límites de imports."
     }
   ]
 }

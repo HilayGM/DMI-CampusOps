@@ -1,9 +1,23 @@
 {
   "schemaVersion": 1,
   "week": 2,
-  "commitSha": "fc8045e980ea9984fbdda6c703b42833493b0507",
-  "generatedAt": "2026-09-13T00:00:00-06:00",
+  "commitSha": "c846e0c238ab9f953f699fae078c7944797c5c78",
+  "generatedAt": "2026-09-13T23:00:00-06:00",
   "checks": [
+    {
+      "id": "dependencias-principales",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd run typecheck",
+      "evidence": "El proyecto compila con Expo, React Native, TypeScript y Jest configurados."
+    },
+    {
+      "id": "repositorio-desconocido",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts",
+      "evidence": "La consulta devuelve null para un identificador inexistente y propaga fallos del adaptador."
+    },
     {
       "id": "discrepancia-domain-ui-controlada",
       "status": "fail",
@@ -16,7 +30,7 @@
       "status": "pass",
       "scenarioType": "boundary",
       "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
-      "evidence": "PASS: 2 suites, 3 pruebas aprobadas. La prueba recorrió los imports relativos de src y no encontró domain -> ui ni ui -> infrastructure; la prueba pública también validó el dibujo y el ADR."
+      "evidence": "La prueba estática recorrió los imports relativos de src y no encontró domain -> ui ni ui -> infrastructure; la prueba pública validó el dibujo y el ADR."
     }
   ]
 }

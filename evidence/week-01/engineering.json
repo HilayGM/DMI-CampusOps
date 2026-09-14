@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "week": 1,
-  "commitSha": "41f458ce8034b4cb5b29ac67ecac56f24c03bfc0",
-  "decision": "Para el punto de partida de CampusOps, mostraremos un estado de salud observable (`checking`, `available` u `offline`) obtenido mediante el adaptador `getBackendHealth`, en vez de declarar una disponibilidad fija en la pantalla. La decisión mantiene la interfaz verificable sin acoplarla al transporte y deja explícito que una respuesta exitosa cambia el estado a `available`.",
+  "commitSha": "c846e0c238ab9f953f699fae078c7944797c5c78",
+  "decision": "CampusOps muestra un estado de salud observable obtenido mediante un adaptador, en lugar de declarar disponibilidad fija en la pantalla.",
   "alternatives": [
-    "Mostrar una etiqueta estática como 'Backend disponible' sin consultar ni representar el resultado de una operación de salud.",
-    "Llamar a fetch directamente desde App.tsx y mezclar la URL, el contrato HTTP y la actualización visual en el componente.",
-    "Ocultar por completo el estado del backend hasta construir la gestión completa de incidencias."
+    "Mostrar una etiqueta estática sin consultar el estado del backend.",
+    "Llamar a fetch directamente desde App.tsx y mezclar transporte y UI.",
+    "Ocultar el estado del backend hasta completar la gestión de incidencias."
   ],
-  "tradeoff": "El beneficio es una señal real y comprobable para el estado nominal y de desconexión, además de que el adaptador se puede simular en pruebas sin depender de una red. El costo es incorporar desde ahora un estado y una abstracción que aún sólo cubren salud del backend: `available` no prueba la autorización, las transiciones de incidencias ni la sincronización offline, que deberán validarse en hitos posteriores.",
+  "tradeoff": "El adaptador permite comprobar los estados available y offline sin acoplar la interfaz al transporte. A cambio, se añade una abstracción pequeña antes de contar con todas las operaciones del producto.",
   "requirementIds": ["AC-02", "AC-04"],
   "verification": [
     {
-      "command": "npm run test:smoke",
-      "result": "PASS course-tests/smoke.test.tsx; 1 suite aprobada y 1 prueba aprobada. La prueba confirmó que, después de resolver getBackendHealth, backend-status contiene `available`.",
-      "evidence": "Salida real de `npm run test:smoke` ejecutada tras restaurar App.tsx; la aserción está en course-tests/smoke.test.tsx:16 y la decisión se implementa en App.tsx mediante getBackendHealth."
+      "command": "npm.cmd run test:smoke",
+      "result": "PASS: la prueba de humo confirmó Backend: available.",
+      "evidence": "course-tests/smoke.test.tsx espera el estado disponible después de resolver getBackendHealth."
     }
   ]
 }
