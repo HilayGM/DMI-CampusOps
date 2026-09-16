@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 3,
-  "commitSha": "d2f0f1cd42deec09c3865f04df963d2761427b04",
+  "commitSha": "d946479e02738cde95f421eff03b095cbe2440ad",
   "decision": "Se prioriza impedir la consulta o modificación no autorizada de incidencias y mantener esa protección comprobable en CI. La autorización debe vivir en los casos de uso y no sólo en botones de la interfaz; el workflow ejecuta pruebas y comprobaciones sin ocultar sus errores.",
   "alternatives": [
     "Restringir únicamente las acciones visibles en la interfaz móvil.",

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": ["d2f0f1cd42deec09c3865f04df963d2761427b04"],
+      "files": ["docs/threat-model.md"],
+      "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
+      "reviews": [],
+      "prediction": "El modelo de amenazas haría explícitos los activos, fronteras de confianza y controles sin desactivar ninguna comprobación del workflow.",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "observedResult": "Las dos pruebas públicas aprobaron: se validó el workflow de mínimo privilegio y el vínculo entre activos, amenazas, controles y verificación.",
+      "explanation": "Se documentó la amenaza prioritaria de acceso o modificación no autorizada de incidencias, los controles en los casos de uso y las verificaciones de CI asociadas."
+    },
+    {
+      "studentId": "3523110443",
+      "commitShas": ["e98b187d999844af5125f684fbf4cd986a73daef"],
+      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd", "course-tests/public/week-02-architecture.test.ts"],
+      "tests": ["npm.cmd run lint", "npm.cmd test -- --ci --runInBand course-tests/public/week-02-architecture.test.ts"],
+      "reviews": [],
+      "prediction": "Conservar los límites documentados entre capas permitiría agregar controles de seguridad sin introducir dependencias inválidas entre la interfaz y la infraestructura.",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-02-architecture.test.ts",
+      "observedResult": "La prueba estática aprobó los casos declarados y no detectó dependencias prohibidas entre las capas de la arquitectura acumulada.",
+      "explanation": "Se aporta la arquitectura y la prueba estática que sirven de base para ubicar controles de autorización fuera de la interfaz y conservar una separación verificable de responsabilidades."
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": ["b43fbcfd02d3c8edcc67d1d157303c13ebfa2484"],
+      "files": ["src/campusops/application/incidentQueries.ts", "src/campusops/application/ports/IncidentRepository.ts", "src/campusops/_tests_/incidentQueries.test.ts"],
+      "tests": ["npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx"],
+      "reviews": [],
+      "prediction": "Las consultas de incidencias continuarían atravesando el puerto del repositorio y las pruebas permitirían detectar una regresión al modificar la navegación o los datos en memoria.",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",
+      "observedResult": "Las pruebas de consultas, lista, detalle, regreso y manejo de errores aprobaron sobre el esqueleto acumulado de CampusOps.",
+      "explanation": "Se aporta el esqueleto ejecutable de incidencias con puerto de repositorio y pruebas, que es la base técnica para aplicar y comprobar los controles descritos en el modelo de amenazas."
+    }
+  ]
+}
