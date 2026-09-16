@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "commitSha": "5b994aae55528da74a4d3076e5d82e88dc0e75ea",
+  "generatedAt": "2026-09-16T05:53:17.527Z",
+  "checks": [
+    {
+      "id": "workflow-minimum-privilege",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "La prueba pública confirmó actions/setup-node@v4, Node 22, instalación reproducible, contents: read y ausencia de continue-on-error, || true o --passWithNoTests."
+    },
+    {
+      "id": "threat-model-required-failure",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "Antes de crear docs/threat-model.md, Jest falló con ENOENT al abrir esa ruta; la comprobación obligatoria no fue ocultada."
+    },
+    {
+      "id": "threat-model-corrected",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "Tras agregar docs/threat-model.md con activos, amenazas, controles y verificación, las 2 pruebas aprobaron."
+    },
+    {
+      "id": "production-dependency-audit",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd run audit:ci",
+      "evidence": "npm audit --omit=dev --audit-level=critical terminó con código 0. Reportó vulnerabilidades altas transitivas de Expo, sin vulnerabilidades críticas; se conserva como riesgo residual para actualización controlada."
+    }
+  ]
+}
