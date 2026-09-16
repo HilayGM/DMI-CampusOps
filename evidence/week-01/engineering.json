@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 1,
-  "commitSha": "4ef17796471f50e3aea1413f5cfb47ed332604d2",
+  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
   "decision": "CampusOps muestra un estado de salud observable obtenido mediante un adaptador, en lugar de declarar disponibilidad fija en la pantalla.",
   "alternatives": [
     "Mostrar una etiqueta estática sin consultar el estado del backend.",
