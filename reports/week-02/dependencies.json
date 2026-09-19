@@ -1,9 +1,36 @@
 {
-  "architecture_validation": "Validación de límites: sin conexiones directas de UI a infraestructura",
-  "discrepancy_simulation": {
-    "simulated_error": "Se introdujo un import directo desde un componente de la interfaz hacia la capa de infraestructura.",
-    "effect": "La prueba automatizada falló al detectar una dependencia dirigida incorrecta, lo que acoplaría la vista con los detalles técnicos de persistencia.",
-    "correction": "Se removió el import y se respetó la inversión de dependencias a través de interfaces."
-  },
-  "status": "PASS"
+  "schemaVersion": 1,
+  "week": 2,
+  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
+  "generatedAt": "2026-09-13T23:00:00-06:00",
+  "checks": [
+    {
+      "id": "dependencias-principales",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd run typecheck",
+      "evidence": "El proyecto compila con Expo, React Native, TypeScript y Jest configurados."
+    },
+    {
+      "id": "repositorio-desconocido",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts",
+      "evidence": "La consulta devuelve null para un identificador inexistente y propaga fallos del adaptador."
+    },
+    {
+      "id": "discrepancia-domain-ui-controlada",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
+      "evidence": "Simulación controlada: una dependencia domain -> ui está declarada como borde prohibido; si se agrega ese import a un módulo domain, la prueba debe reportarlo como violación. La importación inválida no se conserva en el código entregado."
+    },
+    {
+      "id": "imports-respetan-limites",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "evidence": "La prueba estática recorrió los imports relativos de src y no encontró domain -> ui ni ui -> infrastructure; la prueba pública validó el dibujo y el ADR."
+    }
+  ]
 }

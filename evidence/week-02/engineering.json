@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "week": 2,
+  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
+  "decision": "El esqueleto de CampusOps separa Domain, Application, Infrastructure, UI y Composition. La UI recibe consultas y puertos por propiedades; Composition es el único punto que crea InMemoryIncidentRepository.",
+  "alternatives": [
+    "Consultar los datos ficticios directamente desde cada pantalla de React Native.",
+    "Importar InMemoryIncidentRepository desde la UI y crear el adaptador dentro de componentes.",
+    "Esperar al backend real y no disponer de una lista ejecutable durante el diseño.",
+    "Permitir todos los imports y depender únicamente de revisión manual del dibujo."
+  ],
+  "tradeoff": "Los puertos añaden archivos y una capa de composición para un conjunto pequeño de datos, pero permiten reemplazar el adaptador sin que la UI conozca Infrastructure y dejan probar las consultas con repositorios alternativos. La matriz estática detecta acoplamiento accidental temprano, aunque deberá ampliarse cuando aparezcan nuevas capas.",
+  "requirementIds": ["AC-01", "AC-02", "AC-03", "AC-05"],
+  "verification": [
+    {
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts",
+      "result": "PASS: 3 suites y 16 pruebas aprobaron; se verificaron lista, detalle, regreso, errores y el contrato público de Semana 02.",
+      "evidence": "Las pruebas ejercen createIncidentQueries con InMemoryIncidentRepository y con un repositorio alternativo; CampusOpsScreen no importa Infrastructure."
+    },
+    {
+      "command": "npm run test -- course-tests/public/week-02-architecture.test.ts",
+      "result": "PASS: la prueba estática confirmó los límites y el caso controlado domain -> ui.",
+      "evidence": "El recorrido de imports relativos en src no encontró domain -> ui ni ui -> infrastructure; la discrepancia se documenta sin conservar una importación inválida."
+    },
+    {
+      "command": "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts",
+      "result": "PASS: 2 suites y 3 pruebas aprobadas.",
+      "evidence": "La prueba pública confirmó las cuatro capas y el ADR; la prueba arquitectónica comprobó los límites de imports."
+    }
+  ]
+}

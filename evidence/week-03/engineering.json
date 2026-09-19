@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
+  "decision": "Se prioriza impedir la consulta o modificación no autorizada de incidencias y mantener esa protección comprobable en CI. La autorización debe vivir en los casos de uso y no sólo en botones de la interfaz; el workflow ejecuta pruebas y comprobaciones sin ocultar sus errores.",
+  "alternatives": [
+    "Restringir únicamente las acciones visibles en la interfaz móvil.",
+    "Autorizar cada transición de incidencia en los casos de uso y verificarla con pruebas ejecutables.",
+    "Confiar sólo en revisiones manuales antes de fusionar cambios."
+  ],
+  "tradeoff": "Centralizar la autorización en los casos de uso evita que una pantalla u otro adaptador eluda el control y permite probarlo de forma repetible. El costo es mantener reglas y pruebas por transición, además de completar posteriormente la validación del sujeto de sesión en el backend.",
+  "requirementIds": ["AC-02", "AC-03", "AC-04"],
+  "verification": [
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "pass",
+      "evidence": "TypeScript terminó con código de salida 0 sobre la rama dev-hilay."
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "pass",
+      "evidence": "ESLint terminó con código de salida 0 sin diagnósticos."
+    },
+    {
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "result": "pass",
+      "evidence": "Las dos pruebas públicas aprobaron: el workflow conserva permisos mínimos y el modelo enlaza activos, amenazas, controles y verificación."
+    }
+  ]
+}
