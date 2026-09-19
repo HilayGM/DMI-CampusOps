@@ -1,0 +1,3 @@
+{
+"justificacion_tecnica": "La arquitectura por capas aísla la interfaz de usuario de los detalles de infraestructura mediante contratos e interfaces en el dominio, facilitando las pruebas unitarias y la mantenibilidad del sistema."
+}
