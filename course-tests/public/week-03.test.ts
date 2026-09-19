@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 
 test('feedback workflow preserves critical checks and least privilege', () => {
   const workflow = readFileSync('.github/workflows/week-03-ci-amenazas-feedback.yml', 'utf8');
@@ -21,4 +22,32 @@ test('feedback workflow preserves critical checks and least privilege', () => {
 test('threat model links assets, threats, controls and verification', () => {
   const model = readFileSync('docs/threat-model.md', 'utf8');
   for (const concept of ['activo', 'amenaza', 'control', 'verificación']) expect(model.toLowerCase()).toContain(concept);
+});
+
+test('source code does not expose credentials', () => {
+  const sourceRoots = ['App.tsx', 'index.ts', 'src', 'course-backend'];
+  const sourceExtensions = new Set(['.cjs', '.js', '.mjs', '.ts', '.tsx']);
+  const files: string[] = [];
+
+  const collectSourceFiles = (path: string) => {
+    if (statSync(path).isDirectory()) {
+      for (const entry of readdirSync(path)) collectSourceFiles(join(path, entry));
+      return;
+    }
+    if (sourceExtensions.has(path.slice(path.lastIndexOf('.')))) files.push(path);
+  };
+
+  for (const sourceRoot of sourceRoots) collectSourceFiles(sourceRoot);
+
+  const secretPatterns = [
+    /-----BEGIN [A-Z ]+PRIVATE KEY-----/,
+    /\b(?:sk|pk)_(?:live|test)_[A-Za-z0-9]+\b/,
+    /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/,
+    /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
+    /\b(?:api[_-]?key|secret|password)\s*[:=]\s*["'][^"']{8,}["']/i,
+  ];
+  const exposedFiles = files.filter((file) => secretPatterns.some((pattern) => pattern.test(readFileSync(file, 'utf8'))));
+
+  if (process.env.FAKE_TOKEN) exposedFiles.push('FAKE_TOKEN environment variable');
+  expect(exposedFiles).toEqual([]);
 });

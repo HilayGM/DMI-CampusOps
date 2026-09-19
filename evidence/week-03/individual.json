@@ -35,6 +35,30 @@
       "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",
       "observedResult": "Las pruebas de consultas, lista, detalle, regreso y manejo de errores aprobaron sobre el esqueleto acumulado de CampusOps.",
       "explanation": "Se aporta el esqueleto ejecutable de incidencias con puerto de repositorio y pruebas, que es la base técnica para aplicar y comprobar los controles descritos en el modelo de amenazas."
+    },
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora López",
+      "archivos": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "files": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "prueba": "Comprobación automatizada de secretos expuestos en el código fuente.",
+      "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
+      "predicción": "La prueba pasará sin FAKE_TOKEN, fallará al inyectar temporalmente el secreto y volverá a pasar al retirarlo.",
+      "comando": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
+      "observedResult": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
+      "explicación": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente."
     }
   ]
 }

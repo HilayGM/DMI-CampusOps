@@ -5,32 +5,37 @@
   "generatedAt": "2026-09-16T05:53:17.527Z",
   "checks": [
     {
-      "id": "workflow-minimum-privilege",
+      "id": "secret-scan-normal",
       "status": "pass",
-      "scenarioType": "nominal",
+      "scenarioType": "normal",
       "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
-      "evidence": "La prueba pública confirmó actions/setup-node@v4, Node 22, instalación reproducible, contents: read y ausencia de continue-on-error, || true o --passWithNoTests."
+      "evidence": "La comprobación de secretos en el código fuente terminó correctamente y no encontró credenciales expuestas.",
+      "comando real ejecutado": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba de secretos terminó en pass sin archivos fuente expuestos.",
+      "tipo de escenario": "Caso normal",
+      "estado (pass o fail)": "pass"
     },
     {
-      "id": "threat-model-required-failure",
+      "id": "secret-scan-injected-token",
       "status": "fail",
       "scenarioType": "failure",
-      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
-      "evidence": "Antes de crear docs/threat-model.md, Jest falló con ENOENT al abrir esa ruta; la comprobación obligatoria no fue ocultada."
+      "command": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "La prueba detectó la variable FAKE_TOKEN inyectada temporalmente y falló de forma controlada; el valor no se escribió en ningún archivo fuente.",
+      "comando real ejecutado": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba terminó en fail porque detectó FAKE_TOKEN como secreto inyectado temporalmente.",
+      "tipo de escenario": "Fallo controlado",
+      "estado (pass o fail)": "fail"
     },
     {
-      "id": "threat-model-corrected",
+      "id": "secret-scan-corrected",
       "status": "pass",
-      "scenarioType": "boundary",
-      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
-      "evidence": "Tras agregar docs/threat-model.md con activos, amenazas, controles y verificación, las 2 pruebas aprobaron."
-    },
-    {
-      "id": "production-dependency-audit",
-      "status": "pass",
-      "scenarioType": "nominal",
-      "command": "npm.cmd run audit:ci",
-      "evidence": "npm audit --omit=dev --audit-level=critical terminó con código 0. Reportó vulnerabilidades altas transitivas de Expo, sin vulnerabilidades críticas; se conserva como riesgo residual para actualización controlada."
+      "scenarioType": "correction",
+      "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "Después de retirar la variable temporal, la prueba volvió a pasar y confirmó que no quedó el secreto falso en el código fuente.",
+      "comando real ejecutado": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba terminó en pass después de eliminar el secreto temporal.",
+      "tipo de escenario": "Corrección verificada",
+      "estado (pass o fail)": "pass"
     }
   ]
 }

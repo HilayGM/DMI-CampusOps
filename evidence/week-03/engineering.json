@@ -26,5 +26,20 @@
       "result": "pass",
       "evidence": "Las dos pruebas públicas aprobaron: el workflow conserva permisos mínimos y el modelo enlaza activos, amenazas, controles y verificación."
     }
+  ],
+  "participation": [
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora López",
+      "contribution": "Detección de secretos expuestos y pruebas automatizadas de seguridad.",
+      "files": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "evidence": "Se documentaron un caso normal, un fallo controlado con FAKE_TOKEN temporal y una corrección verificada; la prueba confirma que no quedan credenciales en el código fuente.",
+      "verificationCommand": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"
+    }
   ]
 }
