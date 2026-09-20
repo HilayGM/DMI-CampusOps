@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 2,
-  "commitSha": "d26803c3666f5dcecad37b75d117fb441bd000c4",
+  "commitSha": "5558ecb54f85687cb66376d477b97f7f3d8b0554",
   "decision": "El esqueleto de CampusOps separa Domain, Application, Infrastructure, UI y Composition. La UI recibe consultas y puertos por propiedades; Composition es el único punto que crea InMemoryIncidentRepository.",
   "alternatives": [
     "Consultar los datos ficticios directamente desde cada pantalla de React Native.",
