@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 3,
-  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
+  "commitSha": "49b6fb7f41e40b5ccf2aed69a4645cf43be55193",
   "decision": "Se prioriza impedir la consulta o modificación no autorizada de incidencias y mantener esa protección comprobable en CI. La autorización debe vivir en los casos de uso y no sólo en botones de la interfaz; el workflow ejecuta pruebas y comprobaciones sin ocultar sus errores.",
   "alternatives": [
     "Restringir únicamente las acciones visibles en la interfaz móvil.",
@@ -9,7 +9,7 @@
     "Confiar sólo en revisiones manuales antes de fusionar cambios."
   ],
   "tradeoff": "Centralizar la autorización en los casos de uso evita que una pantalla u otro adaptador eluda el control y permite probarlo de forma repetible. El costo es mantener reglas y pruebas por transición, además de completar posteriormente la validación del sujeto de sesión en el backend.",
-  "requirementIds": ["AC-02", "AC-03", "AC-04"],
+  "requirementIds": ["AC-01", "AC-02", "AC-03", "AC-04", "AC-05"],
   "verification": [
     {
       "command": "npm.cmd run typecheck",

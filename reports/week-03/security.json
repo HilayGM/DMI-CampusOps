@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "week": 3,
-  "commitSha": "3ed3a0fc6a8c7272967e1bded2f083fc7ac759d9",
-  "generatedAt": "2026-09-16T05:53:17.527Z",
+  "commitSha": "49b6fb7f41e40b5ccf2aed69a4645cf43be55193",
+  "generatedAt": "2026-09-20T18:01:48.365Z",
   "checks": [
     {
       "id": "secret-scan-normal",
       "status": "pass",
-      "scenarioType": "normal",
+      "scenarioType": "nominal",
       "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "evidence": "La comprobación de secretos en el código fuente terminó correctamente y no encontró credenciales expuestas.",
       "comando real ejecutado": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
@@ -29,7 +29,7 @@
     {
       "id": "secret-scan-corrected",
       "status": "pass",
-      "scenarioType": "correction",
+      "scenarioType": "nominal",
       "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "evidence": "Después de retirar la variable temporal, la prueba volvió a pasar y confirmó que no quedó el secreto falso en el código fuente.",
       "comando real ejecutado": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",

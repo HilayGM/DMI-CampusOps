@@ -5,6 +5,7 @@
   "members": [
     {
       "studentId": "3523110349",
+      "name": "Martin Moreno Libreros",
       "commitShas": ["d2f0f1cd42deec09c3865f04df963d2761427b04"],
       "files": ["docs/threat-model.md"],
       "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
@@ -13,17 +14,6 @@
       "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "observedResult": "Las dos pruebas públicas aprobaron: se validó el workflow de mínimo privilegio y el vínculo entre activos, amenazas, controles y verificación.",
       "explanation": "Se documentó la amenaza prioritaria de acceso o modificación no autorizada de incidencias, los controles en los casos de uso y las verificaciones de CI asociadas."
-    },
-    {
-      "studentId": "3523110443",
-      "commitShas": ["e98b187d999844af5125f684fbf4cd986a73daef"],
-      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd", "course-tests/public/week-02-architecture.test.ts"],
-      "tests": ["npm.cmd run lint", "npm.cmd test -- --ci --runInBand course-tests/public/week-02-architecture.test.ts"],
-      "reviews": [],
-      "prediction": "Conservar los límites documentados entre capas permitiría agregar controles de seguridad sin introducir dependencias inválidas entre la interfaz y la infraestructura.",
-      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-02-architecture.test.ts",
-      "observedResult": "La prueba estática aprobó los casos declarados y no detectó dependencias prohibidas entre las capas de la arquitectura acumulada.",
-      "explanation": "Se aporta la arquitectura y la prueba estática que sirven de base para ubicar controles de autorización fuera de la interfaz y conservar una separación verificable de responsabilidades."
     },
     {
       "studentId": "3523110443",
@@ -40,14 +30,18 @@
         "evidence/week-03/individual.json",
         "evidence/week-03/engineering.json"
       ],
+      "commitShas": ["a1b2e5116bef30631c0185569898b5ca37da1b1c"],
       "prueba": "Comprobación automatizada de secretos expuestos en el código fuente.",
       "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
+      "reviews": [],
       "predicción": "La prueba pasará sin FAKE_TOKEN, fallará al inyectar temporalmente el secreto y volverá a pasar al retirarlo.",
+      "prediction": "La prueba pasará sin FAKE_TOKEN, fallará al inyectar temporalmente el secreto y volverá a pasar al retirarlo.",
       "comando": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "resultado": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
       "observedResult": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
-      "explicación": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente."
+      "explicación": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente.",
+      "explanation": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente."
     },
     {
       "studentId": "3523110806",  
