@@ -40,6 +40,16 @@
       ],
       "evidence": "Se documentaron un caso normal, un fallo controlado con FAKE_TOKEN temporal y una corrección verificada; la prueba confirma que no quedan credenciales en el código fuente.",
       "verificationCommand": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "contribution": "Elaboración y revisión del modelo de amenazas de Semana 03, identificando activos, fronteras de confianza, amenazas T1-T7, priorización, controles existentes/parciales/propuestos, verificaciones existentes V1-V4 y pruebas propuestas P1-P5.",
+      "files": [
+        "docs/threat-model.md"
+      ],
+      "evidence": "docs/threat-model.md documenta la trazabilidad activo → amenaza → control → verificación → riesgo residual. Como colaboración a la decisión del equipo, Oscar justifica priorizar T1 por confidencialidad y T2 por integridad y separación de roles, y mantener la prevención de T6 porque una credencial expuesta puede comprometer otros controles. Su análisis compara restringir únicamente desde UI, aplicar autorización en backend y depender de revisión manual: ocultar botones no constituye autorización; el backend debe comprobar identidad, rol y asignación, y una operación rechazada no debe modificar el recurso. La autorización en backend permite que todos los clientes reciban la misma decisión; el costo es mantener identidad, roles, reglas de asignación y pruebas negativas. La lectura estática asistida realizada en esta sesión confirmó 10 activos, 4 fronteras, 7 amenazas, V1-V4 y P1-P5. No se ejecutaron pruebas funcionales ni se atribuye esta lectura a una ejecución personal de Oscar. P1-P5 permanecen propuestas, sin resultados de ejecución; los controles parciales y propuestos no se presentan como completos.",
+      "verificationCommand": "Get-Content -LiteralPath docs/threat-model.md -Raw -Encoding utf8"
     }
   ]
 }
