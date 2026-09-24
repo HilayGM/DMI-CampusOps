@@ -1,0 +1,9 @@
+Evidencia real de Hallazgo 3
+
+Comando:
+npm.cmd run backend:self-test
+
+Resultado observado:
+Controlled backend self-test passed.
+
+El self-test exige 401 para POST /v1/resources/action sin Authorization. Luego envia el fixture sintetico autorizado, comprueba 201 y verifica el replay idempotente con duplicate: true.

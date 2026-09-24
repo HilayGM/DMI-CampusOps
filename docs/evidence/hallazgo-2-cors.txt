@@ -1,0 +1,10 @@
+Evidencia real de Hallazgo 2
+
+Comando:
+npm.cmd run backend:self-test
+
+Resultado observado:
+CampusOps backend contracts: roles, reassignment conflict, lost response, idempotency, evidence and geocoding PASS.
+Controlled backend self-test passed.
+
+El self-test envia un Origin no confiable y falla si la respuesta contiene access-control-allow-origin: *. El backend usa un origen configurado con valor local predeterminado.

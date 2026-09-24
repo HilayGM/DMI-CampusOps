@@ -9,7 +9,8 @@ const completedOperations = new Map();
 function send(response, status, body, headers = {}) {
   const value = typeof body === 'string' ? body : JSON.stringify(body);
   response.writeHead(status, {
-    'access-control-allow-origin': '*',
+    'access-control-allow-origin': process.env.COURSE_BACKEND_ALLOWED_ORIGIN ?? 'http://localhost:8081',
+    vary: 'Origin',
     'content-type': typeof body === 'string' ? 'application/json' : 'application/json; charset=utf-8',
     ...headers,
   });
@@ -61,6 +62,9 @@ const server = createServer(async (request, response) => {
     return send(response, 200, { accessToken: 'course-valid-token', refreshToken: 'course-refresh-1', expiresIn: 60 });
   }
   if (request.method === 'POST' && url.pathname === '/v1/resources/action') {
+    if (request.headers.authorization !== 'Bearer course-valid-token') {
+      return send(response, 401, { code: 'unauthorized' });
+    }
     const key = request.headers['idempotency-key'];
     if (typeof key !== 'string' || key.length < 8) return send(response, 400, { code: 'idempotency_key_required' });
     if (completedOperations.has(key)) return send(response, 200, { ...completedOperations.get(key), duplicate: true });

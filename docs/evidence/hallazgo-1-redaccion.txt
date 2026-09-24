@@ -1,0 +1,11 @@
+Evidencia real de Hallazgo 1
+
+Comando:
+npm.cmd test -- --ci --runInBand course-tests/public/week-04.test.ts
+
+Resultado observado:
+PASS  course-tests/public/week-04.test.ts
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+
+La prueba verifico que los campos sensibles del objeto sintetico se reemplazan por [REDACTED] y que el contexto tecnico se conserva.

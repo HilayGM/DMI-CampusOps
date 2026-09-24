@@ -27,14 +27,21 @@ async function expectStatus(path, status, init) {
 }
 
 try {
-  const health = await expectStatus('/health', 200);
+  const healthResponse = await fetch(`${baseUrl}/health`, { headers: { Origin: 'https://untrusted.example' } });
+  if (healthResponse.headers.get('access-control-allow-origin') === '*') throw new Error('wildcard CORS origin');
+  const health = await healthResponse.json();
   if (health.contractVersion !== 1) throw new Error('health contract mismatch');
   await expectStatus('/v1/resources', 401);
+  await expectStatus('/v1/resources/action', 401, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': 'unauthorized-operation' },
+    body: JSON.stringify({ resourceId: 'resource-1' }),
+  });
   const resources = await expectStatus('/v1/resources', 200, {
     headers: { Authorization: 'Bearer course-valid-token', 'X-Course-Scenario': 'nullable' },
   });
   if (resources.items[0].payload !== null) throw new Error('nullable scenario mismatch');
-  const action = { method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': 'self-test-operation' }, body: JSON.stringify({ resourceId: 'resource-1' }) };
+  const action = { method: 'POST', headers: { Authorization: 'Bearer course-valid-token', 'Content-Type': 'application/json', 'Idempotency-Key': 'self-test-operation' }, body: JSON.stringify({ resourceId: 'resource-1' }) };
   await expectStatus('/v1/resources/action', 201, action);
   const replay = await expectStatus('/v1/resources/action', 200, action);
   if (replay.duplicate !== true) throw new Error('idempotency replay mismatch');
