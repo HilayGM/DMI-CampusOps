@@ -1,9 +1,11 @@
 # Controlled backend contract
 
-Run with `make run-backend`. All credentials and data are synthetic.
+Configure `COURSE_BACKEND_ACCESS_TOKEN`, `COURSE_BACKEND_REFRESH_TOKEN` and
+`COURSE_BACKEND_NEXT_REFRESH_TOKEN` with synthetic development values, then run
+`make run-backend`. Do not use institutional or production credentials.
 
 - `GET /health`
-- `GET /v1/resources` with `Authorization: Bearer course-valid-token`
+- `GET /v1/resources` with the configured bearer token
 - `POST /v1/session/refresh`
 - `POST /v1/resources/action` with a stable `Idempotency-Key`
 

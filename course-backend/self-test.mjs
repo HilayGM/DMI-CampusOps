@@ -1,9 +1,21 @@
 import { spawn } from 'node:child_process';
 import { testCampusOps } from './campusops-self-test.mjs';
 
+const testAuth = Object.freeze({
+  accessToken: 'fixture-access-token-not-a-secret',
+  refreshToken: 'fixture-refresh-token-not-a-secret',
+  nextRefreshToken: 'fixture-next-refresh-token-not-a-secret',
+});
+
 const child = spawn(process.execPath, ['course-backend/server.mjs'], {
   cwd: process.cwd(),
-  env: { ...process.env, COURSE_BACKEND_PORT: '0' },
+  env: {
+    ...process.env,
+    COURSE_BACKEND_PORT: '0',
+    COURSE_BACKEND_ACCESS_TOKEN: testAuth.accessToken,
+    COURSE_BACKEND_REFRESH_TOKEN: testAuth.refreshToken,
+    COURSE_BACKEND_NEXT_REFRESH_TOKEN: testAuth.nextRefreshToken,
+  },
   stdio: ['ignore', 'pipe', 'inherit'],
 });
 
@@ -31,14 +43,14 @@ try {
   if (health.contractVersion !== 1) throw new Error('health contract mismatch');
   await expectStatus('/v1/resources', 401);
   const resources = await expectStatus('/v1/resources', 200, {
-    headers: { Authorization: 'Bearer course-valid-token', 'X-Course-Scenario': 'nullable' },
+    headers: { Authorization: `Bearer ${testAuth.accessToken}`, 'X-Course-Scenario': 'nullable' },
   });
   if (resources.items[0].payload !== null) throw new Error('nullable scenario mismatch');
   const action = { method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': 'self-test-operation' }, body: JSON.stringify({ resourceId: 'resource-1' }) };
   await expectStatus('/v1/resources/action', 201, action);
   const replay = await expectStatus('/v1/resources/action', 200, action);
   if (replay.duplicate !== true) throw new Error('idempotency replay mismatch');
-  await testCampusOps(baseUrl);
+  await testCampusOps(baseUrl, testAuth);
   process.stdout.write('Controlled backend self-test passed.\n');
 } finally {
   child.kill('SIGTERM');

@@ -1,0 +1,18 @@
+Evidencia reproducible — sanitización de telemetría
+===================================================
+
+Comando:
+
+$ npm run test -- --ci --runInBand course-tests/public/week-04.test.ts
+
+Salida relevante:
+
+PASS course-tests/public/week-04.test.ts
+  ✓ CampusOps redacts personal and incident-sensitive data while preserving technical context
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+
+Resultado: PASS (código de salida 0).
+
+La prueba usa exclusivamente datos ficticios y verifica la redacción de autorización, correo, nombre, ubicación, fotos y comentarios internos.

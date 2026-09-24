@@ -6,6 +6,19 @@ const host = process.env.COURSE_BACKEND_HOST ?? '127.0.0.1';
 const port = Number(process.env.COURSE_BACKEND_PORT ?? 4310);
 const completedOperations = new Map();
 
+const accessToken = process.env.COURSE_BACKEND_ACCESS_TOKEN;
+const refreshToken = process.env.COURSE_BACKEND_REFRESH_TOKEN;
+const nextRefreshToken = process.env.COURSE_BACKEND_NEXT_REFRESH_TOKEN;
+if (!accessToken || !refreshToken || !nextRefreshToken) {
+  throw new Error('Missing required backend authentication environment variables');
+}
+
+const auth = Object.freeze({
+  accessToken,
+  refreshToken,
+  nextRefreshToken,
+});
+
 function send(response, status, body, headers = {}) {
   const value = typeof body === 'string' ? body : JSON.stringify(body);
   response.writeHead(status, {
@@ -37,13 +50,13 @@ const server = createServer(async (request, response) => {
   }
   if (url.pathname.startsWith('/v1/incidents') || url.pathname === '/v1/geocoding' || url.pathname === '/v1/session/login') {
     try {
-      return await handleCampusOps(request, response, url, { send, readJson, scenario });
+      return await handleCampusOps(request, response, url, { send, readJson, scenario, auth });
     } catch {
       return send(response, 400, { code: 'invalid_request' });
     }
   }
   if (request.method === 'GET' && url.pathname === '/v1/resources') {
-    if (request.headers.authorization !== 'Bearer course-valid-token') {
+    if (request.headers.authorization !== `Bearer ${auth.accessToken}`) {
       return send(response, 401, { code: 'unauthorized' });
     }
     if (scenario === 'server_error') return send(response, 500, { code: 'controlled_failure' });
@@ -55,10 +68,14 @@ const server = createServer(async (request, response) => {
   }
   if (request.method === 'POST' && url.pathname === '/v1/session/refresh') {
     const input = await readJson(request).catch(() => null);
-    if (!input || input.refreshToken !== 'course-refresh-0' || scenario === 'invalid_refresh') {
+    if (!input || input.refreshToken !== auth.refreshToken || scenario === 'invalid_refresh') {
       return send(response, 401, { code: 'invalid_grant' });
     }
-    return send(response, 200, { accessToken: 'course-valid-token', refreshToken: 'course-refresh-1', expiresIn: 60 });
+    return send(response, 200, {
+      accessToken: auth.accessToken,
+      refreshToken: auth.nextRefreshToken,
+      expiresIn: 60,
+    });
   }
   if (request.method === 'POST' && url.pathname === '/v1/resources/action') {
     const key = request.headers['idempotency-key'];

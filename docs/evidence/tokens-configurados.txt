@@ -1,0 +1,22 @@
+Evidencia reproducible — tokens configurados por entorno
+=======================================================
+
+1. El backend se ejecutó con valores ficticios inyectados únicamente por la prueba:
+
+$ npm run backend:self-test
+
+Configured fixture tokens and generic authentication failures: PASS.
+CampusOps backend contracts: roles, reassignment conflict, lost response, idempotency, evidence and geocoding PASS.
+Controlled backend self-test passed.
+
+Resultado: PASS (código de salida 0).
+
+2. Sin las tres variables, el backend rechaza el arranque antes de abrir el puerto:
+
+$ env -u COURSE_BACKEND_ACCESS_TOKEN -u COURSE_BACKEND_REFRESH_TOKEN -u COURSE_BACKEND_NEXT_REFRESH_TOKEN node course-backend/server.mjs
+
+Error: Missing required backend authentication environment variables
+
+Resultado esperado: código de salida 1.
+
+Los valores usados por self-test.mjs empiezan con "fixture-" y están marcados como "not-a-secret"; no son credenciales reales.

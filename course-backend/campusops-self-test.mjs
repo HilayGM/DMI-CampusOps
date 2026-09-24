@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 
-export async function testCampusOps(baseUrl) {
+export async function testCampusOps(baseUrl, auth) {
   async function call(path, status, actor = 'coordinator-1', body, key, scenario = 'success') {
     const response = await fetch(`${baseUrl}${path}`, {
       method: body ? 'POST' : 'GET',
-      headers: { Authorization: 'Bearer course-valid-token', 'X-Course-Actor': actor,
+      headers: { Authorization: `Bearer ${auth.accessToken}`, 'X-Course-Actor': actor,
         'Content-Type': 'application/json', 'X-Course-Scenario': scenario,
         ...(key ? { 'Idempotency-Key': key } : {}) },
       ...(body ? { body: JSON.stringify(body) } : {}),
@@ -16,7 +16,11 @@ export async function testCampusOps(baseUrl) {
   const action = (actor, body, key, status = 201) => call(actionPath, status, actor, body, key);
   const login = await call('/v1/session/login', 200, 'technician-1', { actorId: 'technician-1' });
   assert.equal(login.role, 'technician');
-  await call('/v1/session/login', 401, 'technician-1', { actorId: 'not-a-student' });
+  assert.equal(login.accessToken, auth.accessToken);
+  assert.equal(login.refreshToken, auth.refreshToken);
+  const invalidLogin = await call('/v1/session/login', 401, 'technician-1', { actorId: 'not-a-student' });
+  assert.deepEqual(invalidLogin, { code: 'unauthorized' });
+  process.stdout.write('Configured fixture tokens and generic authentication failures: PASS.\n');
   await call('/v1/incidents', 401, 'unknown');
   assert.equal((await call('/v1/incidents', 200, 'reporter-2')).items.length, 0);
   await call('/v1/incidents/campus-inc-001', 403, 'reporter-2');
@@ -34,7 +38,7 @@ export async function testCampusOps(baseUrl) {
   const close = { action: 'close', baseVersion: 4 };
   await assert.rejects(fetch(`${baseUrl}${actionPath}`, {
     method: 'POST', signal: AbortSignal.timeout(250),
-    headers: { Authorization: 'Bearer course-valid-token', 'X-Course-Actor': 'coordinator-1',
+    headers: { Authorization: `Bearer ${auth.accessToken}`, 'X-Course-Actor': 'coordinator-1',
       'Content-Type': 'application/json', 'Idempotency-Key': 'close-lost-response', 'X-Course-Scenario': 'timeout_after_commit' },
     body: JSON.stringify(close),
   }));
@@ -62,7 +66,7 @@ export async function testCampusOps(baseUrl) {
   assert.equal((await call('/v1/geocoding?q=zona', 200, 'reporter-1', undefined, undefined, 'incomplete')).latitude, undefined);
   assert.equal((await call('/v1/geocoding?q=zona', 200, 'reporter-1', undefined, undefined, 'invalid_coordinates')).latitude, 999);
   await call('/v1/geocoding', 422);
-  const malformed = await fetch(`${baseUrl}/v1/geocoding?q=zona`, { headers: { Authorization: 'Bearer course-valid-token', 'X-Course-Actor': 'reporter-1', 'X-Course-Scenario': 'malformed' } });
+  const malformed = await fetch(`${baseUrl}/v1/geocoding?q=zona`, { headers: { Authorization: `Bearer ${auth.accessToken}`, 'X-Course-Actor': 'reporter-1', 'X-Course-Scenario': 'malformed' } });
   await assert.rejects(malformed.json());
   process.stdout.write('CampusOps backend contracts: roles, reassignment conflict, lost response, idempotency, evidence and geocoding PASS.\n');
 }

@@ -23,14 +23,20 @@ function visible(actorId, incident) {
     || (actors[actorId] === 'technician' && incident.payload.assignedTechnicianId === actorId);
 }
 
-export async function handleCampusOps(request, response, url, { send, readJson, scenario }) {
+export async function handleCampusOps(request, response, url, { send, readJson, scenario, auth }) {
   if (request.method === 'POST' && url.pathname === '/v1/session/login') {
     const input = await readJson(request).catch(() => null);
-    if (!input || !Object.hasOwn(actors, input.actorId)) return send(response, 401, { code: 'unknown_fixture_actor' });
-    return send(response, 200, { actorId: input.actorId, role: actors[input.actorId], accessToken: 'course-valid-token', refreshToken: 'course-refresh-0', expiresIn: 60 });
+    if (!input || !Object.hasOwn(actors, input.actorId)) return send(response, 401, { code: 'unauthorized' });
+    return send(response, 200, {
+      actorId: input.actorId,
+      role: actors[input.actorId],
+      accessToken: auth.accessToken,
+      refreshToken: auth.refreshToken,
+      expiresIn: 60,
+    });
   }
   const actorId = request.headers['x-course-actor'];
-  if (request.headers.authorization !== 'Bearer course-valid-token' || !Object.hasOwn(actors, actorId)) {
+  if (request.headers.authorization !== `Bearer ${auth.accessToken}` || !Object.hasOwn(actors, actorId)) {
     return send(response, 401, { code: 'unauthorized' });
   }
   const role = actors[actorId];

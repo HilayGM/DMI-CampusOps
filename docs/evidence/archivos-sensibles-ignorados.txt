@@ -1,0 +1,20 @@
+Evidencia reproducible — archivos locales ignorados
+===================================================
+
+Comando:
+
+$ git check-ignore -v .env .DS_Store reports/.DS_Store
+
+Salida:
+
+.gitignore:11:.env       .env
+.gitignore:2:.DS_Store  .DS_Store
+.gitignore:2:.DS_Store  reports/.DS_Store
+
+Comando:
+
+$ git ls-files '*.DS_Store' '.env'
+
+Salida: vacía.
+
+Resultado: `.env` y `.DS_Store` están ignorados; no existe ninguna de esas rutas en el índice que se enviará al repositorio.

@@ -1,0 +1,18 @@
+Evidencia reproducible — error de autenticación genérico
+=======================================================
+
+La prueba course-backend/campusops-self-test.mjs realiza un login con el actor ficticio inexistente "not-a-student" y exige exactamente:
+
+  estado HTTP: 401
+  cuerpo: { "code": "unauthorized" }
+
+Comando:
+
+$ npm run backend:self-test
+
+Salida relevante:
+
+Configured fixture tokens and generic authentication failures: PASS.
+Controlled backend self-test passed.
+
+Resultado: PASS (código de salida 0). La respuesta ya no revela "unknown_fixture_actor".
