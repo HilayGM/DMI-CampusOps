@@ -181,3 +181,12 @@ Rutas relativas a la raíz del repositorio:
 | `App.tsx` | Montaje de la pantalla con dependencias |
 
 El diagrama complementario está en [architecture.mmd](../architecture.mmd). Agrupa por responsabilidad, por lo que incluye el adaptador histórico dentro de Infrastructure y `App.tsx` dentro de la raíz conceptual de Composition sin afirmar que sus archivos se hayan movido.
+
+## Regla verificable de imports
+
+La prueba estática de Semana 02 analiza imports relativos dentro de `src` sin
+ejecutar los módulos. Un módulo de Domain no puede importar UI y UI no puede
+importar directamente Infrastructure; el flujo permitido pasa por
+Application/Composition y los tipos puros de Domain. Una discrepancia
+controlada `domain -> ui` se conserva como caso de falla documentado, pero no
+como importación en el código entregado.

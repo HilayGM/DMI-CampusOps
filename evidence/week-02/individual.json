@@ -5,31 +5,44 @@
   "members": [
     {
       "studentId": "3523110349",
-      "commitShas": ["37fa9dd5c262d567f6ba7c2f7142852a89f0a1a4"],
-      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd"],
-      "tests": ["npm.cmd run typecheck"],
+      "commitShas": [
+        "37fa9dd5c262d567f6ba7c2f7142852a89f0a1a4",
+        "2c47dc491687c5c7d8173a06ad2935e27226de60",
+        "c48146c1533a8b575cbfeb27199734f8fbf9056c",
+        "fa5134756a0c9dbfa29a555b7f15efafed8f0986",
+        "147208e12bbe5392cf9c3250a1b34bed271828c3"
+      ],
+      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd", "evidence/week-02/engineering.json"],
+      "tests": ["npm.cmd run typecheck", "npm run test -- course-tests/public/week-02.test.ts"],
       "reviews": [],
-      "prediction": "La documentación de la arquitectura sería coherente con la estructura ejecutable propuesta.",
+      "prediction": "La documentación de la arquitectura sería coherente con la estructura ejecutable propuesta y la prueba pública encontraría la alternativa y el trade-off.",
       "command": "npm.cmd run typecheck",
-      "observedResult": "TypeScript aprobó sin errores.",
-      "explanation": "Se registraron la decisión y el diagrama de la arquitectura de la Semana 02."
+      "observedResult": "TypeScript aprobó sin errores y la prueba pública de Semana 02 aprobó la arquitectura.",
+      "explanation": "Se registraron la decisión, el diagrama, las alternativas y los límites entre UI, Application, Domain, Infrastructure y Composition."
     },
     {
       "studentId": "3523110443",
-      "commitShas": ["e98b187d999844af5125f684fbf4cd986a73daef"],
-      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd"],
-      "tests": ["npm.cmd run lint"],
+      "commitShas": [
+        "e98b187d999844af5125f684fbf4cd986a73daef",
+        "eed628c7a2c2972a36cea37ebecb17ae3991f147"
+      ],
+      "files": ["docs/adr/ADR-001-architecture.md", "docs/architecture.mmd", "course-tests/public/week-02-architecture.test.ts", "reports/week-02/dependencies.json"],
+      "tests": ["npm.cmd run lint", "npm run test -- course-tests/public/week-02-architecture.test.ts"],
       "reviews": [],
-      "prediction": "El ADR y el diagrama expresarían los límites entre las capas sin crear dependencias de ejecución.",
+      "prediction": "El ADR y el diagrama expresarían los límites entre las capas sin crear dependencias de ejecución, y la prueba estática detectaría domain -> ui o ui -> infrastructure.",
       "command": "npm.cmd run lint",
-      "observedResult": "ESLint aprobó sin incidencias.",
-      "explanation": "Se documentaron los límites y las decisiones de Clean Architecture."
+      "observedResult": "ESLint aprobó sin incidencias; la prueba estática aprobó 2 casos sin violaciones.",
+      "explanation": "Se documentaron los límites y las decisiones de Clean Architecture, y se registró la discrepancia controlada sin conservar el import inválido."
     },
     {
       "studentId": "3523110806",
-      "commitShas": ["b43fbcfd02d3c8edcc67d1d157303c13ebfa2484"],
+      "commitShas": [
+        "b43fbcfd02d3c8edcc67d1d157303c13ebfa2484",
+        "cc9057818ed52910273db79213a1546af7323074",
+        "08148afa49baf8b7873da8050dc3a6be92dd6980"
+      ],
       "files": ["App.tsx", "src/campusops/domain/Incident.ts", "src/campusops/application/incidentQueries.ts", "src/campusops/application/ports/IncidentRepository.ts", "src/campusops/infrastructure/InMemoryIncidentRepository.ts", "src/campusops/ui/CampusOpsScreen.tsx", "src/composition/campusOpsDependencies.ts", "src/campusops/_tests_/incidentQueries.test.ts", "src/campusops/_tests_/incidentNavigation.test.tsx"],
-      "tests": ["npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx"],
+      "tests": ["npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx", "npm run test -- course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts"],
       "reviews": [],
       "prediction": "La UI mostraría incidencias ficticias a través de IncidentRepository sin importar Infrastructure directamente.",
       "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",

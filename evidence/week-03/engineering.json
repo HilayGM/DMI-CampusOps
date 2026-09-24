@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "commitSha": "5558ecb54f85687cb66376d477b97f7f3d8b0554",
+  "decision": "Se prioriza impedir la consulta o modificación no autorizada de incidencias y mantener esa protección comprobable en CI. La autorización debe vivir en los casos de uso y no sólo en botones de la interfaz; el workflow ejecuta pruebas y comprobaciones sin ocultar sus errores.",
+  "alternatives": [
+    "Restringir únicamente las acciones visibles en la interfaz móvil.",
+    "Autorizar cada transición de incidencia en los casos de uso y verificarla con pruebas ejecutables.",
+    "Confiar sólo en revisiones manuales antes de fusionar cambios."
+  ],
+  "tradeoff": "Centralizar la autorización en los casos de uso evita que una pantalla u otro adaptador eluda el control y permite probarlo de forma repetible. El costo es mantener reglas y pruebas por transición, además de completar posteriormente la validación del sujeto de sesión en el backend.",
+  "requirementIds": ["AC-01", "AC-02", "AC-03", "AC-04", "AC-05"],
+  "verification": [
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "pass",
+      "evidence": "TypeScript terminó con código de salida 0 sobre la rama dev-hilay."
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "pass",
+      "evidence": "ESLint terminó con código de salida 0 sin diagnósticos."
+    },
+    {
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "result": "pass",
+      "evidence": "Las dos pruebas públicas aprobaron: el workflow conserva permisos mínimos y el modelo enlaza activos, amenazas, controles y verificación."
+    }
+  ],
+  "participation": [
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora López",
+      "contribution": "Detección de secretos expuestos y pruebas automatizadas de seguridad.",
+      "files": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "evidence": "Se documentaron un caso normal, un fallo controlado con FAKE_TOKEN temporal y una corrección verificada; la prueba confirma que no quedan credenciales en el código fuente.",
+      "verificationCommand": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "contribution": "Elaboración y revisión del modelo de amenazas de Semana 03, identificando activos, fronteras de confianza, amenazas T1-T7, priorización, controles existentes/parciales/propuestos, verificaciones existentes V1-V4 y pruebas propuestas P1-P5.",
+      "files": [
+        "docs/threat-model.md"
+      ],
+      "evidence": "docs/threat-model.md documenta la trazabilidad activo → amenaza → control → verificación → riesgo residual. Como colaboración a la decisión del equipo, Oscar justifica priorizar T1 por confidencialidad y T2 por integridad y separación de roles, y mantener la prevención de T6 porque una credencial expuesta puede comprometer otros controles. Su análisis compara restringir únicamente desde UI, aplicar autorización en backend y depender de revisión manual: ocultar botones no constituye autorización; el backend debe comprobar identidad, rol y asignación, y una operación rechazada no debe modificar el recurso. La autorización en backend permite que todos los clientes reciban la misma decisión; el costo es mantener identidad, roles, reglas de asignación y pruebas negativas. La lectura estática asistida realizada en esta sesión confirmó 10 activos, 4 fronteras, 7 amenazas, V1-V4 y P1-P5. No se ejecutaron pruebas funcionales ni se atribuye esta lectura a una ejecución personal de Oscar. P1-P5 permanecen propuestas, sin resultados de ejecución; los controles parciales y propuestos no se presentan como completos.",
+      "verificationCommand": "Get-Content -LiteralPath docs/threat-model.md -Raw -Encoding utf8"
+    }
+  ]
+}

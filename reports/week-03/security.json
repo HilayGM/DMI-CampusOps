@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "commitSha": "5558ecb54f85687cb66376d477b97f7f3d8b0554",
+  "generatedAt": "2026-09-20T18:01:48.365Z",
+  "checks": [
+    {
+      "id": "secret-scan-normal",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "La comprobación de secretos en el código fuente terminó correctamente y no encontró credenciales expuestas.",
+      "comando real ejecutado": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba de secretos terminó en pass sin archivos fuente expuestos.",
+      "tipo de escenario": "Caso normal",
+      "estado (pass o fail)": "pass"
+    },
+    {
+      "id": "secret-scan-injected-token",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "La prueba detectó la variable FAKE_TOKEN inyectada temporalmente y falló de forma controlada; el valor no se escribió en ningún archivo fuente.",
+      "comando real ejecutado": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba terminó en fail porque detectó FAKE_TOKEN como secreto inyectado temporalmente.",
+      "tipo de escenario": "Fallo controlado",
+      "estado (pass o fail)": "fail"
+    },
+    {
+      "id": "secret-scan-corrected",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "evidence": "Después de retirar la variable temporal, la prueba volvió a pasar y confirmó que no quedó el secreto falso en el código fuente.",
+      "comando real ejecutado": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado observable": "La prueba terminó en pass después de eliminar el secreto temporal.",
+      "tipo de escenario": "Corrección verificada",
+      "estado (pass o fail)": "pass"
+    }
+  ]
+}

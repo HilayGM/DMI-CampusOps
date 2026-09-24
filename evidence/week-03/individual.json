@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "week": 3,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "name": "Martin Moreno Libreros",
+      "commitShas": ["d2f0f1cd42deec09c3865f04df963d2761427b04"],
+      "files": ["docs/threat-model.md"],
+      "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
+      "reviews": [],
+      "prediction": "El modelo de amenazas haría explícitos los activos, fronteras de confianza y controles sin desactivar ninguna comprobación del workflow.",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "observedResult": "Las dos pruebas públicas aprobaron: se validó el workflow de mínimo privilegio y el vínculo entre activos, amenazas, controles y verificación.",
+      "explanation": "Se documentó la amenaza prioritaria de acceso o modificación no autorizada de incidencias, los controles en los casos de uso y las verificaciones de CI asociadas."
+    },
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora López",
+      "archivos": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "files": [
+        "reports/week-03/security.json",
+        "course-tests/public/week-03.test.ts",
+        "evidence/week-03/individual.json",
+        "evidence/week-03/engineering.json"
+      ],
+      "commitShas": ["a1b2e5116bef30631c0185569898b5ca37da1b1c"],
+      "prueba": "Comprobación automatizada de secretos expuestos en el código fuente.",
+      "tests": ["npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts"],
+      "reviews": [],
+      "predicción": "La prueba pasará sin FAKE_TOKEN, fallará al inyectar temporalmente el secreto y volverá a pasar al retirarlo.",
+      "prediction": "La prueba pasará sin FAKE_TOKEN, fallará al inyectar temporalmente el secreto y volverá a pasar al retirarlo.",
+      "comando": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "command": "Remove-Item Env:FAKE_TOKEN -ErrorAction SilentlyContinue; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "resultado": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
+      "observedResult": "La prueba pasó después de retirar el secreto temporal; la ejecución con FAKE_TOKEN falló de forma controlada.",
+      "explicación": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente.",
+      "explanation": "Se añadió una comprobación que busca patrones de credenciales en el código y detecta FAKE_TOKEN durante la simulación. El secreto falso se mantuvo solo como variable de entorno temporal y no quedó en archivos fuente."
+    },
+    {
+      "studentId": "3523110806",  
+      "name": "Oscar Martinez Martinez",
+      "commitShas": [
+         "86d620831b24a41366282e52e5566088e28d9363"
+        ],
+      "files": [
+        "docs/threat-model.md",
+        "evidence/week-03/engineering.json"
+      ],
+      "tests": [],
+      "reviews": [
+        "Revisión de docs/threat-model.md: se verificó la trazabilidad entre activos, amenazas, controles, verificaciones y riesgo residual. El modelo contiene A1-A10, F1-F4, T1-T7, V1-V4 y P1-P5, y distingue controles existentes, parciales y propuestos sin presentar pruebas propuestas como ejecutadas."
+      ],
+      "prediction": "Esperaba que el modelo de amenazas cubriera los activos, fronteras, amenazas, controles y verificaciones solicitados para Semana 03, distinguiendo claramente los controles existentes de los parciales o propuestos.",
+      "command": "Get-Content -LiteralPath docs/threat-model.md -Raw -Encoding utf8",
+      "observedResult": "Se verificó mediante lectura del documento que docs/threat-model.md contiene A1-A10, F1-F4, T1-T7, V1-V4 y P1-P5, con probabilidad, impacto, prioridad, control técnico, verificación y riesgo residual. Las pruebas propuestas permanecen identificadas como propuestas y no como resultados ejecutados.",
+      "explanation": "Mi contribución consistió en completar y revisar el modelo de amenazas de CampusOps para Semana 03. Documenté los activos y fronteras de confianza del sistema, prioricé amenazas relacionadas con autorización, exposición de información en logs y credenciales, y relacioné cada escenario con controles, verificaciones y riesgo residual. También diferencié mecanismos existentes, parciales y propuestos para evitar atribuir al proyecto controles o pruebas que todavía no están implementados."
+    }
+  ]
+}
