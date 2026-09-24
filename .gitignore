@@ -7,8 +7,14 @@ coverage/
 .npm-cache/
 dist/
 .env
+.env.*
+!.env.example
+.npmrc
+.DS_Store
 *.jks
 *.keystore
 *.p8
 *.p12
+*.pem
+*.key
 reports/**/generated-*

@@ -23,6 +23,15 @@ function visible(actorId, incident) {
     || (actors[actorId] === 'technician' && incident.payload.assignedTechnicianId === actorId);
 }
 
+function canPerformAction(actorId, role, incident, action) {
+  const coordinatorActions = ['assign', 'prioritize', 'close', 'reopen'];
+  const technicianActions = ['start', 'resolve'];
+  const sharedActions = ['comment', 'add_evidence'];
+  return (coordinatorActions.includes(action) && role === 'coordinator')
+    || (technicianActions.includes(action) && role === 'technician' && visible(actorId, incident))
+    || (sharedActions.includes(action) && visible(actorId, incident));
+}
+
 export async function handleCampusOps(request, response, url, { send, readJson, scenario }) {
   if (request.method === 'POST' && url.pathname === '/v1/session/login') {
     const input = await readJson(request).catch(() => null);
@@ -64,6 +73,9 @@ export async function handleCampusOps(request, response, url, { send, readJson, 
   const previous = operations.get(operationKey);
   if (previous) {
     if (previous.fingerprint !== fingerprint) return send(response, 409, { code: 'idempotency_key_reused' });
+    if (match[1] && !canPerformAction(actorId, role, incident, input.action)) {
+      return send(response, 403, { code: 'forbidden' });
+    }
     return send(response, 200, { ...previous.result, duplicate: true });
   }
   let result;
@@ -84,9 +96,7 @@ export async function handleCampusOps(request, response, url, { send, readJson, 
     const technicianActions = ['start', 'resolve'];
     const sharedActions = ['comment', 'add_evidence'];
     if (![...coordinatorActions, ...technicianActions, ...sharedActions].includes(action)) return send(response, 422, { code: 'unknown_action' });
-    if ((coordinatorActions.includes(action) && role !== 'coordinator')
-      || (technicianActions.includes(action) && (role !== 'technician' || !visible(actorId, incident)))
-      || (sharedActions.includes(action) && !visible(actorId, incident))) return send(response, 403, { code: 'forbidden' });
+    if (!canPerformAction(actorId, role, incident, action)) return send(response, 403, { code: 'forbidden' });
     if (!Number.isInteger(input.baseVersion)) return send(response, 422, { code: 'base_version_required' });
     if (input.baseVersion !== incident.version) return send(response, 409, { code: 'version_conflict', currentVersion: incident.version });
     const next = structuredClone(incident);
