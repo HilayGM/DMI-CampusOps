@@ -1,0 +1,156 @@
+{
+    "schemaVersion":  1,
+    "week":  4,
+    "commitSha":  "297c085422be655bcfd8de7087fb5de3cdbedca4",
+    "generatedAt":  "2026-09-26T01:28:12.2125702-06:00",
+    "checks":  [
+                   {
+                       "id":  "typescript",
+                       "status":  "pass",
+                       "scenarioType":  "nominal",
+                       "command":  "npm run typecheck",
+                       "evidence":  "Según el resultado de terminal proporcionado, TypeScript terminó sin errores."
+                   },
+                   {
+                       "id":  "negative-suite-summary",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Una suite aprobada; 11 de 11 pruebas aprobadas; 0 snapshots; duración comunicada de 6.048 s. Los checks siguientes desglosan esta misma ejecución, no ejecuciones adicionales.",
+                       "threatIds":  [
+                                         "T3",
+                                         "T4",
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "error-token-authorization-email",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que excluye token, authorization y email del error seguro y comprueba únicamente código y mensaje permitidos.",
+                       "threatIds":  [
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "error-internal-comments-notes",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que excluye comentarios internos y notas de la representación segura.",
+                       "threatIds":  [
+                                         "T3"
+                                     ]
+                   },
+                   {
+                       "id":  "error-location-coordinates",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que excluye ubicaciones y coordenadas anidadas de la representación segura.",
+                       "threatIds":  [
+                                         "T4"
+                                     ]
+                   },
+                   {
+                       "id":  "error-complete-objects-arrays",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que descarta objetos completos, estructuras anidadas, arrays, stack y cause, incluidos objetos de usuario, sesión y credenciales.",
+                       "threatIds":  [
+                                         "T3",
+                                         "T4",
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "error-input-immutability",
+                       "status":  "pass",
+                       "scenarioType":  "boundary",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que comprueba que la conversión no muta la entrada y devuelve un objeto nuevo en cada llamada.",
+                       "threatIds":  [
+                                         "T3",
+                                         "T4",
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "error-unknown-hostile-inputs",
+                       "status":  "pass",
+                       "scenarioType":  "boundary",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso de errores desconocidos y objetos hostiles, que comprueba una respuesta genérica segura sin lanzar una excepción.",
+                       "threatIds":  [
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "error-known-backend-codes",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que transforma códigos conocidos del backend sin transportar el payload ni la versión original.",
+                       "threatIds":  [
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "http-controlled-diagnostics-report",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso de la frontera HTTP real con fetch simulado: el rechazo seguro se consume en diagnóstico controlado y serialización de reporte en memoria sin los valores sensibles, conservando el código. No acredita sanitización general de stdout/stderr ni un reporte del evaluador en disco.",
+                       "threatIds":  [
+                                         "T3",
+                                         "T4",
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "http-error-body-malformed-json",
+                       "status":  "pass",
+                       "scenarioType":  "failure",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que comprueba que los fallos HTTP no leen el cuerpo y que JSON malformado conserva un rechazo seguro.",
+                       "threatIds":  [
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "health-success-contract",
+                       "status":  "pass",
+                       "scenarioType":  "nominal",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que conserva el contrato existente ante una respuesta exitosa de salud."
+                   },
+                   {
+                       "id":  "protected-storage-minimization",
+                       "status":  "pass",
+                       "scenarioType":  "boundary",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+                       "evidence":  "Aprobó el caso que comprueba mediante un cliente simulado que SecureStore recibe sólo los campos mínimos de sesión, excluye datos adicionales y no emite logs ante el fallo de lectura probado. Los tokens se conservan legítimamente en el contrato del almacén protegido. No demuestra almacenamiento nativo en dispositivo ni una implementación de preferencias normales.",
+                       "threatIds":  [
+                                         "T3",
+                                         "T4",
+                                         "T5"
+                                     ]
+                   },
+                   {
+                       "id":  "navigation-isolated-rerun",
+                       "status":  "pass",
+                       "scenarioType":  "nominal",
+                       "command":  "npm test -- --ci --runInBand src/campusops/_tests_/incidentNavigation.test.tsx",
+                       "evidence":  "La ejecución aislada de navegación aprobó 1 de 1 suites y 8 de 8 pruebas; duración comunicada de 2.959 s."
+                   },
+                   {
+                       "id":  "eslint",
+                       "status":  "pass",
+                       "scenarioType":  "nominal",
+                       "command":  "npm run lint",
+                       "evidence":  "Según el resultado de terminal proporcionado, ESLint terminó sin errores."
+                   }
+               ]
+}
