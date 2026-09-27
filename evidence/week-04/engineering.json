@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "week": 4,
+  "commitSha": "2291f8222f7939f14a5b24bb5927b31845eab468",
+  "decision": "Se eligió Expo SecureStore para la sesión mínima y una telemetría centralizada que clona y redacta antes de emitir cualquier diagnóstico. Así, el mismo control protege campos anidados, listas y errores de la frontera HTTP sin confiar en que cada consumidor o pantalla oculte datos por separado.",
+  "alternatives": [
+    "Persistir la sesión completa en AsyncStorage y ocultar los datos sólo en la interfaz.",
+    "No persistir ninguna sesión y no generar diagnósticos de errores de red.",
+    "Usar SecureStore para la sesión mínima y aplicar una política compartida de sanitización antes de telemetría."
+  ],
+  "tradeoff": "El almacenamiento protegido y el sanitizador central reducen exposición y permiten pruebas repetibles de rutas negativas. El costo es mantener la lista de campos sensibles, probar nuevos adaptadores y aceptar que bibliotecas externas o un dispositivo comprometido siguen fuera de esta frontera.",
+  "requirementIds": ["AC-01", "AC-02", "AC-03", "AC-04", "AC-05"],
+  "verification": [
+    {
+      "command": "npm.cmd run typecheck && npm.cmd run lint",
+      "result": "pass",
+      "evidence": "Ambos comandos terminaron con código de salida 0."
+    },
+    {
+      "command": "npm.cmd test -- --ci --runInBand --no-cache course-tests/public/week-04.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts",
+      "result": "pass",
+      "evidence": "3 suites, 19 pruebas y 0 snapshots aprobaron; la frontera HTTP emite únicamente telemetría redactada."
+    },
+    {
+      "command": "rg -n --pcre2 -g '!node_modules/**' -g '!.git/**' -g '!dist/**' -g '!coverage/**' -g '!reports/week-04/secret-scan.json' '(?:sk|pk)_(?:live|test)_[A-Za-z0-9]+' .",
+      "result": "pass",
+      "evidence": "No se hallaron credenciales con formato de clave en los archivos de entrega."
+    }
+  ]
+}

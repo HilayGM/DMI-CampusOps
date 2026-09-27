@@ -1,6 +1,7 @@
 import { getBackendHealth } from '../../api/courseBackend';
 import { toSafeError } from '../application/safeErrors';
 import { ExpoSecureSessionStore, type SecureStoreClient } from '../infrastructure/ExpoSecureSessionStore';
+import { redactForTelemetry } from '../infrastructure/SafeTelemetry';
 
 const markers = {
   token: 'synthetic-token-value',
@@ -127,10 +128,9 @@ test('T3/T4/T5: real HTTP boundary rejects safely into controlled diagnostics an
   sinks.forEach((sink) => sink.mockImplementation(() => undefined));
   const failure = await rejectedHealth();
   expectSafeShape(failure);
-  // Controlled consumer only: this is not a production telemetry implementation.
-  console.warn(JSON.stringify(failure));
   const diagnostics = sinks.flatMap((sink) => sink.mock.calls);
   expect(diagnostics.length === 1).toBe(true);
+  expect(diagnostics[0]?.[0] === 'CampusOps telemetry').toBe(true);
   expectNoMarkers(diagnostics);
   const report = JSON.stringify({ checks: [{ id: 'controlled-error', diagnostic: failure }] });
   expectNoMarkers(report);
@@ -140,6 +140,7 @@ test('T3/T4/T5: real HTTP boundary rejects safely into controlled diagnostics an
 test('T5: HTTP failures do not read bodies and malformed JSON remains a safe rejection', async () => {
   const json = jest.fn().mockRejectedValue(new Error(markers.token));
   const fetchMock = jest.spyOn(globalThis, 'fetch');
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
   fetchMock.mockResolvedValue({ ok: false, status: 401, json } as unknown as Response);
   const unauthorized = await rejectedHealth();
   expectSafeShape(unauthorized);
@@ -149,6 +150,33 @@ test('T5: HTTP failures do not read bodies and malformed JSON remains a safe rej
   expectSafeShape(await rejectedHealth());
   json.mockResolvedValue({ ok: false, body: sensitiveError() });
   expectSafeShape(await rejectedHealth());
+  expectNoMarkers(warn.mock.calls);
+});
+
+test('T3/T4/T5: telemetry redacts every required nested field without mutating input', () => {
+  const input = {
+    password: markers.token,
+    userId: 'synthetic-user-id',
+    reporterId: 'synthetic-reporter-id',
+    technicianId: 'synthetic-technician-id',
+    assignedTechnicianId: 'synthetic-assignee-id',
+    latitude: markers.latitude,
+    longitude: markers.longitude,
+    evidence: [{ photo: markers.photo }],
+    assignmentHistory: [{ location: markers.location }],
+    nested: [{ internalComments: [markers.comment] }],
+    incidentId: 'campus-inc-001',
+    status: 'open',
+  };
+  const before = JSON.stringify(input);
+  const result = redactForTelemetry(input) as Record<string, unknown>;
+  expectNoMarkers(result);
+  expect(JSON.stringify(input) === before).toBe(true);
+  for (const key of ['password', 'userId', 'reporterId', 'technicianId', 'assignedTechnicianId',
+    'latitude', 'longitude', 'evidence', 'assignmentHistory'] as const) {
+    expect(result[key] === '[REDACTED]').toBe(true);
+  }
+  expect(result.incidentId === 'campus-inc-001' && result.status === 'open').toBe(true);
 });
 
 test('health success preserves the existing contract', async () => {

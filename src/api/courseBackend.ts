@@ -1,4 +1,5 @@
 import { toSafeError } from '../campusops/application/safeErrors';
+import { recordSafeTelemetry } from '../campusops/infrastructure/SafeTelemetry';
 
 export type BackendHealth = Readonly<{
   ok: true;
@@ -14,6 +15,10 @@ export async function getBackendHealth(
   try {
     return await readBackendHealth(baseUrl);
   } catch (error: unknown) {
+    recordSafeTelemetry('backend_health_failed', {
+      operation: 'backend_health',
+      error,
+    });
     throw toSafeError(error);
   }
 }
