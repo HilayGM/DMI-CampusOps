@@ -1,0 +1,26 @@
+{
+  "studentId": "3523110806",
+  "name": "Oscar Martinez Martinez",
+  "commitShas": [
+    "297c085422be655bcfd8de7087fb5de3cdbedca4",
+    "799f900984d5989f6ada1c681ce8aaaf9d8c12d6"
+  ],
+  "files": [
+    "docs/security-controls.md",
+    "src/api/courseBackend.ts",
+    "src/campusops/application/safeErrors.ts",
+    "src/campusops/_tests_/securityNegativePaths.test.ts",
+    "reports/week-04/negative-tests.json"
+  ],
+  "tests": [
+    "npm run typecheck",
+    "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+    "npm run lint",
+    "npm test -- --ci --runInBand src/campusops/_tests_/incidentNavigation.test.tsx"
+  ],
+  "reviews": [],
+  "prediction": "Esperaba que los caminos de error devolvieran únicamente códigos y mensajes seguros sin exponer datos sensibles.",
+  "command": "npm test -- --ci --runInBand src/campusops/_tests_/securityNegativePaths.test.ts",
+  "observedResult": "PASS: 1 suite aprobada, 11 de 11 pruebas aprobadas.",
+  "explanation": "Implementé errores seguros y pruebas negativas vinculadas con T3 (comentarios internos y notas), T4 (ubicación y coordenadas) y T5 (tokens, authorization, correo, sesión y credenciales). La conversión excluye objetos completos, anidación y arrays, conserva la entrada, maneja errores desconocidos y transforma códigos backend. Integré la conversión en la frontera HTTP y comprobé diagnósticos y serialización controlada de reportes en memoria. La prueba de almacenamiento protegido usa un cliente simulado y verifica una sesión mínima: conserva los tokens necesarios y excluye datos adicionales; no acredita almacenamiento nativo en dispositivo ni sanitización general de telemetría. Además, TypeScript y ESLint terminaron sin errores y la ejecución aislada de navegación aprobó 8 de 8 pruebas."
+}
