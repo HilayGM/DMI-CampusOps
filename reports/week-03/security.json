@@ -19,9 +19,9 @@
       "id": "secret-scan-injected-token",
       "status": "fail",
       "scenarioType": "failure",
-      "command": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "command": "$env:FAKE_TOKEN='synthetic-token-12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "evidence": "La prueba detectó la variable FAKE_TOKEN inyectada temporalmente y falló de forma controlada; el valor no se escribió en ningún archivo fuente.",
-      "comando real ejecutado": "$env:FAKE_TOKEN='sk_live_12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
+      "comando real ejecutado": "$env:FAKE_TOKEN='synthetic-token-12345'; npm.cmd test -- --ci --runInBand course-tests/public/week-03.test.ts",
       "resultado observable": "La prueba terminó en fail porque detectó FAKE_TOKEN como secreto inyectado temporalmente.",
       "tipo de escenario": "Fallo controlado",
       "estado (pass o fail)": "fail"
