@@ -7,14 +7,15 @@ import type {
   SyncRecord,
 } from './contracts';
 import type { IncidentLocation } from '../campusops/contracts';
+import { parseRemoteResourceDto } from '../campusops/infrastructure/RemoteResourceParser';
 export { redactForTelemetry } from '../campusops/infrastructure/SafeTelemetry';
 
 function pending(name: string): never {
   throw new Error(`${name} must be implemented in the assigned week`);
 }
 
-export function parseRemoteResource(_input: unknown): ParseResult {
-  return pending('parseRemoteResource');
+export function parseRemoteResource(input: unknown): ParseResult {
+  return parseRemoteResourceDto(input);
 }
 
 export function coordinateRefresh(_events: readonly AuthEvent[]): Readonly<{
