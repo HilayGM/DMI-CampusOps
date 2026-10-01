@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 
 import type { IncidentQueries } from '../application/incidentQueries';
 import type { BackendHealthPort } from '../application/ports/BackendHealthPort';
+import type { CreateIncidentInput } from '../application/ports/IncidentRepository';
 import type { Incident } from '../domain/Incident';
+import { IncidentCreateScreen } from './IncidentCreateScreen';
 import { IncidentDetailScreen } from './IncidentDetailScreen';
 import { IncidentListScreen } from './IncidentListScreen';
 
@@ -21,6 +23,7 @@ type QueryState =
 export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
   const [backendStatus, setBackendStatus] = useState<'checking' | 'available' | 'offline'>('checking');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [query, setQuery] = useState<QueryState>({ status: 'loading' });
 
@@ -39,6 +42,7 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
   }, [checkBackendHealth]);
 
   useEffect(() => {
+    if (creating) return;
     let active = true;
     async function load() {
       // Wait one microtask before transitioning. This keeps the effect
@@ -57,7 +61,7 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
     }
     void load();
     return () => { active = false; };
-  }, [incidents, selectedId, attempt]);
+  }, [incidents, selectedId, attempt, creating]);
 
   useEffect(() => {
     if (selectedId === null) return;
@@ -68,6 +72,13 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
     return () => subscription.remove();
   }, [selectedId]);
 
+  async function createIncident(input: CreateIncidentInput, idempotencyKey: string) {
+    const incident = await incidents.create(input, idempotencyKey);
+    setCreating(false);
+    setSelectedId(incident.id);
+    setAttempt((value) => value + 1);
+  }
+
   return (
     <View style={styles.screen}>
       <View accessibilityRole="summary" style={styles.header}>
@@ -75,18 +86,23 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
         <Text>Incidencias del campus · entorno académico ficticio</Text>
         <Text testID="backend-status">Backend: {backendStatus}</Text>
       </View>
-      {selectedId !== null && (
-        <Pressable accessibilityRole="button" onPress={() => setSelectedId(null)} style={styles.button}>
-          <Text>Volver</Text>
+      {(selectedId !== null || creating) && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => { setSelectedId(null); setCreating(false); }}
+          style={styles.button}
+        >
+          <Text>{creating ? 'Cancelar' : 'Volver'}</Text>
         </Pressable>
       )}
-      {query.status === 'loading' && (
+      {creating && <IncidentCreateScreen onCancel={() => setCreating(false)} onSubmit={createIncident} />}
+      {!creating && query.status === 'loading' && (
         <View style={styles.header}>
           <ActivityIndicator accessibilityLabel="Cargando incidencias" />
           <Text>Cargando incidencias…</Text>
         </View>
       )}
-      {query.status === 'error' && (
+      {!creating && query.status === 'error' && (
         <View style={styles.header}>
           <Text accessibilityRole="alert">No se pudieron cargar las incidencias.</Text>
           <Pressable accessibilityRole="button" onPress={() => setAttempt((value) => value + 1)} style={styles.button}>
@@ -94,10 +110,14 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
           </Pressable>
         </View>
       )}
-      {query.status === 'list' && selectedId === null && (
-        <IncidentListScreen incidents={query.items} onSelect={setSelectedId} />
+      {!creating && query.status === 'list' && selectedId === null && (
+        <IncidentListScreen
+          incidents={query.items}
+          onSelect={setSelectedId}
+          onCreate={() => setCreating(true)}
+        />
       )}
-      {query.status === 'detail' && selectedId !== null && (
+      {!creating && query.status === 'detail' && selectedId !== null && (
         query.incident
           ? <IncidentDetailScreen incident={query.incident} />
           : <Text>No se encontró la incidencia.</Text>
