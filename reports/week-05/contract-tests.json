@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "week": 5,
+  "commitSha": "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7",
+  "generatedAt": "2026-10-03T04:02:57.438464+00:00",
+  "executionEnvironment": "Node 22.22.0; npm_config_offline=true; fetch inyectado, sin Internet público. testTimeout=30000 sólo para el arranque de navegación; timeout del cliente probado con reloj falso de 5 ms.",
+  "checks": [
+    {
+      "id": "valid-response",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Lista, detalle y creación válidos aprobados dentro de 10 suites / 124 pruebas, 0 fallidas."
+    },
+    {
+      "id": "empty-list",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "items: [] devuelve []; lista sólo con payloads nulos devuelve []; lista mixta conserva únicamente Incident válidas."
+    },
+    {
+      "id": "nullable-payload",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Parser acepta null; detalle devuelve null; creación rechaza con kind absent; un item corrupto en lista mixta sigue rechazando con contract/schema."
+    },
+    {
+      "id": "dto-domain-separation",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Las tres operaciones producen objetos de dominio nuevos sin version, payload ni comentarios remotos; la entrada no cambia."
+    },
+    {
+      "id": "malformed-contract",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "27 casos parametrizados de DTO/dominio inválido entre lista, detalle y creación, además de wrappers y metadatos inválidos, rechazan con contract/schema."
+    },
+    {
+      "id": "malformed-json",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "response.json() rechaza con SyntaxError en las tres operaciones; se obtiene contract/json sin contenido crudo."
+    },
+    {
+      "id": "shared-parser",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Suite remoteResourceParser aprobada: null, campos futuros, no mutación, tipos inválidos, accesores hostiles y proxy revocado."
+    },
+    {
+      "id": "public-contracts",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Pruebas públicas Week 04 y Week 05 y arquitectura Week 02 aprobadas sin modificaciones."
+    },
+    {
+      "id": "ui-no-direct-fetch",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Comprobación recursiva de fuentes .ts/.tsx en src/campusops/ui aprobada: sin llamadas fetch directas."
+    }
+  ]
+}
