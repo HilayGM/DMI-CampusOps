@@ -3,6 +3,8 @@ import type { CreateIncidentInput, IncidentRepository } from '../application/por
 import type { SecureSessionStore } from '../application/ports/SecureSessionStore';
 import type { Incident } from '../domain/Incident';
 import { parseRemoteResourceDto } from './RemoteResourceParser';
+import { clientFailure, isClientFailure } from '../application/clientErrors';
+import { recordSafeTelemetry } from './SafeTelemetry';
 
 type HttpIncidentRepositoryOptions = Readonly<{
   baseUrl: string;
@@ -11,12 +13,6 @@ type HttpIncidentRepositoryOptions = Readonly<{
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
 }>;
-
-class HttpError extends Error {
-  constructor(readonly status: number) {
-    super(`CampusOps request failed (${status})`);
-  }
-}
 
 const validCategories: readonly string[] = [
   'electrical', 'laboratory', 'water', 'connectivity', 'equipment', 'safety', 'maintenance',
@@ -27,11 +23,10 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function toIncident(input: unknown): Incident {
+function toIncident(input: unknown): Incident | null {
   const result = parseRemoteResourceDto(input);
-  if (!result.ok || result.value.payload === null) {
-    throw new Error('Invalid incident response');
-  }
+  if (!result.ok) throw clientFailure({ kind: 'contract', reason: 'schema' });
+  if (result.value.payload === null) return null;
 
   const { id, status, payload } = result.value;
   const { category, description, location } = payload;
@@ -41,7 +36,7 @@ function toIncident(input: unknown): Incident {
     || typeof description !== 'string' || !description.trim()
     || typeof location !== 'string' || !location.trim()
   ) {
-    throw new Error('Invalid incident response');
+    throw clientFailure({ kind: 'contract', reason: 'schema' });
   }
 
   return {
@@ -57,6 +52,16 @@ function toIncident(input: unknown): Incident {
 export class HttpIncidentRepository implements IncidentRepository {
   constructor(private readonly options: HttpIncidentRepositoryOptions) {}
 
+  private async execute<T>(operation: 'list' | 'detail' | 'create', work: () => Promise<T>): Promise<T> {
+    try {
+      return await work();
+    } catch (error: unknown) {
+      const failure = isClientFailure(error) ? error : clientFailure({ kind: 'contract', reason: 'schema' });
+      recordSafeTelemetry('incident_request_failed', { operation, error: failure });
+      throw failure;
+    }
+  }
+
   private async request(
     path: string,
     method: 'GET' | 'POST',
@@ -66,12 +71,12 @@ export class HttpIncidentRepository implements IncidentRepository {
     const [session, actorId] = await Promise.all([
       this.options.sessionStore.load(),
       this.options.getActorId(),
-    ]);
+    ]).catch(() => { throw clientFailure({ kind: 'precondition' }); });
     if (!session?.accessToken || !actorId.trim()) {
-      throw new Error('CampusOps session or actor is unavailable');
+      throw clientFailure({ kind: 'precondition' });
     }
     if (method === 'POST' && (!idempotencyKey || idempotencyKey.trim().length < 8)) {
-      throw new Error('A stable idempotency key is required');
+      throw clientFailure({ kind: 'precondition' });
     }
 
     const controller = new AbortController();
@@ -91,38 +96,54 @@ export class HttpIncidentRepository implements IncidentRepository {
           ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         },
       );
-      if (!response.ok) throw new HttpError(response.status);
-      return await response.json() as unknown;
+      if (!response.ok) throw clientFailure({ kind: 'http', status: response.status });
+      try {
+        return await response.json() as unknown;
+      } catch {
+        throw clientFailure(controller.signal.aborted
+          ? { kind: 'timeout' } : { kind: 'contract', reason: 'json' });
+      }
     } catch (error) {
-      if (controller.signal.aborted) throw new Error('CampusOps request timed out');
-      throw error;
+      if (controller.signal.aborted) throw clientFailure({ kind: 'timeout' });
+      if (isClientFailure(error)) throw error;
+      throw clientFailure({ kind: 'network' });
     } finally {
       clearTimeout(timeout);
     }
   }
 
   async list(): Promise<readonly Incident[]> {
-    const response = await this.request('/v1/incidents', 'GET');
-    if (!isRecord(response) || !Array.isArray(response.items)) {
-      throw new Error('Invalid incident list response');
-    }
-    return response.items.map(toIncident);
+    return this.execute('list', async () => {
+      const response = await this.request('/v1/incidents', 'GET');
+      if (!isRecord(response) || !Array.isArray(response.items)) {
+        throw clientFailure({ kind: 'contract', reason: 'schema' });
+      }
+      return response.items.map(toIncident).filter((item): item is Incident => item !== null);
+    });
   }
 
   async getById(id: string): Promise<Incident | null> {
-    try {
-      return toIncident(await this.request(`/v1/incidents/${encodeURIComponent(id)}`, 'GET'));
-    } catch (error) {
-      if (error instanceof HttpError && error.status === 404) return null;
-      throw error;
-    }
+    return this.execute('detail', async () => {
+      try {
+        return toIncident(await this.request(`/v1/incidents/${encodeURIComponent(id)}`, 'GET'));
+      } catch (error) {
+        if (isClientFailure(error) && error.kind === 'http' && error.status === 404) return null;
+        throw error;
+      }
+    });
   }
 
   async create(input: CreateIncidentInput, idempotencyKey: string): Promise<Incident> {
-    const response = await this.request('/v1/incidents', 'POST', input, idempotencyKey);
-    if (!isRecord(response) || !('incident' in response)) {
-      throw new Error('Invalid incident creation response');
-    }
-    return toIncident(response.incident);
+    return this.execute('create', async () => {
+      const response = await this.request('/v1/incidents', 'POST', input, idempotencyKey);
+      if (!isRecord(response) || !('incident' in response)
+        || typeof response.operationId !== 'string' || !response.operationId.trim()
+        || typeof response.duplicate !== 'boolean') {
+        throw clientFailure({ kind: 'contract', reason: 'schema' });
+      }
+      const incident = toIncident(response.incident);
+      if (incident === null) throw clientFailure({ kind: 'absent' });
+      return incident;
+    });
   }
 }

@@ -39,16 +39,16 @@ Un `payload: null` es un sobre remoto **válido sin datos de dominio**. No equiv
 Respuesta HTTP 200:
 
 ```json
-{ "items": [{ "id": "campus-inc-001", "version": 1, "status": "assigned", "payload": {} }] }
+{ "items": [{ "id": "campus-inc-001", "version": 1, "status": "assigned", "payload": { "category": "connectivity", "description": "Falla ficticia de red", "location": "Edificio de prueba A" } }] }
 ```
 
-El cliente debe validar que la raíz sea un objeto, que `items` sea una lista y que cada elemento cumpla el sobre remoto. Una lista vacía es éxito sin incidencias. Un elemento con `payload: null` conserva el estado “payload ausente”; no se transforma en una incidencia de aplicación.
+El cliente valida que la raíz sea un objeto, que `items` sea una lista y que cada elemento cumpla el sobre remoto. `items: []` es éxito sin incidencias. Los elementos con `payload: null` no se convierten en incidencias y se omiten del resultado de dominio; una lista que sólo contiene payloads nulos devuelve `[]`. Se conserva la firma `Promise<readonly Incident[]>`: no distingue cuántos elementos remotos carecían de datos. Un elemento malformado rechaza la operación completa, incluso si hay otros elementos nulos o válidos.
 
 ## Consultar detalle
 
 `GET /v1/incidents/:id`
 
-La respuesta HTTP 200 es un `RemoteResourceDto` directo. El identificador se codifica como segmento de URL. `404` es un error HTTP distinguible; no se representa como un DTO nulo ni como una incidencia inventada.
+La respuesta HTTP 200 es un `RemoteResourceDto` directo. El identificador se codifica como segmento de URL. Un sobre válido con `payload: null` devuelve `null` en el puerto de aplicación. Se conserva el comportamiento existente de `getById`: HTTP 404 también devuelve `null`. Los demás rechazos HTTP son errores `http` con `status`; no se fabrica una incidencia.
 
 ## Crear incidencia
 
@@ -68,13 +68,15 @@ Solicitud para un actor con rol `reporter`:
 
 ```json
 {
-  "incident": { "id": "campus-inc-101", "version": 1, "status": "open", "payload": {} },
+  "incident": { "id": "campus-inc-101", "version": 1, "status": "open", "payload": { "category": "connectivity", "description": "Falla ficticia de red", "location": "Edificio de prueba A" } },
   "operationId": "create-demo-001",
   "duplicate": false
 }
 ```
 
 El cliente valida la raíz, `incident` mediante el mismo parser, `operationId` no vacío y `duplicate` booleano. Una repetición con la misma clave y el mismo cuerpo puede responder 200 y `duplicate: true` sin crear otra incidencia.
+
+La firma existente exige `Promise<Incident>`. Si el sobre de `incident` es válido pero su payload es nulo, la creación rechaza con `kind: 'absent'`, distinto de `contract`. Esto significa que no hay datos de dominio para devolver, no que el servidor no haya guardado la operación. Un reintento debe conservar la misma clave y cuerpo. No se amplía la firma ni se inventan datos.
 
 ## DTO remoto frente al dominio de la aplicación
 
@@ -84,13 +86,18 @@ El DTO conserva `version`, `status` textual y un payload todavía desconocido. E
 |---|---|
 | Sobre válido y payload de dominio válido | Puede mapearse a `Incident`. |
 | Sobre válido y `payload: null` | Ausencia permitida; no es error de contrato ni `Incident`. |
-| Sobre o payload de dominio malformado | Error `contract`. |
-| Tiempo de espera agotado/abortado | Error `timeout`. |
-| HTTP no exitoso, incluido 500 | Error `http` con código/estado técnico seguro. |
+| Sobre o payload de dominio malformado | `kind: 'contract', reason: 'schema'`. |
+| Lectura JSON rechazada, incluida sintaxis inválida | `kind: 'contract', reason: 'json'`. |
+| Timeout interno agotado durante fetch o lectura del cuerpo | Error `timeout`. |
+| HTTP no exitoso, incluido 500 | Error `http` con `status`; excepción compatible: detalle 404 devuelve `null`. |
 | Fallo de transporte | Error `network`. |
 
-Los errores se modelan como datos distinguibles en la capa cliente y se convierten a mensajes seguros antes de llegar a la UI. La telemetría usa `recordSafeTelemetry`; nunca conserva tokens, ubicación, descripción libre, comentarios, fotografías ni cuerpos completos de respuesta.
+`ClientFailure`, en `application/clientErrors.ts`, es una unión discriminada de objetos congelados, no instancias de `Error`. Conserva `kind`, `code` y `message` seguro mediante `toSafeError`; sólo `http` agrega `status` y `contract` agrega `reason`. No conserva stack, cause, excepciones originales ni cuerpos. La variante adicional `precondition` representa sesión/actor no disponibles o clave de idempotencia inválida.
+
+El timeout predeterminado es 8.000 ms, configurable con `timeoutMs`. Usa el AbortController existente y limpia su temporizador en `finally`. Un rechazo de fetch sólo es `timeout` cuando la señal interna está abortada; incluso un `AbortError` ajeno a ese timeout es `network`. El transporte inyectado debe respetar AbortSignal.
+
+La telemetría usa `recordSafeTelemetry` con nombre de operación fijo y el fallo ya seguro; jamás recibe el error original, cabeceras, URL con identificadores o cuerpos. El sanitizador acumulado vuelve a redactar los campos sensibles, incluido `message`. Las pantallas conservan sus mensajes genéricos. No se registran tokens, email, ubicación, coordenadas, comentarios ni texto remoto arbitrario.
 
 ## Pruebas reproducibles
 
-Las pruebas unitarias usan respuestas simuladas y el backend local con `X-Course-Scenario`: `success`, `nullable`, `malformed`, `slow` y `server_error`. No dependen de Internet público. Deben cubrir lista, detalle y creación, además de comprobar explícitamente que los datos remotos no se mutan y que los diagnósticos permanecen sanitizados.
+`HttpIncidentRepository.test.ts` usa fetch inyectado, respuestas simuladas y temporizadores falsos con 5 ms para cubrir lista, detalle y creación. Comprueba DTO/dominio, no mutación, lista vacía, null, contrato inválido, JSON inválido, timeout, HTTP 500, red, sanitización y ausencia de fetch directo en UI. `remoteResourceParser.test.ts` prueba el parser compartido. No requieren Internet público. El backend didáctico mantiene sus escenarios publicados y autopruebas; estas pruebas unitarias no afirman ejecutar esos escenarios a través del cliente real.
