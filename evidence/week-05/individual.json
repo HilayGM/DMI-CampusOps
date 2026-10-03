@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "week": 5,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": [
+        "abbb4f6f0b70dd555a450f45a30d28f9127d7f00"
+      ],
+      "files": [
+        "docs/api-contract.md",
+        "src/campusops/infrastructure/RemoteResourceParser.ts",
+        "src/campusops/_tests_/remoteResourceParser.test.ts",
+        "src/course-evaluation/index.ts"
+      ],
+      "tests": [
+        "src/campusops/_tests_/remoteResourceParser.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "El parser compartido debe aceptar sobres válidos y payload null, rechazar contratos inválidos sin lanzar excepciones y no mutar la entrada.",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "observedResult": "Verificación integrada en el SHA técnico de Oscar: salida 0, 10 suites y 124 pruebas aprobadas, 0 fallidas; incluida remoteResourceParser.test.ts. No se atribuye esta ejecución retrospectivamente al commit individual.",
+      "explanation": "El commit indicado, registrado en Git como HilayGM y asociado por el equipo a Martín, incorpora el parser compartido, su delegación desde el adaptador público, pruebas de contrato y la versión inicial del documento API. La clasificación HTTP posterior pertenece a Oscar, no a este commit."
+    },
+    {
+      "studentId": "3523110443",
+      "commitShas": [
+        "599ea65e4f8190a16e9e8da277a985156ed39974"
+      ],
+      "files": [
+        "src/campusops/infrastructure/HttpIncidentRepository.ts",
+        "src/campusops/application/ports/IncidentRepository.ts",
+        "src/campusops/application/incidentQueries.ts",
+        "src/composition/campusOpsDependencies.ts",
+        "src/campusops/ui/IncidentCreateScreen.tsx",
+        "src/campusops/ui/CampusOpsScreen.tsx",
+        "src/campusops/_tests_/HttpIncidentRepository.test.ts",
+        "src/campusops/_tests_/incidentNavigation.test.tsx"
+      ],
+      "tests": [
+        "src/campusops/_tests_/HttpIncidentRepository.test.ts",
+        "src/campusops/_tests_/incidentNavigation.test.tsx",
+        "src/campusops/_tests_/incidentQueries.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "Lista, detalle y creación deben usar el repositorio HTTP separado de UI, enviar autorización, actor e idempotencia y abrir el detalle creado.",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "observedResult": "Verificación integrada en el SHA técnico de Oscar: salida 0, 10 suites y 124 pruebas aprobadas, 0 fallidas; incluidas consultas, navegación, creación y cliente. El cliente y sus pruebas contienen ampliaciones posteriores de Oscar.",
+      "explanation": "Git confirma autor Felipe y el commit de implementación de HttpIncidentRepository y creación: transporte, cabeceras, AbortController, composición, puerto y formulario. No se le atribuyen los fallos discriminados ni la ampliación de pruebas negativas del commit posterior de Oscar."
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": [
+        "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7"
+      ],
+      "files": [
+        "docs/api-contract.md",
+        "src/campusops/_tests_/HttpIncidentRepository.test.ts",
+        "src/campusops/application/clientErrors.ts",
+        "src/campusops/infrastructure/HttpIncidentRepository.ts"
+      ],
+      "tests": [
+        "src/campusops/_tests_/HttpIncidentRepository.test.ts"
+      ],
+      "reviews": [],
+      "prediction": "El cliente debe separar DTO y dominio, conservar ausencia válida y distinguir contract/schema, contract/json, timeout, http y network sin filtrar errores ni datos sensibles.",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "observedResult": "Salida 0 en HEAD b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7: 10 suites y 124 pruebas aprobadas, 0 fallidas y 0 snapshots. Se verificaron respuesta válida, lista vacía, payload null, contrato inválido, JSON inválido, timeout, HTTP 500, red y sanitización.",
+      "explanation": "El commit firmado por Oscar modifica exactamente los cuatro archivos indicados: agrega ClientFailure, integra errores seguros y telemetría, amplía pruebas y alinea el contrato documentado. Se conserva la base de Felipe y el parser de Martín. Implementación y cierre de evidencias asistidos por IA, contrastados con Git y comandos reales; no se registran revisiones inexistentes."
+    }
+  ]
+}

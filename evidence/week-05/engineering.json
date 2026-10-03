@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "week": 5,
+  "commitSha": "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7",
+  "decision": "Conservar el puerto de Felipe y validar unknown en dos límites: sobre remoto compartido y mapeo de dominio. El cliente devuelve fallos como datos congelados con kind contract/timeout/http/network y mensajes de toSafeError; sólo conserva status HTTP o reason json/schema. La telemetría recibe exclusivamente esos datos seguros. El parser acepta payload null: lista omite elementos sin dominio, detalle devuelve null y creación rechaza con absent porque exige Incident. Se conserva detalle 404 como null.",
+  "alternatives": [
+    "Ampliar todas las firmas a una unión de resultados con metadatos de ausencia, adaptando pantallas, puertos y dobles de prueba.",
+    "Mantener las firmas actuales, representar ausencia compatible en consultas y usar un fallo absent explícito para creación, junto con errores seguros discriminados.",
+    "Propagar excepciones Error originales y clasificar sus mensajes en cada pantalla; descartado por acoplamiento y riesgo de filtración."
+  ],
+  "tradeoff": "Se evita rehacer el cliente y las pantallas de Felipe y se conserva la separación DTO/dominio con fallos comprobables sin red pública. El costo es que la lista no conserva el número de payloads ausentes y detalle no distingue 404 de payload null; creación necesita la variante absent. El timeout requiere transporte que respete AbortSignal. Los mensajes visibles siguen siendo genéricos, aunque kind permite distinguir programáticamente los fallos.",
+  "requirementIds": [
+    "AC-01",
+    "AC-02",
+    "AC-03",
+    "AC-04"
+  ],
+  "verification": [
+    {
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "result": "pass",
+      "evidence": "Reejecuci?n en HEAD b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7: 10 suites, 124 pruebas aprobadas, 0 fallidas y 0 snapshots; salida 0. No se modific? c?digo t?cnico para el cierre. L?mite del runner de 30000 ms expl?cito; timeout HTTP probado con reloj simulado."
+    },
+    {
+      "command": "npm.cmd run backend:self-test",
+      "result": "pass",
+      "evidence": "Salida 0, contratos CampusOps y autoprueba del backend local aprobados."
+    },
+    {
+      "command": "make verify-week-05 PYTHON=python3.14",
+      "result": "fail",
+      "evidence": "Reejecuci?n final: salida 1; cinco checks estructurales aprobados y cinco invocaciones npm bloqueadas por NVM4306. La selecci?n del Python instalado resolvi? el arranque sin modificar el evaluador ni NVM."
+    },
+    {
+      "command": "make public-test-week-05 PYTHON=python3.14",
+      "result": "fail",
+      "evidence": "Reejecuci?n final en el SHA t?cnico: salida 1 por NVM4306 en cuatro invocaciones npm. Los diez checks restantes aprobaron, incluidos todos los archivos, SHA y esquemas de reportes, engineering e individual. El fallo anterior por SHA pendiente e individual ausente qued? resuelto; no se declara ?xito del comando completo."
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "pass",
+      "evidence": "Reejecuci?n final en el SHA t?cnico: salida 0. El TS2532 inicial fue corregido antes de ese commit; durante este cierre no se modific? c?digo."
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "pass",
+      "evidence": "Reejecuci?n final: salida 0, sin diagn?sticos de ESLint."
+    },
+    {
+      "command": "make feedback NPM=npm.cmd",
+      "result": "pass",
+      "evidence": "Reejecuci?n final en el SHA t?cnico: salida 0 con npm_config_offline=true, EXPO_OFFLINE=1 y EXPO_NO_TELEMETRY=1. Typecheck, lint, smoke (1/1) y exportaci?n Android completados. Audit offline imprimi? found 0 vulnerabilities; no representa una consulta actualizada de avisos p?blicos."
+    },
+    {
+      "command": "npm.cmd run bundle:release",
+      "result": "pass",
+      "evidence": "Reejecuci?n final: salida 0; 595 m?dulos, bundle Android de 1.5 MB y metadata.json en dist/export. EXPO_OFFLINE=1 y EXPO_NO_TELEMETRY=1."
+    }
+  ]
+}
