@@ -12,6 +12,18 @@ jest.mock('../../api/courseBackend', () => ({
   getBackendHealth: jest.fn(),
 }));
 
+jest.mock('../infrastructure/ExpoSecureSessionStore', () => ({
+  ExpoSecureSessionStore: class {
+    async load() {
+      return {
+        accessToken: 'course-valid-token',
+        refreshToken: 'course-refresh-token',
+        expiresAt: 4_102_444_800_000,
+      };
+    }
+  },
+}));
+
 const sample: Incident = {
   id: 'test-002', title: 'Equipo ficticio', description: 'Detalle exclusivo del equipo sintético.',
   status: 'open', category: 'equipment', location: 'Zona ficticia de pruebas',
@@ -20,7 +32,26 @@ const available = async () => undefined;
 const defaultRepository: IncidentRepository = {
   list: async () => [sample],
   getById: async (id) => id === sample.id ? sample : null,
+  create: async (input) => ({
+    id: 'created-test-001', title: input.description, description: input.description,
+    status: 'open', category: input.category, location: input.location,
+  }),
 };
+
+const remoteIncidents = [
+  {
+    id: 'demo-inc-001', version: 1, status: 'open',
+    payload: { category: 'electrical', description: 'Luminaria de práctica apagada', location: 'Aula de prueba 101' },
+  },
+  {
+    id: 'demo-inc-002', version: 1, status: 'assigned',
+    payload: { category: 'connectivity', description: 'Conexión intermitente de laboratorio', location: 'Laboratorio de prueba 2' },
+  },
+  {
+    id: 'demo-inc-003', version: 1, status: 'in_progress',
+    payload: { category: 'water', description: 'Fuga simulada en lavabo', location: 'Zona de prueba 3' },
+  },
+];
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -35,6 +66,18 @@ afterEach(() => {
 
 test('the composed app supports list, correct detail and return while backend is offline', async () => {
   jest.mocked(getBackendHealth).mockRejectedValue(new Error('backend offline'));
+  process.env.EXPO_PUBLIC_COURSE_ACTOR_ID = 'reporter-1';
+  jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    const url = String(input);
+    const body = url.endsWith('/v1/incidents/demo-inc-002')
+      ? remoteIncidents[1]
+      : { items: remoteIncidents };
+    return {
+      ok: true,
+      status: 200,
+      json: async () => body,
+    } as Response;
+  });
   const view = await render(<App />);
   expect(view.getByText('CampusOps')).toBeTruthy();
   await waitFor(() => expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: offline'));
@@ -46,7 +89,7 @@ test('the composed app supports list, correct detail and return while backend is
   expect(view.getByText('Estado: Asignada')).toBeTruthy();
   expect(view.queryByText('Luminaria de práctica apagada')).toBeNull();
   await fireEvent.press(view.getByRole('button', { name: 'Volver' }));
-  expect(await view.findByText('Incidencias ficticias')).toBeTruthy();
+  expect(await view.findByText('Incidencias')).toBeTruthy();
   expect(view.getByText('Luminaria de práctica apagada')).toBeTruthy();
   expect(getBackendHealth).toHaveBeenCalledTimes(1);
 });
@@ -123,10 +166,10 @@ test('returning before detail completes ignores its obsolete response', async ()
   await fireEvent.press(await view.findByRole('button', { name: `Abrir incidencia: ${sample.title}` }));
   expect(view.getByText('Cargando incidencias…')).toBeTruthy();
   await fireEvent.press(view.getByRole('button', { name: 'Volver' }));
-  expect(await view.findByText('Incidencias ficticias')).toBeTruthy();
+  expect(await view.findByText('Incidencias')).toBeTruthy();
   await act(async () => { detail.resolve(sample); });
   expect(view.queryByText('Detalle de incidencia')).toBeNull();
-  expect(view.getByText('Incidencias ficticias')).toBeTruthy();
+  expect(view.getByText('Incidencias')).toBeTruthy();
 });
 
 test('Android back returns from detail and removes the listener', async () => {
@@ -139,6 +182,31 @@ test('Android back returns from detail and removes the listener', async () => {
   expect(await view.findByText(sample.description)).toBeTruthy();
   const handler = listener.mock.calls.find(([event]) => event === 'hardwareBackPress')![1];
   await act(async () => { expect(handler({} as never)).toBe(true); });
-  expect(await view.findByText('Incidencias ficticias')).toBeTruthy();
+  expect(await view.findByText('Incidencias')).toBeTruthy();
   expect(remove).toHaveBeenCalledTimes(1);
+});
+
+test('creation screen sends one UUID through the application flow and opens the created detail', async () => {
+  const created: Incident = {
+    id: 'created-001', title: 'Luz apagada', description: 'Luz apagada',
+    status: 'open', category: 'maintenance', location: 'Aula ficticia',
+  };
+  const create = jest.fn().mockResolvedValue(created);
+  const getById = jest.fn(async (id: string) => id === created.id ? created : null);
+  const repository: IncidentRepository = { ...defaultRepository, create, getById };
+  const randomUUID = jest.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('8a16d9fc-a226-4d33-912f-98eb6142bb40');
+  const view = await render(
+    <CampusOpsScreen incidents={createIncidentQueries(repository)} checkBackendHealth={available} />,
+  );
+
+  await fireEvent.press(await view.findByRole('button', { name: 'Nueva incidencia' }));
+  await fireEvent.changeText(view.getByLabelText('Descripción'), 'Luz apagada');
+  await fireEvent.changeText(view.getByLabelText('Ubicación'), 'Aula ficticia');
+  await fireEvent.press(view.getByRole('button', { name: 'Crear incidencia' }));
+
+  await waitFor(() => expect(create).toHaveBeenCalledWith({
+    category: 'maintenance', description: 'Luz apagada', location: 'Aula ficticia',
+  }, '8a16d9fc-a226-4d33-912f-98eb6142bb40'));
+  expect(randomUUID).toHaveBeenCalledTimes(1);
+  expect(await view.findByText('ID: created-001')).toBeTruthy();
 });

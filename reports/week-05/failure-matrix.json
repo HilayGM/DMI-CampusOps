@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "week": 5,
+  "commitSha": "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7",
+  "generatedAt": "2026-10-03T04:02:57.438464+00:00",
+  "checks": [
+    {
+      "id": "internal-timeout",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Las tres operaciones abortan fetch con reloj falso y timeoutMs=5, clasifican timeout y dejan cero temporizadores. También se probó aborto durante lectura del cuerpo."
+    },
+    {
+      "id": "http-500",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Las tres operaciones rechazan con kind http/status 500, código/mensaje seguro y sin invocar response.json()."
+    },
+    {
+      "id": "network",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Error y AbortError de fetch sin aborto interno clasifican network en las tres operaciones; no se conserva el mensaje original."
+    },
+    {
+      "id": "contract-discrimination",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "DTO corrupto: contract/schema; JSON inválido: contract/json; payload nulo en creación: absent, sin Incident inventada."
+    },
+    {
+      "id": "sanitization",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Señuelos sintéticos de Authorization, token, email, location, coordinates, internalComments, stack y cause ausentes en errores, toSafeError, console.warn y serialización. Telemetría usa recordSafeTelemetry y message queda REDACTED."
+    },
+    {
+      "id": "session-failure",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
+      "evidence": "Rechazo del proveedor de sesión se convierte en precondition seguro sin ejecutar fetch."
+    },
+    {
+      "id": "initial-navigation-timeout",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --no-cache src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/remoteResourceParser.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",
+      "evidence": "Antecedente de la implementaci?n previa al commit t?cnico: Primera ejecución: 3 suites aprobadas, 1 fallida; 101 pruebas aprobadas y 1 fallida por timeout de 5000 ms en primer render de navegación. Repetición aislada con límite original: 8 aprobadas/1 fallida. Ejecución final con límite explícito de 30000 ms: 124/124; no se modificó ni eliminó la prueba. En el cierre del SHA t?cnico se repiti? la regresi?n con testTimeout=30000: 124 aprobadas, 0 fallidas."
+    },
+    {
+      "id": "backend-self-test",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd run backend:self-test",
+      "evidence": "Salida 0: CampusOps backend contracts PASS; Controlled backend self-test passed. Sólo servidor local con puerto efímero."
+    },
+    {
+      "id": "weekly-verification",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "make verify-week-05 PYTHON=python3.14",
+      "evidence": "Reejecuci?n en el SHA t?cnico de Oscar: make sali? 1. Cinco checks estructurales aprobaron; los cinco comandos npm del evaluador fueron bloqueados por NVM4306 (delegated script is not trusted). Python 3.14.7 se seleccion? mediante PYTHON=python3.14; no se modificaron versiones ni seguridad."
+    },
+    {
+      "id": "weekly-public-evaluation",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "make public-test-week-05 PYTHON=python3.14",
+      "evidence": "Reejecuci?n en el SHA t?cnico de Oscar: make sali? 1 exclusivamente por cuatro comandos npm bloqueados por NVM4306. Diez checks aprobaron, incluidos SHA, los dos reportes, engineering y exactamente tres miembros de individual.json. No faltan archivos ni SHA. Pruebas p?blicas aprobadas en la regresi?n directa de 124 pruebas."
+    }
+  ]
+}

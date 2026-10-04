@@ -36,18 +36,26 @@ test('application uses an alternative repository without knowing the fake', asyn
   const repository: IncidentRepository = {
     list: jest.fn().mockResolvedValue([incident]),
     getById: jest.fn().mockResolvedValue(incident),
+    create: jest.fn().mockResolvedValue(incident),
   };
   const queries = createIncidentQueries(repository);
   await expect(queries.list()).resolves.toEqual([incident]);
   await expect(queries.getById(incident.id)).resolves.toEqual(incident);
+  await expect(queries.create({
+    category: 'equipment', description: incident.description, location: incident.location,
+  }, 'create-key-001')).resolves.toEqual(incident);
   expect(repository.list).toHaveBeenCalledTimes(1);
   expect(repository.getById).toHaveBeenCalledWith(incident.id);
+  expect(repository.create).toHaveBeenCalledWith({
+    category: 'equipment', description: incident.description, location: incident.location,
+  }, 'create-key-001');
 });
 
 test('preserves an empty list from the provider', async () => {
   const queries = createIncidentQueries({
     list: async () => [],
     getById: async () => null,
+    create: async () => { throw new Error('unused'); },
   });
   await expect(queries.list()).resolves.toEqual([]);
 });
@@ -57,9 +65,13 @@ test('propagates list and detail failures rather than inventing empty results', 
   const queries = createIncidentQueries({
     list: async () => { throw failure; },
     getById: async () => { throw failure; },
+    create: async () => { throw failure; },
   });
   await expect(queries.list()).rejects.toBe(failure);
   await expect(queries.getById('demo-inc-001')).rejects.toBe(failure);
+  await expect(queries.create({
+    category: 'equipment', description: 'Detalle', location: 'Zona',
+  }, 'create-key-002')).rejects.toBe(failure);
 });
 
 test('returned arrays and objects cannot modify the internal fixtures', async () => {

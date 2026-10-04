@@ -29,12 +29,31 @@ const incidents: readonly Incident[] = Object.freeze([
 ]);
 
 export class InMemoryIncidentRepository implements IncidentRepository {
+  private readonly created = new Map<string, Incident>();
+
   async list(): Promise<readonly Incident[]> {
-    return incidents.map((incident) => ({ ...incident }));
+    return [...incidents, ...this.created.values()].map((incident) => ({ ...incident }));
   }
 
   async getById(id: string): Promise<Incident | null> {
     const incident = incidents.find((item) => item.id === id);
-    return incident ? { ...incident } : null;
+    const found = incident ?? [...this.created.values()].find((item) => item.id === id);
+    return found ? { ...found } : null;
+  }
+
+  async create(input: import('../application/ports/IncidentRepository').CreateIncidentInput, idempotencyKey: string): Promise<Incident> {
+    const existing = this.created.get(idempotencyKey);
+    if (existing) return { ...existing };
+
+    const incident: Incident = {
+      id: `demo-inc-created-${this.created.size + 1}`,
+      title: input.description,
+      description: input.description,
+      status: 'open',
+      category: input.category,
+      location: input.location,
+    };
+    this.created.set(idempotencyKey, incident);
+    return { ...incident };
   }
 }

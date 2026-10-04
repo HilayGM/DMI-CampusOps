@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "week": 5,
+  "mode": "verify",
+  "commitSha": "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7",
+  "evaluatedAt": "2026-10-03T04:00:32.359247+00:00",
+  "status": "fail",
+  "checks": [
+    {
+      "id": "base_files",
+      "status": "pass",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "react_native_profile",
+      "status": "pass",
+      "detail": "missing packages=[]"
+    },
+    {
+      "id": "toolchain_scripts",
+      "status": "pass",
+      "detail": "missing scripts=[]"
+    },
+    {
+      "id": "workflow_integrity",
+      "status": "pass",
+      "detail": "bypass markers=[]"
+    },
+    {
+      "id": "secret_scan",
+      "status": "pass",
+      "detail": "hits=[]"
+    },
+    {
+      "id": "toolchain_1",
+      "status": "fail",
+      "detail": "npm run typecheck\nNVM blocked package-manager execution because a delegated command could not be trusted.\n\nCommand: npm\nFile: C:\\Users\\oscar\\AppData\\Local\\Author Software\\nvm\\installs\\v22.22.0\\node_modules\\npm\\bin\\npm-cli.js\nReason: delegated script is not trusted (run nvm reshim or reinstall the version to trust package-manager entrypoints)\nAction: Reinstall this Node.js version or run `nvm reshim` after a trusted install.\nIf this change was unexpected, contact your administrator and review NVM event logs.\nEvent code: NVM4306"
+    },
+    {
+      "id": "toolchain_2",
+      "status": "fail",
+      "detail": "npm run lint\nNVM blocked package-manager execution because a delegated command could not be trusted.\n\nCommand: npm\nFile: C:\\Users\\oscar\\AppData\\Local\\Author Software\\nvm\\installs\\v22.22.0\\node_modules\\npm\\bin\\npm-cli.js\nReason: delegated script is not trusted (run nvm reshim or reinstall the version to trust package-manager entrypoints)\nAction: Reinstall this Node.js version or run `nvm reshim` after a trusted install.\nIf this change was unexpected, contact your administrator and review NVM event logs.\nEvent code: NVM4306"
+    },
+    {
+      "id": "toolchain_3",
+      "status": "fail",
+      "detail": "npm run audit:ci\nNVM blocked package-manager execution because a delegated command could not be trusted.\n\nCommand: npm\nFile: C:\\Users\\oscar\\AppData\\Local\\Author Software\\nvm\\installs\\v22.22.0\\node_modules\\npm\\bin\\npm-cli.js\nReason: delegated script is not trusted (run nvm reshim or reinstall the version to trust package-manager entrypoints)\nAction: Reinstall this Node.js version or run `nvm reshim` after a trusted install.\nIf this change was unexpected, contact your administrator and review NVM event logs.\nEvent code: NVM4306"
+    },
+    {
+      "id": "toolchain_4",
+      "status": "fail",
+      "detail": "npm run test:smoke\nNVM blocked package-manager execution because a delegated command could not be trusted.\n\nCommand: npm\nFile: C:\\Users\\oscar\\AppData\\Local\\Author Software\\nvm\\installs\\v22.22.0\\node_modules\\npm\\bin\\npm-cli.js\nReason: delegated script is not trusted (run nvm reshim or reinstall the version to trust package-manager entrypoints)\nAction: Reinstall this Node.js version or run `nvm reshim` after a trusted install.\nIf this change was unexpected, contact your administrator and review NVM event logs.\nEvent code: NVM4306"
+    },
+    {
+      "id": "toolchain_5",
+      "status": "fail",
+      "detail": "npm run backend:self-test\nNVM blocked package-manager execution because a delegated command could not be trusted.\n\nCommand: npm\nFile: C:\\Users\\oscar\\AppData\\Local\\Author Software\\nvm\\installs\\v22.22.0\\node_modules\\npm\\bin\\npm-cli.js\nReason: delegated script is not trusted (run nvm reshim or reinstall the version to trust package-manager entrypoints)\nAction: Reinstall this Node.js version or run `nvm reshim` after a trusted install.\nIf this change was unexpected, contact your administrator and review NVM event logs.\nEvent code: NVM4306"
+    }
+  ]
+}
