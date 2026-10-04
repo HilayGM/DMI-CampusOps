@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 5,
-  "commitSha": "b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7",
+  "commitSha": "cb0ccda21e7b945ce7ca207a784ca5aa1daa9630",
   "decision": "Conservar el puerto de Felipe y validar unknown en dos límites: sobre remoto compartido y mapeo de dominio. El cliente devuelve fallos como datos congelados con kind contract/timeout/http/network y mensajes de toSafeError; sólo conserva status HTTP o reason json/schema. La telemetría recibe exclusivamente esos datos seguros. El parser acepta payload null: lista omite elementos sin dominio, detalle devuelve null y creación rechaza con absent porque exige Incident. Se conserva detalle 404 como null.",
   "alternatives": [
     "Ampliar todas las firmas a una unión de resultados con metadatos de ausencia, adaptando pantallas, puertos y dobles de prueba.",
@@ -19,7 +19,7 @@
     {
       "command": "npm.cmd test -- --ci --runInBand --no-cache --testTimeout=30000 src/campusops/_tests_ course-tests/public/week-04.test.ts course-tests/public/week-05.test.ts course-tests/public/week-02-architecture.test.ts course-tests/smoke.test.tsx",
       "result": "pass",
-      "evidence": "Reejecuci?n en HEAD b0f9d5e20f83e9ff37f96b8217e3d6db2f143ae7: 10 suites, 124 pruebas aprobadas, 0 fallidas y 0 snapshots; salida 0. No se modific? c?digo t?cnico para el cierre. L?mite del runner de 30000 ms expl?cito; timeout HTTP probado con reloj simulado."
+      "evidence": "Reejecución en main cb0ccda21e7b945ce7ca207a784ca5aa1daa9630: 10 suites, 124 pruebas aprobadas, 0 fallidas y 0 snapshots; salida 0. No se modificó código técnico. Límite del runner de 30000 ms explícito; timeout HTTP probado con reloj simulado."
     },
     {
       "command": "npm.cmd run backend:self-test",
