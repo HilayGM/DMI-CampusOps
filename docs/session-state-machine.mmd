@@ -1,0 +1,18 @@
+stateDiagram-v2
+  [*] --> anonymous
+  anonymous --> authenticating: loginStarted
+  authenticating --> authenticated: loginSucceeded(generation, token)
+  authenticating --> anonymous: loginFailed
+  authenticated --> refreshing: sessionExpired / request401(current generation)
+  refreshing --> refreshing: request401(same generation)\njoin shared refresh
+  refreshing --> authenticated: refreshSucceeded(next generation, token)\nretry each waiting request once
+  refreshing --> anonymous: refreshFailed
+  authenticated --> anonymous: logout
+  refreshing --> anonymous: logout
+  authenticating --> anonymous: logout
+
+  note right of refreshing
+    SessionRefreshCoordinator increments refreshCalls once.
+    A stale generation is ignored; a request already retried
+    cannot start another refresh loop.
+  end note
