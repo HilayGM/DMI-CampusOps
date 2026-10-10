@@ -1,5 +1,6 @@
 /** Public domain vocabulary; teams choose their internal architecture. */
 export type CampusRole = 'reporter' | 'technician' | 'coordinator';
+export type CampusActor = Readonly<{ id: string; role: CampusRole }>;
 export type IncidentStatus = 'open' | 'assigned' | 'in_progress' | 'resolved' | 'closed';
 export type IncidentCategory =
   | 'electrical' | 'laboratory' | 'water' | 'connectivity'

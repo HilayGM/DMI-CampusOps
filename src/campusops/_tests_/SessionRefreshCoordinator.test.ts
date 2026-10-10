@@ -80,3 +80,25 @@ test('never persists malformed login or refresh tokens', () => {
     retriedRequestIds: [], persistedToken: null,
   });
 });
+
+test('a failed token renewal clears the authenticated session', () => {
+  const coordinator = new SessionRefreshCoordinator();
+  coordinator.apply({ type: 'loginSucceeded', generation: 2, token: 'synthetic-access-2' });
+  coordinator.apply({ type: 'request401', requestId: 'list', generation: 2 });
+  coordinator.apply({ type: 'refreshFailed' });
+
+  expect(coordinator.snapshot()).toMatchObject({
+    phase: 'anonymous', activeGeneration: null, persistedToken: null,
+  });
+});
+
+test('logout clears the persisted token and resets the session state', () => {
+  const coordinator = new SessionRefreshCoordinator();
+  coordinator.apply({ type: 'loginSucceeded', generation: 3, token: 'synthetic-access-3' });
+  coordinator.apply({ type: 'logout' });
+
+  expect(coordinator.snapshot()).toEqual({
+    phase: 'anonymous', activeGeneration: null, refreshCalls: 0,
+    retriedRequestIds: [], persistedToken: null,
+  });
+});

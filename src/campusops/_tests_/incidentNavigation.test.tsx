@@ -37,6 +37,7 @@ const defaultRepository: IncidentRepository = {
     id: 'created-test-001', title: input.description, description: input.description,
     status: 'open', category: input.category, location: input.location,
   }),
+  act: async () => sample,
 };
 
 const remoteIncidents = [
@@ -235,7 +236,10 @@ test('creation screen sends one UUID through the application flow and opens the 
   const repository: IncidentRepository = { ...defaultRepository, create, getById };
   const randomUUID = jest.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('8a16d9fc-a226-4d33-912f-98eb6142bb40');
   const view = await render(
-    <CampusOpsScreen incidents={createIncidentQueries(repository)} checkBackendHealth={available} />,
+    <CampusOpsScreen
+      incidents={createIncidentQueries(repository, () => ({ id: 'reporter-1', role: 'reporter' }))}
+      checkBackendHealth={available}
+    />,
   );
 
   await fireEvent.press(await view.findByRole('button', { name: 'Nueva incidencia' }));

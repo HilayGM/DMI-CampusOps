@@ -89,6 +89,20 @@
       "evidence": "La suite aislada pasó 10/10; incluye control de acceso anónimo, login/logout local y el flujo de lista, detalle y retorno."
     },
     {
+      "id": "application-profile-authorization",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts",
+      "evidence": "Las pruebas rechazan la creación sin perfil reportante, la resolución por técnico no asignado y el cierre o reapertura fuera del perfil de coordinación; los permisos se validan antes del repositorio."
+    },
+    {
+      "id": "http-403-and-409-safe-mapping",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts",
+      "evidence": "Las respuestas 403 y 409 se convierten en ClientFailure seguro sin leer ni exponer el cuerpo de la respuesta."
+    },
+    {
       "id": "composed-navigation-batch-timeout",
       "status": "fail",
       "scenarioType": "failure",
