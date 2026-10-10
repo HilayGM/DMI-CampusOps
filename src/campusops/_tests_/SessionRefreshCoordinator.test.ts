@@ -28,6 +28,24 @@ test('ignores obsolete 401 responses and prevents a second refresh for an alread
   expect(result.status).toBe('authenticated');
 });
 
+test('does not rejoin a later refresh with a request that already exhausted its retry', () => {
+  const coordinator = new SessionRefreshCoordinator();
+  coordinator.applyAll([
+    { type: 'request401', requestId: 'first', generation: 0 },
+    { type: 'refreshSucceeded', generation: 1, token: 'synthetic-access-1' },
+    { type: 'request401', requestId: 'second', generation: 1 },
+    { type: 'request401', requestId: 'first', generation: 1 },
+    { type: 'refreshSucceeded', generation: 2, token: 'synthetic-access-2' },
+  ]);
+
+  expect(coordinator.snapshot()).toMatchObject({
+    phase: 'authenticated',
+    activeGeneration: 2,
+    refreshCalls: 2,
+    retriedRequestIds: ['first', 'second'],
+  });
+});
+
 test('expires with a controlled generation and clears authentication after refresh failure or logout', () => {
   const coordinator = new SessionRefreshCoordinator();
   coordinator.apply({ type: 'loginStarted' });

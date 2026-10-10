@@ -3,6 +3,7 @@
  * be persisted with this record.
  */
 export type StoredSession = Readonly<{
+  actorId: string;
   accessToken: string;
   refreshToken: string;
   expiresAt: number;

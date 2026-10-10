@@ -101,12 +101,12 @@ export class SessionRefreshCoordinator {
 
   private handle401(event: SessionLifecycleEvent): void {
     if (!validGeneration(event.generation)) return;
+    if (this.wasAlreadyRetried(event.requestId)) return;
     if (this.phase === 'refreshing') {
       if (event.generation === this.activeGeneration) this.rememberWaitingRequest(event.requestId);
       return;
     }
     if (this.phase === 'authenticated' && event.generation !== this.activeGeneration) return;
-    if (this.phase === 'authenticated' && this.wasAlreadyRetried(event.requestId)) return;
 
     this.activeGeneration = event.generation;
     this.rememberWaitingRequest(event.requestId);

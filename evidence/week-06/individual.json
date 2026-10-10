@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "week": 6,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "name": "Martin Moreno Libreros",
+      "commitShas": [],
+      "evidenceStatus": "No se encontró en los archivos inspeccionados una aportación, prueba o revisión atribuible a Martin para Semana 6."
+    },
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora López",
+      "commitShas": [],
+      "evidenceStatus": "No se encontró en los archivos inspeccionados una aportación, prueba o revisión atribuible a Felipe para Semana 6."
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "commitShas": [
+        "251d4e6417fd5745160c8f6c42ee34a7d601b8da"
+      ],
+      "files": [
+        "src/campusops/application/SessionService.ts",
+        "src/campusops/application/SessionRefreshCoordinator.ts",
+        "src/campusops/infrastructure/ExpoSecureSessionStore.ts",
+        "src/campusops/_tests_/SessionService.test.ts",
+        "src/campusops/_tests_/SessionRefreshCoordinator.test.ts"
+      ],
+      "tests": [
+        "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts"
+      ],
+      "reviews": [],
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "observedResult": "En esta auditoría, el comando terminó con 5 suites aprobadas, 41 pruebas aprobadas y 0 fallidas. Esto verifica el comportamiento actual de los archivos listados, no acredita por sí solo su autoría.",
+      "explanation": "El usuario indicó que Oscar es responsable de la implementación individual de sesión segura. El código existente implementa login/refresh/logout local, almacenamiento seguro, single-flight y límites de reintento; las pruebas listadas cubren concurrencia, expiración, fallos y logout. La inspección de archivos no demuestra autoría ni una revisión individual."
+    }
+  ],
+  "preparationNote": "Preparación parcial deliberada. El contrato exige exactamente tres registros completos y al menos un commit SHA real por miembro. Las identidades se copiaron de evidence/week-03/individual.json como referencia de roster, no como prueba de trabajo de Semana 6. No se inventaron aportaciones de Martin o Felipe, predicciones, revisiones ni SHAs; los campos faltantes deben completarse con evidencia confirmada por cada integrante."
+}
