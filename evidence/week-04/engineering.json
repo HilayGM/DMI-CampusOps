@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 4,
-  "commitSha": "08c22b2d9d9681068c460c837b3bd201c8e36c22",
+  "commitSha": "5107fb3f43dd8f3df7c7fa0f5dd434e951df4c7a",
   "decision": "Se eligió Expo SecureStore para la sesión mínima y una telemetría centralizada que clona y redacta antes de emitir cualquier diagnóstico. Así, el mismo control protege campos anidados, listas y errores de la frontera HTTP sin confiar en que cada consumidor o pantalla oculte datos por separado.",
   "alternatives": [
     "Persistir la sesión completa en AsyncStorage y ocultar los datos sólo en la interfaz.",
