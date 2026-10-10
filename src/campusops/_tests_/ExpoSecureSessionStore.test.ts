@@ -8,6 +8,7 @@ import {
 } from '../infrastructure/ExpoSecureSessionStore';
 
 const session: StoredSession = {
+  actorId: 'reporter-1',
   accessToken: 'fictional-access-token',
   refreshToken: 'fictional-refresh-token',
   expiresAt: 1_800_000_000,

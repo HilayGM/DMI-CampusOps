@@ -14,6 +14,7 @@ const SENSITIVE_FIELDS = new Set([
   'name',
   'nombre',
   'userid',
+  'actorid',
   'reporterid',
   'technicianid',
   'assignedtechnicianid',

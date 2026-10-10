@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import type { IncidentQueries } from '../application/incidentQueries';
 import type { BackendHealthPort } from '../application/ports/BackendHealthPort';
 import type { CreateIncidentInput } from '../application/ports/IncidentRepository';
+import type { SessionLifecycleClient, SessionRequestClient } from '../application/SessionService';
 import type { Incident } from '../domain/Incident';
 import { IncidentCreateScreen } from './IncidentCreateScreen';
 import { IncidentDetailScreen } from './IncidentDetailScreen';
@@ -13,6 +14,12 @@ import { IncidentListScreen } from './IncidentListScreen';
 type Props = Readonly<{
   incidents: IncidentQueries;
   checkBackendHealth: BackendHealthPort;
+  session?: SessionRequestClient & SessionLifecycleClient & {
+    restore: () => Promise<boolean>;
+    login: (actorId: string) => Promise<void>;
+    logout: () => Promise<void>;
+  };
+  sessionActorId?: string;
 }>;
 type QueryState =
   | { status: 'loading' }
@@ -20,8 +27,18 @@ type QueryState =
   | { status: 'list'; items: readonly Incident[] }
   | { status: 'detail'; incident: Incident | null };
 
-export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
+export function CampusOpsScreen({
+  incidents,
+  checkBackendHealth,
+  session,
+  sessionActorId = '',
+}: Props) {
   const [backendStatus, setBackendStatus] = useState<'checking' | 'available' | 'offline'>('checking');
+  const [sessionStatus, setSessionStatus] = useState<'loading' | 'anonymous' | 'authenticated' | 'error'>(
+    session ? 'loading' : 'authenticated',
+  );
+  const [sessionBusy, setSessionBusy] = useState(false);
+  const [sessionError, setSessionError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -42,7 +59,26 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
   }, [checkBackendHealth]);
 
   useEffect(() => {
-    if (creating) return;
+    if (!session) return;
+    let active = true;
+    const unsubscribe = session.subscribe((authenticated) => {
+      if (active) setSessionStatus(authenticated ? 'authenticated' : 'anonymous');
+    });
+    void session.restore().then((restored) => {
+      if (!active) return;
+      setSessionStatus(restored ? 'authenticated' : 'anonymous');
+      if (restored) setAttempt((value) => value + 1);
+    }).catch(() => {
+      if (active) setSessionStatus('error');
+    });
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [session]);
+
+  useEffect(() => {
+    if (creating || (session && sessionStatus !== 'authenticated')) return;
     let active = true;
     async function load() {
       // Wait one microtask before transitioning. This keeps the effect
@@ -61,7 +97,7 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
     }
     void load();
     return () => { active = false; };
-  }, [incidents, selectedId, attempt, creating]);
+  }, [incidents, selectedId, attempt, creating, session, sessionStatus]);
 
   useEffect(() => {
     if (selectedId === null) return;
@@ -79,48 +115,107 @@ export function CampusOpsScreen({ incidents, checkBackendHealth }: Props) {
     setAttempt((value) => value + 1);
   }
 
+  async function signIn() {
+    if (!session) return;
+    setSessionBusy(true);
+    setSessionError(false);
+    try {
+      await session.login(sessionActorId);
+      setSessionStatus('authenticated');
+      setAttempt((value) => value + 1);
+    } catch {
+      setSessionStatus('anonymous');
+      setSessionError(true);
+    } finally {
+      setSessionBusy(false);
+    }
+  }
+
+  async function signOut() {
+    if (!session) return;
+    setSessionBusy(true);
+    setSessionError(false);
+    try {
+      await session.logout();
+      setSelectedId(null);
+      setCreating(false);
+      setSessionStatus('anonymous');
+    } catch {
+      setSessionStatus('anonymous');
+      setSessionError(true);
+    } finally {
+      setSessionBusy(false);
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <View accessibilityRole="summary" style={styles.header}>
         <Text style={styles.title}>CampusOps</Text>
         <Text>Incidencias del campus · entorno académico ficticio</Text>
         <Text testID="backend-status">Backend: {backendStatus}</Text>
+        {session && sessionStatus === 'authenticated' && (
+          <>
+            {sessionError && <Text accessibilityRole="alert">No se pudo completar la operación de sesión.</Text>}
+            <Pressable accessibilityRole="button" onPress={() => void signOut()} disabled={sessionBusy} style={styles.button}>
+              <Text>{sessionBusy ? 'Cerrando sesión…' : 'Cerrar sesión'}</Text>
+            </Pressable>
+          </>
+        )}
       </View>
-      {(selectedId !== null || creating) && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => { setSelectedId(null); setCreating(false); }}
-          style={styles.button}
-        >
-          <Text>{creating ? 'Cancelar' : 'Volver'}</Text>
-        </Pressable>
-      )}
-      {creating && <IncidentCreateScreen onCancel={() => setCreating(false)} onSubmit={createIncident} />}
-      {!creating && query.status === 'loading' && (
+      {session && sessionStatus !== 'authenticated' && (
         <View style={styles.header}>
-          <ActivityIndicator accessibilityLabel="Cargando incidencias" />
-          <Text>Cargando incidencias…</Text>
+          {sessionStatus === 'loading' && <Text>Comprobando sesión…</Text>}
+          {sessionStatus !== 'loading' && (
+            <>
+              <Text>{sessionStatus === 'error' ? 'No se pudo comprobar la sesión.' : 'Inicia sesión para consultar CampusOps.'}</Text>
+              {sessionError && <Text accessibilityRole="alert">No se pudo completar la operación de sesión.</Text>}
+              <Pressable accessibilityRole="button" onPress={() => void signIn()} disabled={sessionBusy} style={styles.button}>
+                <Text>{sessionBusy ? 'Iniciando sesión…' : 'Iniciar sesión'}</Text>
+              </Pressable>
+            </>
+          )}
         </View>
       )}
-      {!creating && query.status === 'error' && (
-        <View style={styles.header}>
-          <Text accessibilityRole="alert">No se pudieron cargar las incidencias.</Text>
-          <Pressable accessibilityRole="button" onPress={() => setAttempt((value) => value + 1)} style={styles.button}>
-            <Text>Reintentar</Text>
-          </Pressable>
-        </View>
-      )}
-      {!creating && query.status === 'list' && selectedId === null && (
-        <IncidentListScreen
-          incidents={query.items}
-          onSelect={setSelectedId}
-          onCreate={() => setCreating(true)}
-        />
-      )}
-      {!creating && query.status === 'detail' && selectedId !== null && (
-        query.incident
-          ? <IncidentDetailScreen incident={query.incident} />
-          : <Text>No se encontró la incidencia.</Text>
+      {(!session || sessionStatus === 'authenticated') && (
+        <>
+          {(selectedId !== null || creating) && (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => { setSelectedId(null); setCreating(false); }}
+              style={styles.button}
+            >
+              <Text>{creating ? 'Cancelar' : 'Volver'}</Text>
+            </Pressable>
+          )}
+          {creating && <IncidentCreateScreen onCancel={() => setCreating(false)} onSubmit={createIncident} />}
+          {!creating && query.status === 'loading' && (
+            <View style={styles.header}>
+              <ActivityIndicator accessibilityLabel="Cargando incidencias" />
+              <Text>Cargando incidencias…</Text>
+            </View>
+          )}
+          {!creating && query.status === 'error' && (
+            <View style={styles.header}>
+              <Text accessibilityRole="alert">No se pudieron cargar las incidencias.</Text>
+              <Pressable accessibilityRole="button" onPress={() => setAttempt((value) => value + 1)} style={styles.button}>
+                <Text>Reintentar</Text>
+              </Pressable>
+            </View>
+          )}
+          {!creating && query.status === 'list' && selectedId === null && (
+            <IncidentListScreen
+              incidents={query.items}
+              onSelect={setSelectedId}
+              onCreate={() => setCreating(true)}
+            />
+          )}
+          {!creating && query.status === 'detail' && selectedId !== null && (
+            query.incident
+              ? <IncidentDetailScreen incident={query.incident} />
+              : <Text>No se encontró la incidencia.</Text>
+          )}
+        </>
       )}
       <StatusBar style="auto" />
     </View>

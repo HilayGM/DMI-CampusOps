@@ -1,17 +1,15 @@
 import type { IncidentCategory, IncidentStatus } from '../contracts';
 import type { CreateIncidentInput, IncidentRepository } from '../application/ports/IncidentRepository';
-import type { SecureSessionStore } from '../application/ports/SecureSessionStore';
 import type { Incident } from '../domain/Incident';
 import { parseRemoteResourceDto } from './RemoteResourceParser';
 import { clientFailure, isClientFailure } from '../application/clientErrors';
 import { recordSafeTelemetry } from './SafeTelemetry';
+import type { SessionRequestClient } from '../application/SessionService';
 
 type HttpIncidentRepositoryOptions = Readonly<{
   baseUrl: string;
-  sessionStore: SecureSessionStore;
-  getActorId: () => Promise<string>;
+  session: SessionRequestClient;
   timeoutMs?: number;
-  fetchImpl?: typeof fetch;
 }>;
 
 const validCategories: readonly string[] = [
@@ -68,13 +66,6 @@ export class HttpIncidentRepository implements IncidentRepository {
     body?: unknown,
     idempotencyKey?: string,
   ): Promise<unknown> {
-    const [session, actorId] = await Promise.all([
-      this.options.sessionStore.load(),
-      this.options.getActorId(),
-    ]).catch(() => { throw clientFailure({ kind: 'precondition' }); });
-    if (!session?.accessToken || !actorId.trim()) {
-      throw clientFailure({ kind: 'precondition' });
-    }
     if (method === 'POST' && (!idempotencyKey || idempotencyKey.trim().length < 8)) {
       throw clientFailure({ kind: 'precondition' });
     }
@@ -82,14 +73,12 @@ export class HttpIncidentRepository implements IncidentRepository {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.options.timeoutMs ?? 8_000);
     try {
-      const response = await (this.options.fetchImpl ?? fetch)(
+      const response = await this.options.session.fetchProtected(
         `${this.options.baseUrl.replace(/\/$/, '')}${path}`,
         {
           method,
           signal: controller.signal,
           headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            'X-Course-Actor': actorId,
             ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
             ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
           },
