@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "week": 6,
-  "commitSha": "251d4e6417fd5745160c8f6c42ee34a7d601b8da",
-  "generatedAt": "2026-10-09T23:21:27.8438360-06:00",
+  "commitSha": "60df15acb8a5f0a231d1567294b4d9ca783a759d",
+  "generatedAt": "2026-10-10T10:48:17.7714450-06:00",
   "checks": [
     {
       "id": "login-valid-and-minimal-session",
@@ -104,10 +104,10 @@
     },
     {
       "id": "composed-navigation-batch-timeout",
-      "status": "fail",
-      "scenarioType": "failure",
-      "command": "npm test -- --runInBand src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/incidentNavigation.test.tsx src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts course-tests/public/week-06.test.ts",
-      "evidence": "En esta ejecución conjunta 6/7 suites pasaron (118 pruebas aprobadas, 1 fallida); el test de navegación compuesta superó el límite Jest de 5000 ms. La repetición aislada de incidentNavigation.test.tsx pasó 10/10, con el test compuesto en 3845 ms. Se conserva el fallo observado; no se modificó ni se ocultó."
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/incidentNavigation.test.tsx src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Ejecución integrada posterior sobre el SHA indicado: 7 suites y 123 pruebas aprobadas. El límite explícito conserva la aserción y permite a la navegación compuesta completar sin depender del límite predeterminado de 5 s."
     }
   ]
 }
