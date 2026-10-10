@@ -2,6 +2,8 @@ import { createIncidentQueries } from '../application/incidentQueries';
 import type { IncidentRepository } from '../application/ports/IncidentRepository';
 import { InMemoryIncidentRepository } from '../infrastructure/InMemoryIncidentRepository';
 
+const reporter = { id: 'reporter-1', role: 'reporter' } as const;
+
 test('lists deterministic incidents with stable unique IDs', async () => {
   const queries = createIncidentQueries(new InMemoryIncidentRepository());
   const incidents = await queries.list();
@@ -37,8 +39,9 @@ test('application uses an alternative repository without knowing the fake', asyn
     list: jest.fn().mockResolvedValue([incident]),
     getById: jest.fn().mockResolvedValue(incident),
     create: jest.fn().mockResolvedValue(incident),
+    act: jest.fn().mockResolvedValue(incident),
   };
-  const queries = createIncidentQueries(repository);
+  const queries = createIncidentQueries(repository, () => reporter);
   await expect(queries.list()).resolves.toEqual([incident]);
   await expect(queries.getById(incident.id)).resolves.toEqual(incident);
   await expect(queries.create({
@@ -56,6 +59,7 @@ test('preserves an empty list from the provider', async () => {
     list: async () => [],
     getById: async () => null,
     create: async () => { throw new Error('unused'); },
+    act: async () => { throw new Error('unused'); },
   });
   await expect(queries.list()).resolves.toEqual([]);
 });
@@ -66,7 +70,8 @@ test('propagates list and detail failures rather than inventing empty results', 
     list: async () => { throw failure; },
     getById: async () => { throw failure; },
     create: async () => { throw failure; },
-  });
+    act: async () => { throw failure; },
+  }, () => reporter);
   await expect(queries.list()).rejects.toBe(failure);
   await expect(queries.getById('demo-inc-001')).rejects.toBe(failure);
   await expect(queries.create({

@@ -1,0 +1,21 @@
+[
+  {
+    "studentId": "3523110443",
+    "commitShas": [
+      "REEMPLAZAR_CON_TU_SHA"
+    ],
+    "files": [
+      "src/campusops/application/incidentQueries.ts",
+      "src/campusops/infrastructure/HttpIncidentRepository.ts",
+      "reports/week-06/auth-tests.json"
+    ],
+    "tests": [
+      "course-tests/public/week-06.test.ts"
+    ],
+    "reviews": [],
+    "prediction": "Implementar validación de autorización por perfiles (Reportante, Técnico, Coordinación) en la capa de aplicación, interceptar errores 403 y 409 en el repositorio HTTP para evitar excepciones no controladas, y generar el reporte de pruebas de sesión.",
+    "command": "npm test week-06",
+    "observedResult": "Verificación exitosa de las pruebas de autorización de perfiles, fallo de renovación de token y flujo de logout. Las validaciones a nivel de aplicación bloquean correctamente las acciones no permitidas.",
+    "explanation": "Git confirma autor Felipe y el commit de implementación de las reglas de negocio de autorización en incidentQueries, la intercepción segura de códigos HTTP en HttpIncidentRepository, y la creación del reporte auth-tests.json."
+  }
+]
