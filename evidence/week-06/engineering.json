@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 6,
-  "commitSha": "9ba6e518f57f55cebb3052c45abac3ebf7d1515a",
+  "commitSha": "23988ba4f539b2cb7b07df531d020d89892f3e0f",
   "decision": "Observación técnica derivada del código inspeccionado, no registro de una decisión histórica del equipo: SessionService reutiliza SessionRefreshCoordinator para estados y límites de reintento, y comparte una promesa HTTP de refresh por época de sesión. Al fallar refresh invalida el estado activo, borra el almacén seguro y rechaza las solicitudes afectadas; logout invalida la época antes de borrar el almacén para impedir que una respuesta tardía restaure la sesión. El logout es local porque el backend didáctico no implementa una ruta de revocación.",
   "alternatives": [
     "Alternativa de diseño contrastada, sin evidencia documental de que el equipo la haya discutido: hacer un refresh HTTP independiente por cada respuesta 401, lo que simplifica cada llamada pero duplicaría renovaciones concurrentes y ampliaría las carreras.",
