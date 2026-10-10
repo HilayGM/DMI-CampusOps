@@ -7,6 +7,7 @@ import type {
   SyncRecord,
 } from './contracts';
 import type { IncidentLocation } from '../campusops/contracts';
+import { SessionRefreshCoordinator } from '../campusops/application/SessionRefreshCoordinator';
 import { parseRemoteResourceDto } from '../campusops/infrastructure/RemoteResourceParser';
 export { redactForTelemetry } from '../campusops/infrastructure/SafeTelemetry';
 
@@ -18,14 +19,21 @@ export function parseRemoteResource(input: unknown): ParseResult {
   return parseRemoteResourceDto(input);
 }
 
-export function coordinateRefresh(_events: readonly AuthEvent[]): Readonly<{
+export function coordinateRefresh(events: readonly AuthEvent[]): Readonly<{
   status: 'anonymous' | 'authenticated';
   activeGeneration: number | null;
   refreshCalls: number;
   retriedRequestIds: readonly string[];
   persistedToken: string | null;
 }> {
-  return pending('coordinateRefresh');
+  const snapshot = new SessionRefreshCoordinator().applyAll(events);
+  return {
+    status: snapshot.phase === 'authenticated' ? 'authenticated' : 'anonymous',
+    activeGeneration: snapshot.activeGeneration,
+    refreshCalls: snapshot.refreshCalls,
+    retriedRequestIds: snapshot.retriedRequestIds,
+    persistedToken: snapshot.persistedToken,
+  };
 }
 
 export function resolveSync(

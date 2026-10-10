@@ -22,7 +22,8 @@ function isNonEmptyString(value: unknown): value is string {
 function isStoredSession(value: unknown): value is StoredSession {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
   const candidate = value as Record<string, unknown>;
-  return isNonEmptyString(candidate.accessToken)
+  return isNonEmptyString(candidate.actorId)
+    && isNonEmptyString(candidate.accessToken)
     && isNonEmptyString(candidate.refreshToken)
     && typeof candidate.expiresAt === 'number'
     && Number.isSafeInteger(candidate.expiresAt)
@@ -32,6 +33,7 @@ function isStoredSession(value: unknown): value is StoredSession {
 function copySession(session: StoredSession): StoredSession {
   if (!isStoredSession(session)) throw new Error('Cannot persist an invalid session');
   return {
+    actorId: session.actorId,
     accessToken: session.accessToken,
     refreshToken: session.refreshToken,
     expiresAt: session.expiresAt,

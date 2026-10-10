@@ -1,0 +1,28 @@
+stateDiagram-v2
+  [*] --> anonymous
+  anonymous --> authenticating: loginStarted
+  authenticating --> authenticated: loginSucceeded(generation, token)
+  authenticating --> anonymous: loginFailed
+  authenticated --> refreshing: sessionExpired / request401(current generation)
+  refreshing --> refreshing: request401(same generation)\njoin shared refresh
+  refreshing --> authenticated: refreshSucceeded(next generation, token)\nretry each waiting request once
+  refreshing --> anonymous: refreshFailed
+  authenticated --> anonymous: logout
+  refreshing --> anonymous: logout
+  authenticating --> anonymous: logout
+
+  note right of refreshing
+    SessionRefreshCoordinator increments refreshCalls once.
+    A stale generation is ignored; a request already retried
+    cannot join a later refresh or start another refresh loop.
+    SessionService shares one HTTP refresh promise per session generation.
+    Logout invalidates the session epoch before secure storage is cleared;
+    late refresh responses cannot persist or restore the session.
+  end note
+
+  note left of authenticated
+    Secure storage contains actorId only because the teaching backend
+    requires it for X-Course-Actor after app restart, plus accessToken,
+    refreshToken and expiresAt. Role is validated at login, not persisted.
+    Logout is local; the backend has no logout endpoint.
+  end note

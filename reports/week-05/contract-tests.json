@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 5,
-  "commitSha": "cb0ccda21e7b945ce7ca207a784ca5aa1daa9630",
+  "commitSha": "d6a4deb70b3c1d9e55e2d026ebe53b17e3bd2513",
   "generatedAt": "2026-10-04T16:22:34.0893938-06:00",
   "executionEnvironment": "Node 22.22.0; npm_config_offline=true; fetch inyectado, sin Internet público. testTimeout=30000 sólo para el arranque de navegación; timeout del cliente probado con reloj falso de 5 ms.",
   "checks": [

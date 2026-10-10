@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "week": 6,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": ["99f54cb81af57eff579c9530b2c504d082c0a842"],
+      "files": [
+        "src/campusops/application/SessionRefreshCoordinator.ts",
+        "src/campusops/_tests_/SessionRefreshCoordinator.test.ts",
+        "docs/session-state-machine.mmd"
+      ],
+      "tests": ["src/campusops/_tests_/SessionRefreshCoordinator.test.ts"],
+      "reviews": [],
+      "prediction": "Varias respuestas 401 de la misma generación de sesión deben compartir una única renovación y cada solicitud sólo puede reintentarse una vez.",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/SessionRefreshCoordinator.test.ts course-tests/public/week-06.test.ts",
+      "observedResult": "Las pruebas verifican coalescencia de 401, rechazo de eventos obsoletos, límite de reintento y expiración con reloj inyectado.",
+      "explanation": "El commit de Martín introduce la máquina de estados y su diagrama; no realiza llamadas HTTP desde la interfaz. SessionService la reutiliza para coordinar la renovación real."
+    },
+    {
+      "studentId": "3523110443",
+      "commitShas": ["de163b0aa554a6a9a6e7a3af4d4cbafa0201fada"],
+      "files": [
+        "src/campusops/application/incidentQueries.ts",
+        "src/campusops/infrastructure/HttpIncidentRepository.ts",
+        "src/campusops/_tests_/incidentAuthorization.test.ts"
+      ],
+      "tests": ["src/campusops/_tests_/incidentAuthorization.test.ts"],
+      "reviews": [],
+      "prediction": "Las operaciones deben validar el perfil y la asignación antes de invocar el repositorio; 403 y 409 del servidor deben representarse como fallos seguros.",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts",
+      "observedResult": "Las pruebas cubren creación de reportante, resolución de técnico asignado y cierre o reapertura de coordinación, junto con el mapeo seguro de 403 y 409.",
+      "explanation": "El commit de Felipe añade reglas de autorización en la capa de aplicación, acciones del repositorio y pruebas para impedir que la visibilidad de botones sustituya el control de permisos."
+    },
+    {
+      "studentId": "3523110806",
+      "commitShas": ["251d4e6417fd5745160c8f6c42ee34a7d601b8da"],
+      "files": [
+        "src/campusops/application/SessionService.ts",
+        "src/campusops/infrastructure/ExpoSecureSessionStore.ts",
+        "src/campusops/_tests_/SessionService.test.ts"
+      ],
+      "tests": ["src/campusops/_tests_/SessionService.test.ts"],
+      "reviews": [],
+      "prediction": "Login, refresh y logout deben persistir sólo la sesión mínima en SecureStore; tres solicitudes 401 simultáneas deben producir una sola renovación HTTP y ningún token debe reaparecer tras logout.",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts",
+      "observedResult": "Las pruebas controlan login, expiración, refresh compartido, refresh fallido, logout durante refresh y borrado del almacenamiento seguro.",
+      "explanation": "El commit de Oscar integra el ciclo de sesión con almacenamiento seguro, transporte protegido, single-flight de refresh y pruebas de concurrencia deterministas."
+    }
+  ]
+}

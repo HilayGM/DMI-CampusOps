@@ -16,6 +16,7 @@ jest.mock('../infrastructure/ExpoSecureSessionStore', () => ({
   ExpoSecureSessionStore: class {
     async load() {
       return {
+        actorId: 'reporter-1',
         accessToken: 'course-valid-token',
         refreshToken: 'course-refresh-token',
         expiresAt: 4_102_444_800_000,
@@ -36,6 +37,7 @@ const defaultRepository: IncidentRepository = {
     id: 'created-test-001', title: input.description, description: input.description,
     status: 'open', category: input.category, location: input.location,
   }),
+  act: async () => sample,
 };
 
 const remoteIncidents = [
@@ -79,17 +81,23 @@ test('the composed app supports list, correct detail and return while backend is
     } as Response;
   });
   const view = await render(<App />);
-  expect(view.getByText('CampusOps')).toBeTruthy();
-  await waitFor(() => expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: offline'));
-  expect(await view.findByText('Luminaria de práctica apagada')).toBeTruthy();
-  expect(view.getByText('Fuga simulada en lavabo')).toBeTruthy();
-  await fireEvent.press(view.getByRole('button', { name: 'Abrir incidencia: Conexión intermitente de laboratorio' }));
-  expect(await view.findByText('Detalle de incidencia')).toBeTruthy();
+  await waitFor(() => {
+    expect(view.getByText('CampusOps')).toBeTruthy();
+    expect(view.getByText('Backend: offline')).toBeTruthy();
+    expect(view.getByText('Luminaria de práctica apagada')).toBeTruthy();
+    expect(view.getByText('Fuga simulada en lavabo')).toBeTruthy();
+  });
+  const detailButton = view.getByRole('button', {
+    name: 'Abrir incidencia: Conexión intermitente de laboratorio',
+  });
+  await fireEvent.press(detailButton);
+  expect(view.getByText('Detalle de incidencia')).toBeTruthy();
   expect(view.getByText('ID: demo-inc-002')).toBeTruthy();
   expect(view.getByText('Estado: Asignada')).toBeTruthy();
   expect(view.queryByText('Luminaria de práctica apagada')).toBeNull();
-  await fireEvent.press(view.getByRole('button', { name: 'Volver' }));
-  expect(await view.findByText('Incidencias')).toBeTruthy();
+  const backButton = view.getByRole('button', { name: 'Volver' });
+  await fireEvent.press(backButton);
+  expect(view.getByText('Incidencias')).toBeTruthy();
   expect(view.getByText('Luminaria de práctica apagada')).toBeTruthy();
   expect(getBackendHealth).toHaveBeenCalledTimes(1);
 });
@@ -100,9 +108,41 @@ test('list works while backend health remains checking', async () => {
     <CampusOpsScreen incidents={createIncidentQueries(defaultRepository)} checkBackendHealth={() => health.promise} />,
   );
   expect(await view.findByText(sample.title)).toBeTruthy();
-  expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: checking');
+  expect(await view.findByText('Backend: checking')).toBeTruthy();
   await act(async () => { health.resolve(undefined); });
-  expect(view.getByTestId('backend-status')).toHaveTextContent('Backend: available');
+  expect(await view.findByText('Backend: available')).toBeTruthy();
+});
+
+test('session controls gate incident access and sign out locally', async () => {
+  const session = {
+    fetchProtected: jest.fn(),
+    subscribe: jest.fn((listener: (authenticated: boolean) => void) => {
+      listener(false);
+      return jest.fn();
+    }),
+    restore: jest.fn().mockResolvedValue(false),
+    login: jest.fn().mockResolvedValue(undefined),
+    logout: jest.fn().mockResolvedValue(undefined),
+  };
+  const view = await render(
+    <CampusOpsScreen
+      incidents={createIncidentQueries(defaultRepository)}
+      checkBackendHealth={available}
+      session={session}
+      sessionActorId="reporter-1"
+    />,
+  );
+
+  expect(await view.findByText('Inicia sesión para consultar CampusOps.')).toBeTruthy();
+  expect(view.queryByText(sample.title)).toBeNull();
+  await fireEvent.press(view.getByRole('button', { name: 'Iniciar sesión' }));
+  expect(session.login).toHaveBeenCalledWith('reporter-1');
+  expect(await view.findByText(sample.title)).toBeTruthy();
+
+  await fireEvent.press(view.getByRole('button', { name: 'Cerrar sesión' }));
+  expect(session.logout).toHaveBeenCalledTimes(1);
+  expect(await view.findByText('Inicia sesión para consultar CampusOps.')).toBeTruthy();
+  expect(view.queryByText(sample.title)).toBeNull();
 });
 
 test('shows loading and then an empty list', async () => {
@@ -196,7 +236,10 @@ test('creation screen sends one UUID through the application flow and opens the 
   const repository: IncidentRepository = { ...defaultRepository, create, getById };
   const randomUUID = jest.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('8a16d9fc-a226-4d33-912f-98eb6142bb40');
   const view = await render(
-    <CampusOpsScreen incidents={createIncidentQueries(repository)} checkBackendHealth={available} />,
+    <CampusOpsScreen
+      incidents={createIncidentQueries(repository, () => ({ id: 'reporter-1', role: 'reporter' }))}
+      checkBackendHealth={available}
+    />,
   );
 
   await fireEvent.press(await view.findByRole('button', { name: 'Nueva incidencia' }));

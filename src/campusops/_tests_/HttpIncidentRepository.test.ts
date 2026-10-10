@@ -1,4 +1,5 @@
 import type { SecureSessionStore } from '../application/ports/SecureSessionStore';
+import { clientFailure } from '../application/clientErrors';
 import { HttpIncidentRepository } from '../infrastructure/HttpIncidentRepository';
 import { toSafeError } from '../application/safeErrors';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -29,6 +30,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 function createRepository(timeoutMs = 8_000) {
   const sessionStore: SecureSessionStore = {
     load: async () => ({
+      actorId: 'reporter-1',
       accessToken: 'course-valid-token',
       refreshToken: 'course-refresh-token',
       expiresAt: 4_102_444_800_000,
@@ -37,11 +39,31 @@ function createRepository(timeoutMs = 8_000) {
     clear: async () => undefined,
   };
   const fetchImpl = jest.fn() as jest.MockedFunction<typeof fetch>;
+  const session = {
+    fetchProtected: async (input: RequestInfo | URL, init: RequestInit = {}) => {
+      let stored;
+      try {
+        stored = await sessionStore.load();
+      } catch {
+        throw clientFailure({ kind: 'precondition' });
+      }
+      if (!stored) throw clientFailure({ kind: 'precondition' });
+      const headers = new Headers(init.headers);
+      headers.set('Authorization', `Bearer ${stored.accessToken}`);
+      headers.set('X-Course-Actor', stored.actorId);
+      return fetchImpl(input, {
+        ...init,
+        headers: {
+          ...(init.headers as Record<string, string>),
+          Authorization: headers.get('Authorization')!,
+          'X-Course-Actor': headers.get('X-Course-Actor')!,
+        },
+      });
+    },
+  };
   const repository = new HttpIncidentRepository({
     baseUrl: 'https://campusops.test/',
-    sessionStore,
-    getActorId: async () => 'reporter-1',
-    fetchImpl,
+    session,
     timeoutMs,
   });
   return { repository, fetchImpl, sessionStore };
@@ -58,6 +80,7 @@ test('lists and maps valid remote incidents', async () => {
     status: 'open',
     category: 'equipment',
     location: resource.payload.location,
+    version: resource.version,
   }]);
   expect(fetchImpl).toHaveBeenCalledWith(
     'https://campusops.test/v1/incidents',
@@ -164,7 +187,10 @@ test.each(operations)('%s maps DTO to fresh domain data without mutation or remo
   fetchImpl.mockResolvedValue(jsonResponse(envelope(operation, dto)));
   const result = await invoke(repository, operation);
   const incident = Array.isArray(result) ? result[0] : result;
-  expect(incident).toEqual({ id: resource.id, title: resource.payload.description, ...resource.payload, status: 'open' });
+  expect(incident).toEqual({
+    id: resource.id, title: resource.payload.description, ...resource.payload,
+    status: 'open', version: resource.version,
+  });
   expect(incident).not.toBe(dto);
   expect(JSON.stringify(dto)).toBe(before);
 });
@@ -203,6 +229,20 @@ test('accepts a successful duplicate creation response without exposing remote m
   const { repository, fetchImpl } = createRepository();
   fetchImpl.mockResolvedValue(jsonResponse({ incident: resource, operationId: operationKey, duplicate: true }));
   await expect(repository.create(input, operationKey)).resolves.toMatchObject({ id: resource.id });
+});
+
+test.each([
+  [403, 'FORBIDDEN', 'Acceso denegado.'],
+  [409, 'CONFLICT', 'Conflicto en la operación.'],
+] as const)('maps HTTP %i to a safe application failure', async (status, code, message) => {
+  const { repository, fetchImpl } = createRepository();
+  const json = jest.fn(async () => ({ token: 'must-not-be-read' }));
+  fetchImpl.mockResolvedValue({ ...jsonResponse(null, status), json });
+
+  await expect(repository.act(
+    resource.id, 'resolve', resource.version, { diagnosis: 'Diagnóstico ficticio' }, operationKey,
+  )).rejects.toMatchObject({ kind: 'http', status, code, message });
+  expect(json).not.toHaveBeenCalled();
 });
 
 const markers = {

@@ -7,4 +7,6 @@ export type Incident = Readonly<{
   status: IncidentStatus;
   category: IncidentCategory;
   location: string;
+  version?: number;
+  assigneeId?: string | null;
 }>;
