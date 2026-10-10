@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 5,
-  "commitSha": "d6a4deb70b3c1d9e55e2d026ebe53b17e3bd2513",
+  "commitSha": "09fb0ad15f44330720623e8c07ab91c690f7bd5b",
   "decision": "Conservar el puerto de Felipe y validar unknown en dos límites: sobre remoto compartido y mapeo de dominio. El cliente devuelve fallos como datos congelados con kind contract/timeout/http/network y mensajes de toSafeError; sólo conserva status HTTP o reason json/schema. La telemetría recibe exclusivamente esos datos seguros. El parser acepta payload null: lista omite elementos sin dominio, detalle devuelve null y creación rechaza con absent porque exige Incident. Se conserva detalle 404 como null.",
   "alternatives": [
     "Ampliar todas las firmas a una unión de resultados con metadatos de ausencia, adaptando pantallas, puertos y dobles de prueba.",
