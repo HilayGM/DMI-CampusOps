@@ -157,6 +157,7 @@ test('T3/T4/T5: telemetry redacts every required nested field without mutating i
   const input = {
     password: markers.token,
     userId: 'synthetic-user-id',
+    actorId: 'synthetic-actor-id',
     reporterId: 'synthetic-reporter-id',
     technicianId: 'synthetic-technician-id',
     assignedTechnicianId: 'synthetic-assignee-id',
@@ -172,7 +173,7 @@ test('T3/T4/T5: telemetry redacts every required nested field without mutating i
   const result = redactForTelemetry(input) as Record<string, unknown>;
   expectNoMarkers(result);
   expect(JSON.stringify(input) === before).toBe(true);
-  for (const key of ['password', 'userId', 'reporterId', 'technicianId', 'assignedTechnicianId',
+  for (const key of ['password', 'userId', 'actorId', 'reporterId', 'technicianId', 'assignedTechnicianId',
     'latitude', 'longitude', 'evidence', 'assignmentHistory'] as const) {
     expect(result[key] === '[REDACTED]').toBe(true);
   }
@@ -195,12 +196,12 @@ test('T3/T4/T5: protected storage keeps only minimal session fields', async () =
     deleteItemAsync: jest.fn().mockResolvedValue(undefined),
   };
   const store = new ExpoSecureSessionStore(client);
-  await store.save({ ...sensitiveError(), accessToken: markers.token,
+  await store.save({ ...sensitiveError(), actorId: 'reporter-1', accessToken: markers.token,
     refreshToken: 'synthetic-refresh-value', expiresAt: 1_800_000_000 });
   expect(client.setItemAsync.mock.calls.length === 1).toBe(true);
   const stored: unknown = JSON.parse(client.setItemAsync.mock.calls[0]![1]);
   expect(JSON.stringify(Object.keys(stored as object).sort()) ===
-    '["accessToken","expiresAt","refreshToken"]').toBe(true);
+    '["accessToken","actorId","expiresAt","refreshToken"]').toBe(true);
   // Tokens belong in the protected session; other sensitive data does not.
   for (const key of ['comment', 'location', 'email', 'name', 'photo'] as const) {
     expect(JSON.stringify(stored).includes(markers[key])).toBe(false);

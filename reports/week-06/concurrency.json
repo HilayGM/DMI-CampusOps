@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "week": 6,
+  "commitSha": "60df15acb8a5f0a231d1567294b4d9ca783a759d",
+  "generatedAt": "2026-10-10T10:48:17.7714450-06:00",
+  "checks": [
+    {
+      "id": "three-concurrent-401s-share-one-http-refresh",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "concurrentProtectedRequests": 3,
+      "initial401Responses": 3,
+      "refreshHttpRequests": 1,
+      "protectedRetries": 3,
+      "totalProtectedHttpCalls": 6,
+      "result": "pass",
+      "evidence": "SessionService.test.ts crea tres peticiones diferidas, resuelve sus tres 401 y comprueba una llamada a /v1/session/refresh, seis llamadas protegidas en total y resultado exitoso para las tres solicitudes."
+    },
+    {
+      "id": "request-receives-at-most-one-retry",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "concurrentProtectedRequests": 1,
+      "initial401Responses": 1,
+      "refreshHttpRequests": 1,
+      "protectedRetries": 1,
+      "totalProtectedHttpCalls": 2,
+      "result": "pass",
+      "evidence": "El caso 'does not refresh again when a retried request receives 401' confirma que el segundo 401 rechaza la petición, con una renovación y dos llamadas protegidas; no se inicia un ciclo."
+    },
+    {
+      "id": "refresh-failure-rejects-waiting-request-and-clears-session",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "concurrentProtectedRequests": 1,
+      "initial401Responses": 1,
+      "refreshHttpRequests": 1,
+      "protectedRetries": 0,
+      "totalProtectedHttpCalls": 1,
+      "result": "pass",
+      "evidence": "Los casos de refresh 401, JSON inválido y respuesta malformada confirman que la solicitud original se rechaza y la sesión almacenada queda vacía. El fallo de red también se prueba separadamente."
+    },
+    {
+      "id": "logout-during-refresh-does-not-restore-session",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "concurrentProtectedRequests": 1,
+      "initial401Responses": 1,
+      "refreshHttpRequests": 1,
+      "protectedRetries": 0,
+      "totalProtectedHttpCalls": 1,
+      "result": "pass",
+      "evidence": "La prueba mantiene refresh pendiente, completa logout y después resuelve la respuesta obsoleta; la solicitud rechaza 401 y el almacenamiento sigue vacío. No se envía un reintento tras logout."
+    },
+    {
+      "id": "coordinator-model-coalesces-waiting-requests",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "concurrentProtectedRequests": 3,
+      "initial401Responses": 3,
+      "refreshHttpRequests": 0,
+      "protectedRetries": 3,
+      "totalProtectedHttpCalls": 0,
+      "result": "pass",
+      "evidence": "SessionRefreshCoordinator.test.ts y course-tests/public/week-06.test.ts comprueban refreshCalls=1 y tres request IDs reintentados para tres eventos 401. Este escenario prueba la máquina de estados en memoria, no una petición HTTP."
+    }
+  ]
+}

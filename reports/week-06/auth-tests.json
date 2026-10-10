@@ -1,51 +1,113 @@
 {
   "schemaVersion": 1,
   "week": 6,
-  "commitSha": "4c540ddeae7685ae8c7fa6145228c4b9dd56aec9",
-  "generatedAt": "2026-10-10T01:06:14.2482817-06:00",
-  "workingTreeNote": "Las pruebas se ejecutaron sobre los cambios de código actualmente modificados en el árbol de trabajo. commitSha identifica HEAD antes de esos cambios; actualizarlo al guardar el commit de código.",
+  "commitSha": "60df15acb8a5f0a231d1567294b4d9ca783a759d",
+  "generatedAt": "2026-10-10T10:48:17.7714450-06:00",
   "checks": [
     {
-      "id": "application-authorization",
-      "status": "pass",
-      "scenarioType": "boundary",
-      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
-      "evidence": "10 suites y 111 pruebas pasaron. Se comprobó rechazo 403 para creación sin rol reportante, resolución por técnico no asignado o perfil distinto, y cierre/reapertura sólo por coordinación."
-    },
-    {
-      "id": "http-403-409-safe-mapping",
-      "status": "pass",
-      "scenarioType": "failure",
-      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
-      "evidence": "Las respuestas HTTP 403 y 409 produjeron fallos clientErrors seguros FORBIDDEN/CONFLICT; response.json no fue invocado y no se expuso el cuerpo."
-    },
-    {
-      "id": "refresh-failure",
-      "status": "pass",
-      "scenarioType": "failure",
-      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
-      "evidence": "Pasaron las pruebas específicas: refreshFailed devuelve la sesión a anonymous y elimina el token en memoria; la prueba pública de semana 06 pasa la renovación compartida y los reintentos limitados."
-    },
-    {
-      "id": "logout",
-      "status": "pass",
-      "scenarioType": "boundary",
-      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
-      "evidence": "Las pruebas de logout de SessionRefreshCoordinator y ExpoSecureSessionStore pasaron; el estado vuelve a anonymous y el almacenamiento protegido recibe deleteItemAsync."
-    },
-    {
-      "id": "typecheck",
+      "id": "login-valid-and-minimal-session",
       "status": "pass",
       "scenarioType": "nominal",
-      "command": "npm.cmd run typecheck",
-      "evidence": "tsc --noEmit finalizó con código 0."
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "SessionService.test.ts valida POST /v1/session/login, el actor y rol de respuesta, accessToken, refreshToken y expiresIn; sólo persiste actorId, accessToken, refreshToken y expiresAt."
     },
     {
-      "id": "changed-files-lint",
+      "id": "login-rejection-and-invalid-response",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Los casos de actor rechazado (401), respuesta malformada y JSON inválido fallan de forma segura, no persisten sesión y no exponen el señuelo sintético del error."
+    },
+    {
+      "id": "expiry-boundaries-and-successful-refresh",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Con reloj inyectado se comprobó restore antes de expirar (0 refresh) y en/al pasar la expiración (1 refresh). El caso vencido usa POST /v1/session/refresh, valida el contrato y restaura la sesión."
+    },
+    {
+      "id": "refresh-failure-clears-session",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Refresh rechazado con 401, JSON inválido o respuesta malformada limpia el almacenamiento y rechaza la solicitud; una solicitud posterior queda sin autenticar."
+    },
+    {
+      "id": "refresh-network-failure-sanitized",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "El rechazo de red durante refresh se clasifica como network sin conservar el error original y borra la sesión persistida."
+    },
+    {
+      "id": "retry-limit-after-401",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Si el único reintento después de refresh vuelve a recibir 401, la solicitud se rechaza: se observan dos llamadas protegidas en total y una sola llamada HTTP de refresh."
+    },
+    {
+      "id": "local-logout-and-secure-store-clear",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "SessionService.logout invalida el estado local y SecureSessionStore.clear elimina el registro de Expo SecureStore. El backend didáctico no define ruta /v1/session/logout; no se afirma revocación remota."
+    },
+    {
+      "id": "logout-during-refresh-invalidates-late-result",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "La prueba controla la promesa de refresh, ejecuta logout antes de resolverla y comprueba rechazo 401 y almacenamiento vacío; otra prueba comprueba que logout se serializa después de una escritura segura en curso."
+    },
+    {
+      "id": "secure-storage-malformed-record-and-read-error",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "ExpoSecureSessionStore.test.ts comprueba SecureStore protegido, persistencia mínima, borrado de un registro malformado y tratamiento seguro de error de lectura."
+    },
+    {
+      "id": "token-redaction-in-errors-and-telemetry",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "securityNegativePaths.test.ts verifica que señuelos de tokens, autorización y datos sensibles no aparezcan en errores, consola, telemetría ni serialización."
+    },
+    {
+      "id": "backend-role-and-authorization-contracts",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "node course-backend/self-test.mjs",
+      "evidence": "Salida observada: 'CampusOps backend contracts: roles, reassignment conflict, lost response, idempotency, evidence and geocoding PASS.' y 'Controlled backend self-test passed.' Es el fixture docente, no autenticación institucional."
+    },
+    {
+      "id": "session-controls-and-navigation-isolated",
       "status": "pass",
       "scenarioType": "nominal",
-      "command": "npm.cmd exec -- eslint src/campusops/application/incidentQueries.ts src/campusops/application/ports/IncidentRepository.ts src/campusops/contracts.ts src/campusops/domain/Incident.ts src/campusops/infrastructure/HttpIncidentRepository.ts src/campusops/infrastructure/InMemoryIncidentRepository.ts src/composition/campusOpsDependencies.ts src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",
-      "evidence": "ESLint finalizó con código 0 para los archivos TypeScript modificados."
+      "command": "npm test -- --runInBand src/campusops/_tests_/incidentNavigation.test.tsx",
+      "evidence": "La suite aislada pasó 10/10; incluye control de acceso anónimo, login/logout local y el flujo de lista, detalle y retorno."
+    },
+    {
+      "id": "application-profile-authorization",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts",
+      "evidence": "Las pruebas rechazan la creación sin perfil reportante, la resolución por técnico no asignado y el cierre o reapertura fuera del perfil de coordinación; los permisos se validan antes del repositorio."
+    },
+    {
+      "id": "http-403-and-409-safe-mapping",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts",
+      "evidence": "Las respuestas 403 y 409 se convierten en ClientFailure seguro sin leer ni exponer el cuerpo de la respuesta."
+    },
+    {
+      "id": "composed-navigation-batch-timeout",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/incidentNavigation.test.tsx src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Ejecución integrada posterior sobre el SHA indicado: 7 suites y 123 pruebas aprobadas. El límite explícito conserva la aserción y permite a la navegación compuesta completar sin depender del límite predeterminado de 5 s."
     }
   ]
 }

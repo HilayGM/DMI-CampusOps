@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "week": 6,
+  "commitSha": "60df15acb8a5f0a231d1567294b4d9ca783a759d",
+  "decision": "Observación técnica derivada del código inspeccionado, no registro de una decisión histórica del equipo: SessionService reutiliza SessionRefreshCoordinator para estados y límites de reintento, y comparte una promesa HTTP de refresh por época de sesión. Al fallar refresh invalida el estado activo, borra el almacén seguro y rechaza las solicitudes afectadas; logout invalida la época antes de borrar el almacén para impedir que una respuesta tardía restaure la sesión. El logout es local porque el backend didáctico no implementa una ruta de revocación.",
+  "alternatives": [
+    "Alternativa de diseño contrastada, sin evidencia documental de que el equipo la haya discutido: hacer un refresh HTTP independiente por cada respuesta 401, lo que simplifica cada llamada pero duplicaría renovaciones concurrentes y ampliaría las carreras.",
+    "Alternativa de diseño contrastada, sin evidencia documental de que el equipo la haya discutido: mantener sólo la máquina de estados pura y no compartir una promesa de transporte en SessionService, lo que reduciría estado de coordinación HTTP pero no garantizaría single-flight de red."
+  ],
+  "tradeoff": "La implementación observada evita renovaciones HTTP simultáneas, limita cada solicitud a un reintento y evita restauraciones obsoletas, a cambio de coordinar epochs, generaciones y escrituras seguras. Expo SecureStore retiene sólo actorId, accessToken, refreshToken y expiresAt; actorId se necesita para el encabezado del backend didáctico y el rol no se persiste. La validación corresponde a un fixture docente con tokens sintéticos, no acredita autenticación de producción ni revocación remota.",
+  "requirementIds": [
+    "AC-01",
+    "AC-02",
+    "AC-03",
+    "AC-04",
+    "AC-05"
+  ],
+  "verification": [
+    {
+      "command": "npm test -- --runInBand src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts course-tests/public/week-06.test.ts",
+      "result": "pass",
+      "evidence": "5 suites aprobadas, 41 pruebas aprobadas, 0 fallidas. Incluye reloj controlable, concurrencia HTTP de tres solicitudes, refresh fallido, logout, almacenamiento seguro y sanitización."
+    },
+    {
+      "command": "npm test -- --runInBand src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/securityNegativePaths.test.ts src/campusops/_tests_/incidentNavigation.test.tsx src/campusops/_tests_/SessionService.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts course-tests/public/week-06.test.ts",
+      "result": "fail",
+      "evidence": "Ejecución conjunta: 6 de 7 suites aprobadas, 118 pruebas aprobadas y 1 fallida por timeout de 5000 ms en navegación compuesta."
+    },
+    {
+      "command": "npm test -- --runInBand src/campusops/_tests_/incidentNavigation.test.tsx",
+      "result": "pass",
+      "evidence": "Repetición aislada posterior: 1 suite, 10 pruebas aprobadas, 0 fallidas; el caso compuesto completó en 3845 ms."
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "evidence": "TypeScript terminó con código 0 y sin diagnósticos."
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass",
+      "evidence": "ESLint terminó con código 0 y sin diagnósticos."
+    },
+    {
+      "command": "node course-backend/self-test.mjs",
+      "result": "pass",
+      "evidence": "Salida observada: contratos de roles, conflicto de reasignación, respuesta perdida e idempotencia PASS; Controlled backend self-test passed."
+    }
+  ],
+  "shaStatus": "commitSha registrado con el SHA real confirmado por el usuario. Las alternativas aquí son contrastes analíticos del revisor, no alternativas cuya discusión por el equipo esté documentada."
+}

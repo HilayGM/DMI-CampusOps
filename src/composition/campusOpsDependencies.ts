@@ -2,16 +2,13 @@ import { getBackendHealth } from '../api/courseBackend';
 import type { CampusActor, CampusRole } from '../campusops/contracts';
 import { createIncidentQueries } from '../campusops/application/incidentQueries';
 import type { BackendHealthPort } from '../campusops/application/ports/BackendHealthPort';
+import { SessionService } from '../campusops/application/SessionService';
 import { ExpoSecureSessionStore } from '../campusops/infrastructure/ExpoSecureSessionStore';
 import { HttpIncidentRepository } from '../campusops/infrastructure/HttpIncidentRepository';
 
-const session = new ExpoSecureSessionStore();
-
-const getActorId = async (): Promise<string> => {
-  const actorId = process.env.EXPO_PUBLIC_COURSE_ACTOR_ID;
-  if (!actorId?.trim()) throw new Error('CampusOps actor is not configured');
-  return actorId;
-};
+const baseUrl = process.env.EXPO_PUBLIC_COURSE_BACKEND_URL ?? 'http://127.0.0.1:4310';
+const sessionStore = new ExpoSecureSessionStore();
+const session = new SessionService({ baseUrl, sessionStore });
 
 const isCampusRole = (value: string | undefined): value is CampusRole =>
   value === 'reporter' || value === 'technician' || value === 'coordinator';
@@ -23,9 +20,8 @@ const getCurrentActor = (): CampusActor | null => {
 };
 
 const incidentsRepository = new HttpIncidentRepository({
-  baseUrl: process.env.EXPO_PUBLIC_COURSE_BACKEND_URL ?? 'http://127.0.0.1:4310',
-  sessionStore: session,
-  getActorId,
+  baseUrl,
+  session,
 });
 
 const checkBackendHealth: BackendHealthPort = async () => {
@@ -35,5 +31,6 @@ const checkBackendHealth: BackendHealthPort = async () => {
 export const campusOpsDependencies = {
   incidents: createIncidentQueries(incidentsRepository, getCurrentActor),
   session,
+  sessionActorId: process.env.EXPO_PUBLIC_COURSE_ACTOR_ID ?? '',
   checkBackendHealth,
 };
