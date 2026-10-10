@@ -2,7 +2,7 @@
   {
     "studentId": "3523110443",
     "commitShas": [
-      "REEMPLAZAR_CON_TU_SHA"
+      "de163b0aa554a6a9a6e7a3af4d4cbafa0201fada"
     ],
     "files": [
       "src/campusops/application/incidentQueries.ts",
