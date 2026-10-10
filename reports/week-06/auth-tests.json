@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "week": 6,
+  "commitSha": "4c540ddeae7685ae8c7fa6145228c4b9dd56aec9",
+  "generatedAt": "2026-10-10T01:06:14.2482817-06:00",
+  "workingTreeNote": "Las pruebas se ejecutaron sobre los cambios de código actualmente modificados en el árbol de trabajo. commitSha identifica HEAD antes de esos cambios; actualizarlo al guardar el commit de código.",
+  "checks": [
+    {
+      "id": "application-authorization",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "10 suites y 111 pruebas pasaron. Se comprobó rechazo 403 para creación sin rol reportante, resolución por técnico no asignado o perfil distinto, y cierre/reapertura sólo por coordinación."
+    },
+    {
+      "id": "http-403-409-safe-mapping",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Las respuestas HTTP 403 y 409 produjeron fallos clientErrors seguros FORBIDDEN/CONFLICT; response.json no fue invocado y no se expuso el cuerpo."
+    },
+    {
+      "id": "refresh-failure",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Pasaron las pruebas específicas: refreshFailed devuelve la sesión a anonymous y elimina el token en memoria; la prueba pública de semana 06 pasa la renovación compartida y los reintentos limitados."
+    },
+    {
+      "id": "logout",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand --testTimeout=30000 src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/ExpoSecureSessionStore.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx course-tests/public/week-02.test.ts course-tests/public/week-02-architecture.test.ts course-tests/public/week-05.test.ts course-tests/public/week-06.test.ts",
+      "evidence": "Las pruebas de logout de SessionRefreshCoordinator y ExpoSecureSessionStore pasaron; el estado vuelve a anonymous y el almacenamiento protegido recibe deleteItemAsync."
+    },
+    {
+      "id": "typecheck",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd run typecheck",
+      "evidence": "tsc --noEmit finalizó con código 0."
+    },
+    {
+      "id": "changed-files-lint",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd exec -- eslint src/campusops/application/incidentQueries.ts src/campusops/application/ports/IncidentRepository.ts src/campusops/contracts.ts src/campusops/domain/Incident.ts src/campusops/infrastructure/HttpIncidentRepository.ts src/campusops/infrastructure/InMemoryIncidentRepository.ts src/composition/campusOpsDependencies.ts src/campusops/_tests_/incidentAuthorization.test.ts src/campusops/_tests_/HttpIncidentRepository.test.ts src/campusops/_tests_/SessionRefreshCoordinator.test.ts src/campusops/_tests_/incidentQueries.test.ts src/campusops/_tests_/incidentNavigation.test.tsx",
+      "evidence": "ESLint finalizó con código 0 para los archivos TypeScript modificados."
+    }
+  ]
+}

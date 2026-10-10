@@ -58,6 +58,7 @@ test('lists and maps valid remote incidents', async () => {
     status: 'open',
     category: 'equipment',
     location: resource.payload.location,
+    version: resource.version,
   }]);
   expect(fetchImpl).toHaveBeenCalledWith(
     'https://campusops.test/v1/incidents',
@@ -164,7 +165,10 @@ test.each(operations)('%s maps DTO to fresh domain data without mutation or remo
   fetchImpl.mockResolvedValue(jsonResponse(envelope(operation, dto)));
   const result = await invoke(repository, operation);
   const incident = Array.isArray(result) ? result[0] : result;
-  expect(incident).toEqual({ id: resource.id, title: resource.payload.description, ...resource.payload, status: 'open' });
+  expect(incident).toEqual({
+    id: resource.id, title: resource.payload.description, ...resource.payload,
+    status: 'open', version: resource.version,
+  });
   expect(incident).not.toBe(dto);
   expect(JSON.stringify(dto)).toBe(before);
 });
@@ -203,6 +207,20 @@ test('accepts a successful duplicate creation response without exposing remote m
   const { repository, fetchImpl } = createRepository();
   fetchImpl.mockResolvedValue(jsonResponse({ incident: resource, operationId: operationKey, duplicate: true }));
   await expect(repository.create(input, operationKey)).resolves.toMatchObject({ id: resource.id });
+});
+
+test.each([
+  [403, 'FORBIDDEN', 'Acceso denegado.'],
+  [409, 'CONFLICT', 'Conflicto en la operación.'],
+] as const)('maps HTTP %i to a safe application failure', async (status, code, message) => {
+  const { repository, fetchImpl } = createRepository();
+  const json = jest.fn(async () => ({ token: 'must-not-be-read' }));
+  fetchImpl.mockResolvedValue({ ...jsonResponse(null, status), json });
+
+  await expect(repository.act(
+    resource.id, 'resolve', resource.version, { diagnosis: 'Diagnóstico ficticio' }, operationKey,
+  )).rejects.toMatchObject({ kind: 'http', status, code, message });
+  expect(json).not.toHaveBeenCalled();
 });
 
 const markers = {

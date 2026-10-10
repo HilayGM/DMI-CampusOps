@@ -1,5 +1,9 @@
 import type { IncidentCategory, IncidentStatus } from '../contracts';
-import type { CreateIncidentInput, IncidentRepository } from '../application/ports/IncidentRepository';
+import type {
+  CreateIncidentInput,
+  IncidentAction,
+  IncidentRepository,
+} from '../application/ports/IncidentRepository';
 import type { SecureSessionStore } from '../application/ports/SecureSessionStore';
 import type { Incident } from '../domain/Incident';
 import { parseRemoteResourceDto } from './RemoteResourceParser';
@@ -39,20 +43,32 @@ function toIncident(input: unknown): Incident | null {
     throw clientFailure({ kind: 'contract', reason: 'schema' });
   }
 
-  return {
+  const incident = {
     id,
     title: description,
     description,
     status: status as IncidentStatus,
     category: category as IncidentCategory,
     location,
-  };
+    version: result.value.version,
+  } as const;
+  if ('assignedTechnicianId' in payload) {
+    const assigneeId = payload.assignedTechnicianId;
+    if (assigneeId !== null && (typeof assigneeId !== 'string' || !assigneeId.trim())) {
+      throw clientFailure({ kind: 'contract', reason: 'schema' });
+    }
+    return { ...incident, assigneeId };
+  }
+  return incident;
 }
 
 export class HttpIncidentRepository implements IncidentRepository {
   constructor(private readonly options: HttpIncidentRepositoryOptions) {}
 
-  private async execute<T>(operation: 'list' | 'detail' | 'create', work: () => Promise<T>): Promise<T> {
+  private async execute<T>(
+    operation: 'list' | 'detail' | 'create' | 'action',
+    work: () => Promise<T>,
+  ): Promise<T> {
     try {
       return await work();
     } catch (error: unknown) {
@@ -136,6 +152,31 @@ export class HttpIncidentRepository implements IncidentRepository {
   async create(input: CreateIncidentInput, idempotencyKey: string): Promise<Incident> {
     return this.execute('create', async () => {
       const response = await this.request('/v1/incidents', 'POST', input, idempotencyKey);
+      if (!isRecord(response) || !('incident' in response)
+        || typeof response.operationId !== 'string' || !response.operationId.trim()
+        || typeof response.duplicate !== 'boolean') {
+        throw clientFailure({ kind: 'contract', reason: 'schema' });
+      }
+      const incident = toIncident(response.incident);
+      if (incident === null) throw clientFailure({ kind: 'absent' });
+      return incident;
+    });
+  }
+
+  async act(
+    id: string,
+    action: IncidentAction,
+    baseVersion: number,
+    details: Readonly<{ diagnosis?: string }>,
+    idempotencyKey: string,
+  ): Promise<Incident> {
+    return this.execute('action', async () => {
+      const response = await this.request(
+        `/v1/incidents/${encodeURIComponent(id)}/actions`,
+        'POST',
+        { action, baseVersion, ...details },
+        idempotencyKey,
+      );
       if (!isRecord(response) || !('incident' in response)
         || typeof response.operationId !== 'string' || !response.operationId.trim()
         || typeof response.duplicate !== 'boolean') {
