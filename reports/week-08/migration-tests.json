@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "week": 8,
+  "commitSha": "e478d867b897cf7535af97d5290fc7d3d498c376",
+  "generatedAt": "2026-10-21T03:44:45.749-06:00",
+  "checks": [
+    {
+      "id": "nominal-migration-applies-pending-versions",
+      "status": "pending",
+      "scenarioType": "nominal",
+      "command": "npm test -- src/campusops/tests/MigrationRollback.test.ts",
+      "evidence": "Pendiente de ejecutar: falta una prueba nominal que confirme que migrate aplica las migraciones configuradas y devuelve la versión final."
+    },
+    {
+      "id": "boundary-migration-with-no-changes",
+      "status": "pending",
+      "scenarioType": "boundary",
+      "command": "npm test -- src/campusops/tests/MigrationRollback.test.ts",
+      "evidence": "Pendiente de ejecutar: falta una prueba de base de datos ya actualizada que confirme que no se aplican cambios y se conserva su estado."
+    },
+    {
+      "id": "failure-v2-rolls-back-schema-and-preserves-pending-operations",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "evidence": "Ejecución observada: 1 suite y 1 prueba aprobadas. La prueba verifica que el error 'Forced failure in v2' se propaga, se registra una transacción y un rollback, se deshacen los cambios de esquema/versionado y se conserva la cola de operaciones pendientes."
+    }
+  ]
+}

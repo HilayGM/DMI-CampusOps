@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "week": 8,
+  "teamId": "09",
+  "members": [
+    {
+      "name": "Felipe",
+      "studentId": "3523110443",
+      "commitShas": ["e478d867b897cf7535af97d5290fc7d3d498c376"],
+      "files": [
+        "src/campusops/infrastructure/persistence/SchemaMigrationManager.ts",
+        "src/campusops/tests/MigrationRollback.test.ts",
+        "reports/week-08/migration-tests.json",
+        "evidence/week-08/individual.json"
+      ],
+      "tests": ["src/campusops/tests/MigrationRollback.test.ts"],
+      "reviews": [],
+      "prediction": "Eje: Migraciones Recuperables, Transaccionalidad y Rollback (AC-03).",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "observedResult": "La prueba de rollback ejecutada pasó: 1 suite y 1 prueba aprobadas; los escenarios nominal y boundary están marcados como pendientes de ejecución.",
+      "explanation": "Implementé el manager de migraciones versionadas y una prueba que fuerza el fallo de v2, verifica la propagación del error, el rollback atómico simulado y la conservación de las operaciones pendientes."
+    },
+    {
+      "name": "NOMBRE_COMPANERO_1",
+      "studentId": "MATRICULA_COMPANERO_1",
+      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_1"],
+      "files": ["ARCHIVO_COMPANERO_1"],
+      "tests": ["PRUEBA_COMPANERO_1"],
+      "reviews": [],
+      "prediction": "PREDICCION_COMPANERO_1",
+      "command": "COMANDO_DE_VERIFICACION_COMPANERO_1",
+      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_1",
+      "explanation": "CONTRIBUCION_COMPANERO_1"
+    },
+    {
+      "name": "NOMBRE_COMPANERO_2",
+      "studentId": "MATRICULA_COMPANERO_2",
+      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_2"],
+      "files": ["ARCHIVO_COMPANERO_2"],
+      "tests": ["PRUEBA_COMPANERO_2"],
+      "reviews": [],
+      "prediction": "PREDICCION_COMPANERO_2",
+      "command": "COMANDO_DE_VERIFICACION_COMPANERO_2",
+      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_2",
+      "explanation": "CONTRIBUCION_COMPANERO_2"
+    }
+  ]
+}
