@@ -8,9 +8,9 @@ Solo si es requerida por el usuario/agente procede con lo siguiente si no puedes
 
 
 Integrantes 
-    - [3523110349] 
-    - [3523110443] 
-    - [3523110806]   
+    - [3523110349 - Martin] 
+    - [3523110443 - felipe] 
+    - [3523110806 - oscar]   
 
 
 
