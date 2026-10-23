@@ -15,6 +15,43 @@ function pending(name: string): never {
   throw new Error(`${name} must be implemented in the assigned week`);
 }
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
+        .map(([key, entry]) => [key, canonicalize(entry)]),
+    );
+  }
+  return value;
+}
+
+function sameJson(left: unknown, right: unknown): boolean {
+  return JSON.stringify(canonicalize(left)) === JSON.stringify(canonicalize(right));
+}
+
+function cloneJsonValue<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(cloneJsonValue) as T;
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [key, cloneJsonValue(entry)]),
+    ) as T;
+  }
+  return value;
+}
+
+function hasField(record: JsonObject, field: string): boolean {
+  return Object.prototype.hasOwnProperty.call(record, field);
+}
+
+function fieldChanged(base: JsonObject, candidate: JsonObject, field: string): boolean {
+  const baseHasField = hasField(base, field);
+  const candidateHasField = hasField(candidate, field);
+  return baseHasField !== candidateHasField
+    || (baseHasField && candidateHasField && !sameJson(base[field], candidate[field]));
+}
+
 export function parseRemoteResource(input: unknown): ParseResult {
   return parseRemoteResourceDto(input);
 }
@@ -37,17 +74,54 @@ export function coordinateRefresh(events: readonly AuthEvent[]): Readonly<{
 }
 
 export function resolveSync(
-  _base: SyncRecord,
-  _local: SyncRecord,
-  _remote: SyncRecord,
+  base: SyncRecord,
+  local: SyncRecord,
+  remote: SyncRecord,
 ): Readonly<{ kind: 'merged'; fields: JsonObject } | { kind: 'conflict'; fields: readonly string[] }> {
-  return pending('resolveSync');
+  const fields = [...new Set([
+    ...Object.keys(base.fields),
+    ...Object.keys(local.fields),
+    ...Object.keys(remote.fields),
+  ])].sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
+  const merged: Record<string, unknown> = {};
+  const conflicts: string[] = [];
+
+  for (const field of fields) {
+    const localChanged = fieldChanged(base.fields, local.fields, field);
+    const remoteChanged = fieldChanged(base.fields, remote.fields, field);
+
+    if (localChanged && remoteChanged) {
+      if (sameJson(local.fields[field], remote.fields[field])
+        && hasField(local.fields, field) === hasField(remote.fields, field)) {
+        if (hasField(local.fields, field)) merged[field] = cloneJsonValue(local.fields[field]);
+      } else {
+        conflicts.push(field);
+      }
+    } else if (localChanged) {
+      if (hasField(local.fields, field)) merged[field] = cloneJsonValue(local.fields[field]);
+    } else if (remoteChanged) {
+      if (hasField(remote.fields, field)) merged[field] = cloneJsonValue(remote.fields[field]);
+    } else if (hasField(base.fields, field)) {
+      merged[field] = cloneJsonValue(base.fields[field]);
+    }
+  }
+
+  return conflicts.length > 0
+    ? { kind: 'conflict', fields: conflicts }
+    : { kind: 'merged', fields: merged };
 }
 
 export function deduplicateOperations<T extends Readonly<{ operationId: string }>>(
-  _operations: readonly T[],
+  operations: readonly T[],
 ): readonly T[] {
-  return pending('deduplicateOperations');
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const operation of operations) {
+    if (seen.has(operation.operationId)) continue;
+    seen.add(operation.operationId);
+    result.push(operation);
+  }
+  return result;
 }
 
 export function planRetry(_input: Readonly<{
