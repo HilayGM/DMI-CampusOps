@@ -29,7 +29,7 @@ No expongas la matrícula en registros públicos, capturas ni archivos de códig
 
 ## Fuentes y reglas DMI
 
-- Lee `activity.md` y la consigna del proyecto antes de emitir conclusiones. Aplica los niveles de desempeño y límites que indiquen esos documentos.
+- Lee `activity.md` donde esta la parte de evaluacion individual y la consigna del proyecto antes de emitir conclusiones. Aplica los niveles de desempeño y límites que indiquen esos documentos.
 - Identifica qué criterios de aceptación AC-01 a AC-05 corresponden a la parte asignada. AC-01 a AC-03 son comprobaciones automáticas y AC-04/AC-05 semiautomáticas; confirma su definición en los archivos del proyecto y no supongas contenidos ni asignaciones que no estén documentados.
 - Usa datos ficticios durante las verificaciones. No incorpores datos personales o reales a pruebas, ejemplos, capturas o reportes.
 - Conserva las pruebas y su configuración habilitada. No elimines, desactives, omitas ni debilites pruebas para mejorar el resultado.
