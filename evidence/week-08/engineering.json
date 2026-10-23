@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "week": 8,
+  "commitSha": "d68b256b3c3cd7a12a9abcc87ce8d8783706a1c3",
+  "decision": "Combinar automáticamente cambios independientes comparando contenido JSON, declarar conflictos deterministas cuando ambas partes cambian el mismo campo y conservar la primera operación por operationId.",
+  "alternatives": [
+    {
+      "name": "Última escritura gana",
+      "benefit": "Implementación sencilla y resolución automática.",
+      "cost": "Puede sobrescribir una reasignación o un cambio local sin confirmación.",
+      "risk": "Pérdida silenciosa de trabajo y trazabilidad incorrecta."
+    },
+    {
+      "name": "Rechazar toda divergencia",
+      "benefit": "Evita sobrescrituras automáticas.",
+      "cost": "Impide combinar cambios independientes y aumenta la resolución manual.",
+      "risk": "Operaciones compatibles quedarían pendientes innecesariamente."
+    },
+    {
+      "name": "Merge independiente y conflicto por campo",
+      "benefit": "Conserva cambios compatibles y hace explícita la colisión.",
+      "cost": "Requiere comparar JSON, conservar la cola y ofrecer resolución posterior.",
+      "risk": "La integración servidor-cola requiere un puerto adicional aún no presente."
+    }
+  ],
+  "tradeoff": "Se prioriza preservar trabajo y evitar sobrescrituras silenciosas sobre la resolución automática total. La implementación queda limitada a los adaptadores puros porque la arquitectura actual no expone el contrato necesario para sincronizar una operación pendiente completa.",
+  "requirementIds": ["AC-02", "AC-04"],
+  "verification": [
+    {
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts src/course-evaluation/_tests_/sync.test.ts",
+      "result": "pass",
+      "evidence": "2 suites passed; 7 tests passed; 0 snapshots."
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "pass",
+      "evidence": "tsc --noEmit terminó sin errores."
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "pass with warnings",
+      "evidence": "0 errors y 2 warnings preexistentes en src/campusops/tests/MigrationRollback.test.ts."
+    }
+  ]
+}
