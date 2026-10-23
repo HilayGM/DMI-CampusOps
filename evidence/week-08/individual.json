@@ -4,49 +4,45 @@
   "teamId": "09",
   "members": [
     {
-      "studentId": "3523110349",
-      "commitShas": ["5f2720330530cadf3d77bafaaf143e1bfb74682a"],
-      "files": [
-        "src/campusops/infrastructure/persistence/OfflineOperationQueue.ts",
-        "src/campusops/_tests_/OfflineOperationQueue.test.ts",
-        "docs/data-model.md"
-      ],
-      "tests": ["src/campusops/_tests_/OfflineOperationQueue.test.ts"],
-      "reviews": [],
-      "prediction": "Las operaciones encoladas sin conexión deben conservar identidad estable, asociarse a la incidencia, persistir tras reiniciar la app y permitir recuperar notas y fotos.",
-      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/OfflineOperationQueue.test.ts",
-      "observedResult": "8 pruebas pasadas satisfactoriamente: encolado con identidad estable, durabilidad tras reinicio, preservación de notas, fotos, idempotencia, confirmación y recuperación ante datos corruptos.",
-      "explanation": "El commit de Martín implementa OfflineOperationQueue desacoplada de la plataforma con KeyValueStore, garantizando persistencia durable entre reinicios, deduplicación e inmutabilidad estricta."
-    },
-    {
+      "name": "Felipe",
       "studentId": "3523110443",
-      "commitShas": ["de163b0aa554a6a9a6e7a3af4d4cbafa0201fada"],
+      "commitShas": ["e478d867b897cf7535af97d5290fc7d3d498c376"],
       "files": [
         "src/campusops/infrastructure/persistence/SchemaMigrationManager.ts",
-        "src/campusops/_tests_/MigrationRollback.test.ts",
-        "reports/week-08/migration-tests.json"
+        "src/campusops/tests/MigrationRollback.test.ts",
+        "reports/week-08/migration-tests.json",
+        "evidence/week-08/individual.json"
       ],
-      "tests": ["src/campusops/_tests_/MigrationRollback.test.ts"],
+      "tests": ["src/campusops/tests/MigrationRollback.test.ts"],
       "reviews": [],
-      "prediction": "Las migraciones de esquema deben ejecutarse de forma transaccional; si una transacción falla, debe hacer rollback atómico sin dejar el estado parcialmente migrado ni perder la cola.",
-      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/MigrationRollback.test.ts",
-      "observedResult": "Pendiente de integración en su rama correspondiente: pruebas de migración de esquema v1 a v2, rollback ante fallos inyectados y preservación de registros.",
-      "explanation": "Felipe tiene asignado el desarrollo del gestor de migraciones transaccionales, rollback seguro ante fallas simuladas (AC-03) y el reporte migration-tests.json."
+      "prediction": "Eje: Migraciones Recuperables, Transaccionalidad y Rollback (AC-03).",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "observedResult": "La prueba de rollback ejecutada pasó: 1 suite y 1 prueba aprobadas; los escenarios nominal y boundary están marcados como pendientes de ejecución.",
+      "explanation": "Implementé el manager de migraciones versionadas y una prueba que fuerza el fallo de v2, verifica la propagación del error, el rollback atómico simulado y la conservación de las operaciones pendientes."
     },
     {
-      "studentId": "3523110806",
-      "commitShas": ["251d4e6417fd5745160c8f6c42ee34a7d601b8da"],
-      "files": [
-        "src/course-evaluation/index.ts",
-        "docs/sync-policy.md",
-        "evidence/week-08/engineering.json"
-      ],
-      "tests": ["course-tests/public/week-08.test.ts"],
+      "name": "NOMBRE_COMPANERO_1",
+      "studentId": "MATRICULA_COMPANERO_1",
+      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_1"],
+      "files": ["ARCHIVO_COMPANERO_1"],
+      "tests": ["PRUEBA_COMPANERO_1"],
       "reviews": [],
-      "prediction": "resolveSync debe detectar colisiones concurrentes en el objeto work (inicio local vs reasignación remota) sin mutar entradas, y deduplicateOperations debe filtrar por operationId.",
-      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts",
-      "observedResult": "Pendiente de integración en su rama correspondiente: adaptadores públicos de evaluación y política documentada de sincronización y resolución de conflictos.",
-      "explanation": "Oscar tiene asignada la implementación de resolveSync, deduplicateOperations, la redacción de docs/sync-policy.md y la justificación de diseño en engineering.json."
+      "prediction": "PREDICCION_COMPANERO_1",
+      "command": "COMANDO_DE_VERIFICACION_COMPANERO_1",
+      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_1",
+      "explanation": "CONTRIBUCION_COMPANERO_1"
+    },
+    {
+      "name": "NOMBRE_COMPANERO_2",
+      "studentId": "MATRICULA_COMPANERO_2",
+      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_2"],
+      "files": ["ARCHIVO_COMPANERO_2"],
+      "tests": ["PRUEBA_COMPANERO_2"],
+      "reviews": [],
+      "prediction": "PREDICCION_COMPANERO_2",
+      "command": "COMANDO_DE_VERIFICACION_COMPANERO_2",
+      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_2",
+      "explanation": "CONTRIBUCION_COMPANERO_2"
     }
   ]
 }
