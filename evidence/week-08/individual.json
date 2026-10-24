@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "week": 8,
+  "teamId": "09",
+  "members": [
+    {
+      "name": "Felipe",
+      "studentId": "3523110443",
+      "commitShas": ["e478d867b897cf7535af97d5290fc7d3d498c376"],
+      "files": [
+        "src/campusops/infrastructure/persistence/SchemaMigrationManager.ts",
+        "src/campusops/tests/MigrationRollback.test.ts",
+        "reports/week-08/migration-tests.json",
+        "evidence/week-08/individual.json"
+      ],
+      "tests": ["src/campusops/tests/MigrationRollback.test.ts"],
+      "reviews": [],
+      "prediction": "Eje: Migraciones Recuperables, Transaccionalidad y Rollback (AC-03).",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "observedResult": "1 suite y 3 pruebas aprobadas: nominal (aplicación secuencial de migraciones), boundary (sin cambios cuando la base está al día) y failure (rollback atómico que preserva operaciones pendientes).",
+      "explanation": "Implementé el manager de migraciones versionadas y una prueba que fuerza el fallo de v2, verifica la propagación del error, el rollback atómico simulado y la conservación de las operaciones pendientes."
+    },
+    {
+      "name": "Oscar Martinez Martinez",
+      "studentId": "3523110806",
+      "commitShas": ["d68b256b3c3cd7a12a9abcc87ce8d8783706a1c3"],
+      "files": [
+        "src/course-evaluation/index.ts",
+        "src/course-evaluation/_tests_/sync.test.ts",
+        "docs/sync-policy.md"
+      ],
+      "tests": ["src/course-evaluation/_tests_/sync.test.ts", "course-tests/public/week-08.test.ts"],
+      "reviews": [],
+      "prediction": "AC-02 y AC-04: la resolución combinará cambios independientes, reportará conflictos deterministas por campo y conservará la primera operación para evitar efectos duplicados.",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts src/course-evaluation/_tests_/sync.test.ts",
+      "observedResult": "2 suites aprobadas, 7 pruebas aprobadas y 0 snapshots; npm.cmd run typecheck terminó sin errores.",
+      "explanation": "Implementé resolveSync para comparar valores JSON por contenido, combinar cambios independientes, ordenar colisiones y preservar entradas sin mutarlas. Implementé deduplicateOperations para conservar la primera operación de cada operationId en el orden original. Documenté la política de conflictos, reintentos e idempotencia, incluida la limitación de integración completa con la cola offline."
+    },
+    {
+      "name": "Martín Moreno Libreros",
+      "studentId": "3523110349",
+      "commitShas": ["5f2720330530cadf3d77bafaaf143e1bfb74682a"],
+      "files": [
+        "src/campusops/infrastructure/persistence/OfflineOperationQueue.ts",
+        "src/campusops/_tests_/OfflineOperationQueue.test.ts",
+        "docs/data-model.md"
+      ],
+      "tests": ["src/campusops/_tests_/OfflineOperationQueue.test.ts"],
+      "reviews": [],
+      "prediction": "Las operaciones encoladas sin conexión deben conservar identidad estable, asociarse a la incidencia, persistir tras reiniciar la app y permitir recuperar notas y fotos.",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/OfflineOperationQueue.test.ts",
+      "observedResult": "8 pruebas pasadas satisfactoriamente: encolado con identidad estable, durabilidad tras reinicio, preservación de notas, fotos, idempotencia, confirmación y recuperación ante datos corruptos.",
+      "explanation": "El commit de Martín implementa OfflineOperationQueue desacoplada de la plataforma con KeyValueStore, garantizando persistencia durable entre reinicios, deduplicación e inmutabilidad estricta."
+    }
+  ]
+}

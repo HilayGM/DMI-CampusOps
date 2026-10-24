@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "week": 8,
+  "commitSha": "12f37333806e3e8806b44ffde60cee3678ad04f8",
+  "decision": "Combinar automáticamente cambios independientes comparando contenido JSON, declarar conflictos deterministas cuando ambas partes cambian el mismo campo y conservar la primera operación por operationId.",
+  "alternatives": [
+    "Última escritura gana (LWW): Implementación sencilla y resolución automática de mutaciones concurrentes, pero con el costo y riesgo crítico de sobrescribir reasignaciones remotas o intenciones locales sin confirmación, generando pérdida silenciosa de trabajo.",
+    "Rechazar toda divergencia: Evita sobrescrituras automáticas rechazando cualquier concurrencia, pero impide combinar cambios independientes en campos distintos, aumentando la carga de resolución manual y dejando pendientes operaciones compatibles.",
+    "Merge independiente y conflicto determinista por campo: Conserva cambios compatibles comparando contenido JSON y hace explícita la colisión cuando el mismo campo diverge, preservando la cola offline a cambio de requerir resolución posterior e integración desacoplada."
+  ],
+  "tradeoff": "Se prioriza preservar trabajo y evitar sobrescrituras silenciosas sobre la resolución automática total. La implementación queda limitada a los adaptadores puros porque la arquitectura actual no expone el contrato necesario para sincronizar una operación pendiente completa.",
+  "requirementIds": ["AC-02", "AC-04"],
+  "verification": [
+    {
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts src/course-evaluation/_tests_/sync.test.ts",
+      "result": "pass",
+      "evidence": "2 suites passed; 7 tests passed; 0 snapshots."
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "pass",
+      "evidence": "tsc --noEmit terminó sin errores."
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "pass with warnings",
+      "evidence": "0 errors y 2 warnings preexistentes en src/campusops/tests/MigrationRollback.test.ts."
+    }
+  ]
+}
