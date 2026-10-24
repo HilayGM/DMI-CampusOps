@@ -17,7 +17,7 @@
       "reviews": [],
       "prediction": "Eje: Migraciones Recuperables, Transaccionalidad y Rollback (AC-03).",
       "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
-      "observedResult": "La prueba de rollback ejecutada pasó: 1 suite y 1 prueba aprobadas; los escenarios nominal y boundary están marcados como pendientes de ejecución.",
+      "observedResult": "1 suite y 3 pruebas aprobadas: nominal (aplicación secuencial de migraciones), boundary (sin cambios cuando la base está al día) y failure (rollback atómico que preserva operaciones pendientes).",
       "explanation": "Implementé el manager de migraciones versionadas y una prueba que fuerza el fallo de v2, verifica la propagación del error, el rollback atómico simulado y la conservación de las operaciones pendientes."
     },
     {
@@ -37,16 +37,20 @@
       "explanation": "Implementé resolveSync para comparar valores JSON por contenido, combinar cambios independientes, ordenar colisiones y preservar entradas sin mutarlas. Implementé deduplicateOperations para conservar la primera operación de cada operationId en el orden original. Documenté la política de conflictos, reintentos e idempotencia, incluida la limitación de integración completa con la cola offline."
     },
     {
-      "name": "NOMBRE_COMPANERO_2",
-      "studentId": "MATRICULA_COMPANERO_2",
-      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_2"],
-      "files": ["ARCHIVO_COMPANERO_2"],
-      "tests": ["PRUEBA_COMPANERO_2"],
+      "name": "Martín Moreno Libreros",
+      "studentId": "3523110349",
+      "commitShas": ["5f2720330530cadf3d77bafaaf143e1bfb74682a"],
+      "files": [
+        "src/campusops/infrastructure/persistence/OfflineOperationQueue.ts",
+        "src/campusops/_tests_/OfflineOperationQueue.test.ts",
+        "docs/data-model.md"
+      ],
+      "tests": ["src/campusops/_tests_/OfflineOperationQueue.test.ts"],
       "reviews": [],
-      "prediction": "PREDICCION_COMPANERO_2",
-      "command": "COMANDO_DE_VERIFICACION_COMPANERO_2",
-      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_2",
-      "explanation": "CONTRIBUCION_COMPANERO_2"
+      "prediction": "Las operaciones encoladas sin conexión deben conservar identidad estable, asociarse a la incidencia, persistir tras reiniciar la app y permitir recuperar notas y fotos.",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/OfflineOperationQueue.test.ts",
+      "observedResult": "8 pruebas pasadas satisfactoriamente: encolado con identidad estable, durabilidad tras reinicio, preservación de notas, fotos, idempotencia, confirmación y recuperación ante datos corruptos.",
+      "explanation": "El commit de Martín implementa OfflineOperationQueue desacoplada de la plataforma con KeyValueStore, garantizando persistencia durable entre reinicios, deduplicación e inmutabilidad estricta."
     }
   ]
 }

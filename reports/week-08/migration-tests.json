@@ -1,29 +1,50 @@
 {
   "schemaVersion": 1,
   "week": 8,
-  "commitSha": "e478d867b897cf7535af97d5290fc7d3d498c376",
-  "generatedAt": "2026-10-21T03:44:45.749-06:00",
+  "commitSha": "12f37333806e3e8806b44ffde60cee3678ad04f8",
+  "generatedAt": "2026-10-23T18:56:00.000-06:00",
   "checks": [
     {
       "id": "nominal-migration-applies-pending-versions",
-      "status": "pending",
+      "status": "pass",
       "scenarioType": "nominal",
-      "command": "npm test -- src/campusops/tests/MigrationRollback.test.ts",
-      "evidence": "Pendiente de ejecutar: falta una prueba nominal que confirme que migrate aplica las migraciones configuradas y devuelve la versión final."
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "evidence": "Ejecución observada: 1 suite y 3 pruebas aprobadas. La prueba verifica que migrate aplica secuencialmente las migraciones configuradas (v1 y v2), actualiza schema_migrations, registra una única transacción y preserva la cola de operaciones pendientes."
     },
     {
       "id": "boundary-migration-with-no-changes",
-      "status": "pending",
+      "status": "pass",
       "scenarioType": "boundary",
-      "command": "npm test -- src/campusops/tests/MigrationRollback.test.ts",
-      "evidence": "Pendiente de ejecutar: falta una prueba de base de datos ya actualizada que confirme que no se aplican cambios y se conserva su estado."
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
+      "evidence": "Ejecución observada: 1 suite y 3 pruebas aprobadas. La prueba confirma que ante una base de datos que ya tiene aplicadas todas las versiones, migrate no vuelve a ejecutar las migraciones (upCalled = false), no genera rollback y preserva intactas la estructura y las operaciones pendientes."
     },
     {
       "id": "failure-v2-rolls-back-schema-and-preserves-pending-operations",
       "status": "pass",
       "scenarioType": "failure",
       "command": "npm.cmd test -- --ci --runInBand src/campusops/tests/MigrationRollback.test.ts",
-      "evidence": "Ejecución observada: 1 suite y 1 prueba aprobadas. La prueba verifica que el error 'Forced failure in v2' se propaga, se registra una transacción y un rollback, se deshacen los cambios de esquema/versionado y se conserva la cola de operaciones pendientes."
+      "evidence": "Ejecución observada: 1 suite y 3 pruebas aprobadas. La prueba verifica que el error 'Forced failure in v2' se propaga, se registra una transacción y un rollback, se deshacen los cambios de esquema/versionado y se conserva la cola de operaciones pendientes."
+    },
+    {
+      "id": "nominal-offline-queue-restart-preservation",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/OfflineOperationQueue.test.ts",
+      "evidence": "Ejecución observada: 8 pruebas aprobadas. Verifica que una nueva instancia de OfflineOperationQueue reconstruye las operaciones pendientes, notas y referencias a fotografías sin pérdidas tras reiniciar la aplicación."
+    },
+    {
+      "id": "nominal-sync-conflict-detection",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts src/course-evaluation/_tests_/sync.test.ts",
+      "evidence": "Ejecución observada: 2 suites y 7 pruebas aprobadas. resolveSync detecta el conflicto concurrente entre inicio local y reasignación remota en el campo work sin mutar los registros base, local ni remoto."
+    },
+    {
+      "id": "nominal-sync-deduplicate-replayed-operations",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts",
+      "evidence": "Ejecución observada: 1 suite y 3 pruebas aprobadas. deduplicateOperations preserva la primera operación de cada operationId estable en su orden original y sin mutar las entradas."
     }
   ]
 }
