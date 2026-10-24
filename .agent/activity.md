@@ -5,7 +5,8 @@ este archivo solo es para tratar las instrucciones y los criterios de aceptacion
 
 Tu trabajo sera dividir la tarea entre 3 personas para poder entregar todo completo para la respectiva semana y devolver las asignaciones a cada persona por el chat 
 
-Esta es la actividad de esta semana los archivos comprimidos ya se encuentran en el proyecto:
+Esta es la actividad de esta semana los archivos comprimidos ya se encuentran en el proyecto tienes aun mas contexto en agent/activity/ACTIVITY_STUDENT_FACING.md
+ , agent/activity/RUBRIC_PUBLIC.MD , agent/activity/CAMPUSOPS_API.MD y agent/activity/CAMPUSOPS.MD  :
 
 
 # Semana 08 — Persistencia íntegra y sincronización (8 puntos)
@@ -49,34 +50,3 @@ Por separado, cada integrante responde **Quiz semanal 8 — Persistencia y sincr
 
 
 Actividad individual por revision de skill revision-aporte-individual-skill.md : 
-
-👤 Integrante 1: Martín — [3523110349]
-Eje de trabajo: Modelo de Datos Local y Cola de Operaciones Offline Persistente (Punto 1 y AC-02)
-
-Archivos asignados:
-
-
-docs/data-model.md
- (Nuevo entregable requerido)
-src/campusops/infrastructure/persistence/OfflineOperationQueue.ts (o archivo equivalente de persistencia)
-src/campusops/_tests_/OfflineOperationQueue.test.ts
-Contribución a 
-
-evidence/week-08/individual.json
-Rama de trabajo recomendada: feature/week-08-persistence-datamodel
-Tareas a realizar:
-Definir y estructurar la cola local persistente:
-Almacenar operaciones pendientes con identidad estable (operationId), identificador de incidencia (incidentId), versión base (baseVersion), autor (authorId), marca de tiempo y payload de la acción.
-Asegurar que las notas y referencias a fotografías pendientes sean persistentes y sigan utilizables tras reiniciar la app (no solo en memoria RAM durante la sesión).
-Documentar el modelo de datos:
-Redactar 
-
-docs/data-model.md
- explicando el esquema de almacenamiento local, estructura de la cola de pendientes, claves de identidad y garantías de durabilidad tras reinicios.
-Pruebas de persistencia y reinicio:
-Crear pruebas unitarias que simulen el ciclo de vida: encolar operaciones, cerrar/reiniciar el almacén, y verificar que los datos continúan íntegros y listos para sincronizar.
-Evidencias individuales:
-Registrar en 
-
-evidence/week-08/individual.json
- su predicción técnica, comando de prueba ejecutado, resultado observado y justificación de sus archivos.

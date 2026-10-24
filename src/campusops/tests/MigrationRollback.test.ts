@@ -4,15 +4,11 @@ import {
   type SchemaMigration,
 } from '../infrastructure/persistence/SchemaMigrationManager';
 
-interface MigrationVersionRow {
-  version: number;
-}
-
 interface MemoryDatabaseState {
   tables: Set<string>;
   columns: Map<string, Set<string>>;
   migrationVersions: number[];
-  pendingOperations: Array<{ operationId: string; status: string }>;
+  pendingOperations: { operationId: string; status: string }[];
 }
 
 class MemoryMigrationDatabase implements MigrationDatabase {
@@ -140,3 +136,81 @@ test('rolls back all schema changes and preserves pending operations when v2 fai
   expect(database.state.migrationVersions).toEqual([]);
   expect(database.state.pendingOperations).toEqual(initialPendingOperations);
 });
+
+test('nominal: applies configured migrations and returns final schema version while preserving pending operations', async () => {
+  const database = new MemoryMigrationDatabase();
+  const initialPendingOperations = database.state.pendingOperations.map(
+    (operation) => ({ ...operation }),
+  );
+
+  const migrations: SchemaMigration[] = [
+    {
+      version: 1,
+      async up(db) {
+        await db.runAsync(`
+          CREATE TABLE IF NOT EXISTS incidents_pending (
+            id INTEGER PRIMARY KEY NOT NULL
+          )
+        `);
+      },
+    },
+    {
+      version: 2,
+      async up(db) {
+        await db.runAsync(
+          'ALTER TABLE incidents_pending ADD COLUMN migration_marker TEXT',
+        );
+      },
+    },
+  ];
+
+  const manager = new SchemaMigrationManager(database, migrations);
+  const finalVersion = await manager.migrate();
+
+  expect(finalVersion).toBe(2);
+  expect(database.transactionCount).toBe(1);
+  expect(database.rollbackCount).toBe(0);
+  expect(database.state.tables.has('incidents_pending')).toBe(true);
+  expect(database.state.columns.get('incidents_pending')?.has('migration_marker')).toBe(true);
+  expect(database.state.migrationVersions).toEqual([1, 2]);
+  expect(database.state.pendingOperations).toEqual(initialPendingOperations);
+});
+
+test('boundary: preserves schema and pending operations with no changes when database is already up to date', async () => {
+  const database = new MemoryMigrationDatabase();
+  database.state.tables.add('incidents_pending');
+  database.state.columns.set('incidents_pending', new Set(['migration_marker']));
+  database.state.migrationVersions = [1, 2];
+
+  const initialPendingOperations = database.state.pendingOperations.map(
+    (operation) => ({ ...operation }),
+  );
+
+  let upCalled = false;
+  const migrations: SchemaMigration[] = [
+    {
+      version: 1,
+      async up() {
+        upCalled = true;
+      },
+    },
+    {
+      version: 2,
+      async up() {
+        upCalled = true;
+      },
+    },
+  ];
+
+  const manager = new SchemaMigrationManager(database, migrations);
+  const finalVersion = await manager.migrate();
+
+  expect(finalVersion).toBe(2);
+  expect(upCalled).toBe(false);
+  expect(database.transactionCount).toBe(1);
+  expect(database.rollbackCount).toBe(0);
+  expect(database.state.tables.has('incidents_pending')).toBe(true);
+  expect(database.state.migrationVersions).toEqual([1, 2]);
+  expect(database.state.pendingOperations).toEqual(initialPendingOperations);
+});
+
