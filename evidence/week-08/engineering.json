@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 8,
-  "commitSha": "12f37333806e3e8806b44ffde60cee3678ad04f8",
+  "commitSha": "773ba4383be03a6e3278ae8fbedf9f4e5fdd7c36",
   "decision": "Combinar automáticamente cambios independientes comparando contenido JSON, declarar conflictos deterministas cuando ambas partes cambian el mismo campo y conservar la primera operación por operationId.",
   "alternatives": [
     "Última escritura gana (LWW): Implementación sencilla y resolución automática de mutaciones concurrentes, pero con el costo y riesgo crítico de sobrescribir reasignaciones remotas o intenciones locales sin confirmación, generando pérdida silenciosa de trabajo.",
