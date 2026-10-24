@@ -21,16 +21,20 @@
       "explanation": "Implementé el manager de migraciones versionadas y una prueba que fuerza el fallo de v2, verifica la propagación del error, el rollback atómico simulado y la conservación de las operaciones pendientes."
     },
     {
-      "name": "NOMBRE_COMPANERO_1",
-      "studentId": "MATRICULA_COMPANERO_1",
-      "commitShas": ["SHA_DEL_COMMIT_COMPANERO_1"],
-      "files": ["ARCHIVO_COMPANERO_1"],
-      "tests": ["PRUEBA_COMPANERO_1"],
+      "name": "Oscar Martinez Martinez",
+      "studentId": "3523110806",
+      "commitShas": ["d68b256b3c3cd7a12a9abcc87ce8d8783706a1c3"],
+      "files": [
+        "src/course-evaluation/index.ts",
+        "src/course-evaluation/_tests_/sync.test.ts",
+        "docs/sync-policy.md"
+      ],
+      "tests": ["src/course-evaluation/_tests_/sync.test.ts", "course-tests/public/week-08.test.ts"],
       "reviews": [],
-      "prediction": "PREDICCION_COMPANERO_1",
-      "command": "COMANDO_DE_VERIFICACION_COMPANERO_1",
-      "observedResult": "RESULTADO_OBSERVADO_COMPANERO_1",
-      "explanation": "CONTRIBUCION_COMPANERO_1"
+      "prediction": "AC-02 y AC-04: la resolución combinará cambios independientes, reportará conflictos deterministas por campo y conservará la primera operación para evitar efectos duplicados.",
+      "command": "npm.cmd test -- --ci --runInBand course-tests/public/week-08.test.ts src/course-evaluation/_tests_/sync.test.ts",
+      "observedResult": "2 suites aprobadas, 7 pruebas aprobadas y 0 snapshots; npm.cmd run typecheck terminó sin errores.",
+      "explanation": "Implementé resolveSync para comparar valores JSON por contenido, combinar cambios independientes, ordenar colisiones y preservar entradas sin mutarlas. Implementé deduplicateOperations para conservar la primera operación de cada operationId en el orden original. Documenté la política de conflictos, reintentos e idempotencia, incluida la limitación de integración completa con la cola offline."
     },
     {
       "name": "NOMBRE_COMPANERO_2",
