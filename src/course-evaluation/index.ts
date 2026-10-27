@@ -7,6 +7,7 @@ import type {
   SyncRecord,
 } from './contracts';
 import type { IncidentLocation } from '../campusops/contracts';
+import { resolveIncidentLocation } from '../campusops/application/IncidentLocationResolver';
 import { SessionRefreshCoordinator } from '../campusops/application/SessionRefreshCoordinator';
 import { parseRemoteResourceDto } from '../campusops/infrastructure/RemoteResourceParser';
 export { redactForTelemetry } from '../campusops/infrastructure/SafeTelemetry';
@@ -147,7 +148,6 @@ export function reducePermissionLifecycle(
   return pending('reducePermissionLifecycle');
 }
 
-/** Week 09: see docs/CAMPUSOPS_API.md; this is not a completed solution. */
-export function selectIncidentLocation(_provider: unknown, _manualLabel: string): IncidentLocation {
-  return pending('selectIncidentLocation');
+export function selectIncidentLocation(provider: unknown, manualLabel: string): IncidentLocation {
+  return resolveIncidentLocation(provider, manualLabel);
 }
