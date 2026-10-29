@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "week": 9,
+  "commitSha": "bf8de2475cecb3c0f63d9b086aaf6e58c0ad885d",
+  "decision": "Implementar una suite de seguridad determinista dentro del alcance real de React Native/Expo: proteger contra regresiones de sinks HTML/browser en el árbol nativo, detectar patrones de secretos en archivos versionados con exclusiones explícitas para fixtures públicos y artefactos generados, y documentar CSP, cabeceras HTTP y robots.txt como no aplicables mientras no exista una superficie web verificable.",
+  "alternatives": [
+    "Crear pruebas que supongan una CSP, cabeceras HTTP o public/robots.txt inexistentes; se descarta porque afirmaría protecciones no observadas.",
+    "Limitar la comprobación a patrones de secretos y omitir la frontera React Native/web; se descarta porque no documentaría el riesgo de introducir sinks HTML/browser ni las limitaciones de seguridad web.",
+    "Mantener la suite acotada a configuración y fuente versionadas, excluir node_modules, builds y cobertura, aceptar fixtures públicos documentados y dejar las comprobaciones web explícitamente condicionadas a la existencia de una superficie web; alternativa seleccionada por ser reproducible sin servicios externos."
+  ],
+  "tradeoff": "La decisión evita falsos positivos y no presenta CSP, cabeceras o robots.txt como controles activos sin evidencia. A cambio, no acredita sanitización HTML de una superficie web inexistente ni sustituye una revisión manual de despliegues futuros; además, la ejecución automatizada queda pendiente mientras el runner no pueda iniciar los comandos.",
+  "requirementIds": [
+    "AC-03",
+    "AC-04"
+  ],
+  "verification": [
+    {
+      "command": "npm run test:security",
+      "result": "blocked: not executed",
+      "evidence": "El runner de terminal no pudo iniciar el proceso y devolvió helper_unknown_error: setup refresh had errors. No se registran pruebas aprobadas ni cobertura."
+    },
+    {
+      "command": "npm test -- --runInBand",
+      "result": "blocked: not executed",
+      "evidence": "El mismo fallo del runner impidió iniciar npm. No se registra resultado de Jest."
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "blocked: not executed",
+      "evidence": "El runner no pudo crear el proceso. La comprobación problems del editor no sustituye typecheck."
+    },
+    {
+      "command": "npm run lint",
+      "result": "blocked: not executed",
+      "evidence": "El runner no pudo crear el proceso. La comprobación problems del editor no sustituye ESLint."
+    }
+  ],
+  "shaStatus": "Pendiente del commit final real; no se inventa ni se reutiliza un SHA como evidencia de esta implementación."
+}
