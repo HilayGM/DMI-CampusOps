@@ -49,3 +49,23 @@ Sustituye `01` por la semana efectiva correspondiente. No edites tests o workflo
 - No subas `.env`, tokens, credenciales, datos personales reales ni archivos de firma.
 - El backend incluido es sintético y no contiene credenciales.
 - Todo valor `EXPO_PUBLIC_*` queda expuesto al cliente y jamás debe contener secretos.
+
+## Seguridad y verificación
+
+Ejecuta la suite específica con:
+
+```bash
+npm run test:security
+```
+
+La suite revisa payloads de entrada peligrosos, límites de esquemas URL, patrones de secretos en archivos versionados y exclusiones de artefactos generados. Los fixtures públicos documentados, como `course-valid-token`, los hashes SHA, nombres de campos y `Idempotency-Key` no se consideran credenciales por sí solos.
+
+La suite completa se ejecuta con:
+
+```bash
+npm test
+```
+
+El modelo de amenazas y los límites de privacidad están en `docs/CAMPUSOPS.md` y `docs/CAMPUSOPS_API.md`. Las pruebas automáticas son una señal reproducible; deben complementarse con revisión manual de cambios, configuración y evidencia.
+
+Este proyecto es una aplicación React Native/Expo. La configuración actual no declara una superficie web, CSP, cabeceras HTTP ni `public/robots.txt`; por ello `test:security` no afirma que esas protecciones estén activas. Si se añade una exportación web o servidor, las verificaciones deben hacerse contra la configuración y respuesta reales del despliegue.

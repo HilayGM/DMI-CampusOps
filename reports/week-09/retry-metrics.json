@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "week": 9,
+  "commitSha": "5103b3a85341ea7a884e01991451d355eb42626e",
+  "generatedAt": "2026-10-30T15:45:00.000-06:00",
+  "limits": {
+    "maxRetries": 3,
+    "firstDisallowedAttempt": 4,
+    "backoffDelaysMs": [1000, 2000, 4000]
+  },
+  "observedAttempts": [
+    { "attempt": 1, "retry": true, "delayMs": 1000 },
+    { "attempt": 2, "retry": true, "delayMs": 2000 },
+    { "attempt": 3, "retry": true, "delayMs": 4000 },
+    { "attempt": 4, "retry": false }
+  ],
+  "checks": [
+    {
+      "id": "bounded-progressive-timeout-backoff",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand src/course-evaluation/_tests_/retry.test.ts course-tests/public/week-09.test.ts",
+      "evidence": "Ejecución aprobada: 2 suites y 8 pruebas. planRetry devuelve esperas finitas progresivas de 1000, 2000 y 4000 ms para intentos 1–3 y { retry: false } desde el intento 4."
+    },
+    {
+      "id": "rate-limit-retry-after-exact-delay",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --ci --runInBand src/course-evaluation/_tests_/retry.test.ts course-tests/public/week-09.test.ts",
+      "evidence": "Para GET 429 con retryAfterMs=800, el planificador devuelve delayMs=800 exactamente."
+    },
+    {
+      "id": "unsafe-post-retry-rejected",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --ci --runInBand src/course-evaluation/_tests_/retry.test.ts course-tests/public/week-09.test.ts",
+      "evidence": "Para POST 503 sin idempotencyKey, el planificador devuelve retry=false, delayMs=0 y requiresStableIdempotencyKey=true."
+    }
+  ]
+}

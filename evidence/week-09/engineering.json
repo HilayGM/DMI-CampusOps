@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "week": 9,
+  "commitSha": "5103b3a85341ea7a884e01991451d355eb42626e",
+  "decision": "Implementar una política de resiliencia determinista en CampusOps que delimite tres respuestas operativas ante contingencias de red: 1) reintentar solicitudes idempotentes o transitorias (429 con Retry-After, 500 y timeouts) aplicando backoff progresivo finito acotado estrictamente a tres reintentos y exigiendo clave de idempotencia estable en métodos mutantes POST; 2) degradar a alternativa manual determinista sin coordenadas ficticias cuando el proveedor de geocodificación devuelva fallas, límites de cuota (429), timeouts o datos fuera de rango geodésico; y 3) reportar un fallo definitivo sin reintentar cuando se alcance el cuarto intento o cuando un POST carezca de identidad de idempotencia estable, previniendo saturación y duplicación de efectos en el servidor.",
+  "alternatives": [
+    "Reintentos continuos con espera fija: Permite insistir repetidamente hasta que el servidor o proveedor responda, pero satura la red del dispositivo, agota cuotas externas ante errores 429 y corre el riesgo de duplicar operaciones mutantes sin garantizar terminación.",
+    "Fallo inmediato sin reintentos ni alternativa manual: Simplifica el código del cliente al no requerir caché ni planificador de reintentos, pero bloquea el registro operativo de incidencias ante fallas transitorias de conectividad y deja a los técnicos sin posibilidad de indicar ubicación manual en campo.",
+    "Política de resiliencia adaptativa con caché acotada, fallback manual y reintentos acotados por idempotencia: Alternativa seleccionada que asegura continuidad del servicio con ubicación manual, protege cuotas con TTL y caché en memoria, y garantiza que las respuestas perdidas se reintenten sin duplicar eventos en el backend."
+  ],
+  "tradeoff": "La decisión seleccionada añade complejidad en la gestión de claves de idempotencia, caché en memoria y coordinación de temporizadores en el cliente, pero a cambio previene la pérdida de operaciones por caídas de red, elimina la duplicación accidental de historial o notificaciones en el servidor y asegura que la aplicación siga siendo operativa aun cuando los servicios de mapas externos queden fuera de servicio.",
+  "requirementIds": [
+    "AC-01",
+    "AC-02",
+    "AC-03",
+    "AC-04",
+    "AC-05"
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass: 0 errors",
+      "evidence": "Comprobación estática de tipos de TypeScript exitosa en todos los adaptadores, contratos y pruebas de la Semana 09."
+    },
+    {
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentLocationResolver.test.ts",
+      "result": "pass: 13 passed",
+      "evidence": "Verificación de aceptación de geocodificación válida, caché en memoria con TTL y degradación a ubicación manual ante 429 o coordenadas inválidas."
+    },
+    {
+      "command": "npm test -- --runInBand src/course-evaluation/_tests_/retry.test.ts",
+      "result": "pass: 4 passed",
+      "evidence": "Comprobación de planRetry con esperas progresivas 1000/2000/4000 ms, corte en intento 4, respeto a Retry-After y rechazo de POST sin clave estable."
+    },
+    {
+      "command": "npm test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "result": "pass: 4 passed",
+      "evidence": "Inyección de falla de respuesta perdida post-commit; reintento exitoso con la misma clave de idempotencia devolviendo duplicate=true sin duplicar historial."
+    },
+    {
+      "command": "npm test -- --runInBand course-tests/public/week-09.test.ts",
+      "result": "pass: 4 passed",
+      "evidence": "Las 4 pruebas públicas de la Semana 09 del curso pasan satisfactoriamente."
+    }
+  ]
+}

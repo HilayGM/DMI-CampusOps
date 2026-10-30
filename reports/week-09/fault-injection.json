@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "week": 9,
+  "commitSha": "5103b3a85341ea7a884e01991451d355eb42626e",
+  "generatedAt": "2026-10-30T15:45:00.000-06:00",
+  "checks": [
+    {
+      "id": "lost-response-timeout-after-commit",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm.cmd test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "evidence": "Reproducción controlada de timeout tras commit en servidor; el reintento con la misma clave estable devuelve duplicate=true, estado resolved y exactamente una entrada en el historial sin duplicar efectos."
+    },
+    {
+      "id": "retry-limit-runaway-prevention",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --runInBand src/course-evaluation/_tests_/retry.test.ts",
+      "evidence": "El planificador planRetry devuelve delayMs progresivo para intentos 1–3 y { retry: false } en intento 4, impidiendo bucles infinitos de reintento."
+    },
+    {
+      "id": "unsafe-post-idempotency-key-required",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm.cmd test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "evidence": "Solicitud POST sin clave de idempotencia estable es rechazada con requiresStableIdempotencyKey=true y retry=false."
+    },
+    {
+      "id": "nominal-resolution-commitment",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm.cmd test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "evidence": "Resolución nominal con clave estable 'resolve-key-001' procesada con éxito y persistida con versión 4."
+    }
+  ]
+}

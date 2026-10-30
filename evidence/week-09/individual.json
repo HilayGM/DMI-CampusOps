@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "week": 9,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "commitShas": [
+        "5d11e22b78e11f5e45735ac6517e163765117bfc"
+      ],
+      "files": [
+        "src/campusops/application/IncidentLocationResolver.ts",
+        "src/campusops/infrastructure/GeocodingCache.ts",
+        "src/course-evaluation/index.ts",
+        "src/campusops/_tests_/IncidentLocationResolver.test.ts",
+        "docs/resilience-policy.md"
+      ],
+      "tests": [
+        "src/campusops/_tests_/IncidentLocationResolver.test.ts",
+        "course-tests/public/week-09.test.ts"
+      ],
+      "reviews": [
+        "docs/CAMPUSOPS_API.md"
+      ],
+      "prediction": "La función selectIncidentLocation aceptará coordenadas válidas y devolverá manual ante nulos, 429 o datos inválidos sin inventar coordenadas.",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentLocationResolver.test.ts",
+      "observedResult": "Aprobadas 13 pruebas unitarias nominales, límite y de fallback, comprobando aceptación de geocodificación y degradación a manual.",
+      "explanation": "Implementé la lógica de selección y resolución de ubicación con degradación a manual y la caché acotada en memoria para evitar saturar cuotas de geocodificación."
+    },
+    {
+      "name": "Felipe Mora Lopez",
+      "studentId": "3523110443",
+      "commitShas": [
+        "49de6b902d29f6114c7ea54dc814ce44c5718b48"
+      ],
+      "files": [
+        "src/course-evaluation/index.ts",
+        "src/course-evaluation/_tests_/retry.test.ts",
+        "reports/week-09/retry-metrics.json"
+      ],
+      "tests": [
+        "src/course-evaluation/_tests_/retry.test.ts",
+        "course-tests/public/week-09.test.ts"
+      ],
+      "reviews": [
+        "docs/resilience-policy.md"
+      ],
+      "prediction": "El planificador planRetry limitará los reintentos al cuarto intento y respetará Retry-After con esperas acotadas.",
+      "command": "npm.cmd test -- --ci --runInBand src/course-evaluation/_tests_/retry.test.ts course-tests/public/week-09.test.ts",
+      "observedResult": "Ejecución aprobada: 2 suites y 8 pruebas. Se verificaron demoras finitas de 1000/2000/4000 ms, corte en intento 4, Retry-After exacto de 800 ms y rechazo de POST sin clave estable.",
+      "explanation": "Implementé planRetry con backoff exponencial finito, respeto estricto de Retry-After, límite en el cuarto intento y protección de POST mediante una clave de idempotencia no vacía."
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "commitShas": [
+        "2ede2b173648cae20fe57650eeb52f65b33a0b0f"
+      ],
+      "files": [
+        "src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+        "reports/week-09/fault-injection.json",
+        "evidence/week-09/engineering.json"
+      ],
+      "tests": [
+        "src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+        "course-tests/public/week-09.test.ts"
+      ],
+      "reviews": [
+        "docs/resilience-policy.md",
+        "docs/CAMPUSOPS_API.md"
+      ],
+      "prediction": "La simulación de respuesta perdida tras guardado en servidor devolverá duplicate=true en el reintento y no duplicará entradas en el historial.",
+      "command": "npm test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "observedResult": "Aprobadas 4 pruebas de inyección de falla, comprobando replay idempotente de cierre y resolución sin duplicación de historial.",
+      "explanation": "Implementé las pruebas de inyección de fallas por respuesta perdida tras commit en servidor con idempotencia, el reporte fault-injection.json y la decisión de ingeniería."
+    }
+  ]
+}
