@@ -125,14 +125,53 @@ export function deduplicateOperations<T extends Readonly<{ operationId: string }
   return result;
 }
 
-export function planRetry(_input: Readonly<{
+const MAX_RETRY_ATTEMPT = 4;
+const RETRY_BASE_DELAY_MS = 1_000;
+const RETRY_MAX_DELAY_MS = 8_000;
+
+export function planRetry(input: Readonly<{
   method: 'GET' | 'POST';
   status: number | 'timeout';
   attempt: number;
   retryAfterMs?: number;
   idempotencyKey?: string;
-}>): Readonly<{ retry: boolean; delayMs: number; requiresStableIdempotencyKey: boolean }> {
-  return pending('planRetry');
+}>): Readonly<{ retry: false; delayMs?: 0; requiresStableIdempotencyKey?: boolean }>
+  | Readonly<{ retry: true; delayMs: number; requiresStableIdempotencyKey: false }> {
+  if (input.attempt >= MAX_RETRY_ATTEMPT
+    || !Number.isInteger(input.attempt)
+    || input.attempt < 1) {
+    return { retry: false };
+  }
+
+  const hasStableIdempotencyKey = typeof input.idempotencyKey === 'string'
+    && input.idempotencyKey.trim().length > 0;
+  if (input.method === 'POST' && !hasStableIdempotencyKey) {
+    return { retry: false, delayMs: 0, requiresStableIdempotencyKey: true };
+  }
+
+  const retryable = input.status === 'timeout'
+    || input.status === 429
+    || (typeof input.status === 'number' && input.status >= 500);
+  if (!retryable) {
+    return { retry: false, delayMs: 0, requiresStableIdempotencyKey: false };
+  }
+
+  const backoffDelayMs = Math.min(
+    RETRY_BASE_DELAY_MS * 2 ** (input.attempt - 1),
+    RETRY_MAX_DELAY_MS,
+  );
+  const delayMs = input.status === 429
+    && typeof input.retryAfterMs === 'number'
+    && Number.isFinite(input.retryAfterMs)
+    && input.retryAfterMs >= 0
+    ? input.retryAfterMs
+    : backoffDelayMs;
+
+  return {
+    retry: true,
+    delayMs,
+    requiresStableIdempotencyKey: false,
+  };
 }
 
 export function reduceRemoteResponses(_input: Readonly<{

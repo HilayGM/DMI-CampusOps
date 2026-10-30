@@ -28,24 +28,27 @@
       "explanation": "Implementé la lógica de selección y resolución de ubicación con degradación a manual y la caché acotada en memoria para evitar saturar cuotas de geocodificación."
     },
     {
+      "name": "Felipe Mora Lopez",
       "studentId": "3523110443",
       "commitShas": [
         "d38d3a37ec531a328239eb8b00c972c6d5e72150"
       ],
       "files": [
         "src/course-evaluation/index.ts",
+        "src/course-evaluation/_tests_/retry.test.ts",
         "reports/week-09/retry-metrics.json"
       ],
       "tests": [
+        "src/course-evaluation/_tests_/retry.test.ts",
         "course-tests/public/week-09.test.ts"
       ],
       "reviews": [
         "docs/resilience-policy.md"
       ],
       "prediction": "El planificador planRetry limitará los reintentos al cuarto intento y respetará Retry-After con esperas acotadas.",
-      "command": "npm test -- --runInBand -t retries course-tests/public/week-09.test.ts",
-      "observedResult": "Comprobación de límites en reintentos progresivos y verificación de idempotencia en operaciones mutantes.",
-      "explanation": "Diseño y estructura de la política de reintentos acotados y límites progresivos para operaciones idempotentes y mutantes."
+      "command": "npm.cmd test -- --ci --runInBand src/course-evaluation/_tests_/retry.test.ts course-tests/public/week-09.test.ts",
+      "observedResult": "Ejecución aprobada: 2 suites y 8 pruebas. Se verificaron demoras finitas de 1000/2000/4000 ms, corte en intento 4, Retry-After exacto de 800 ms y rechazo de POST sin clave estable.",
+      "explanation": "Implementé planRetry con backoff exponencial finito, respeto estricto de Retry-After, límite en el cuarto intento y protección de POST mediante una clave de idempotencia no vacía."
     },
     {
       "studentId": "3523110806",
