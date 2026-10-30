@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "week": 9,
   "mode": "public",
-  "commitSha": "5103b3a85341ea7a884e01991451d355eb42626e",
-  "evaluatedAt": "2026-10-30T21:49:23.369795+00:00",
-  "status": "pass",
+  "commitSha": "8127131e4b67a98186fc01abe57ffc5b5a05d6f6",
+  "evaluatedAt": "2026-10-30T22:07:16.883116+00:00",
+  "status": "fail",
   "checks": [
     {
       "id": "base_files",
@@ -55,6 +55,26 @@
       "id": "schema:evidence/week-09/individual.json",
       "status": "pass",
       "detail": "three individual evidence records found"
+    },
+    {
+      "id": "toolchain_1",
+      "status": "fail",
+      "detail": "npm run typecheck\n[WinError 2] El sistema no puede encontrar el archivo especificado"
+    },
+    {
+      "id": "toolchain_2",
+      "status": "fail",
+      "detail": "npm run lint\n[WinError 2] El sistema no puede encontrar el archivo especificado"
+    },
+    {
+      "id": "toolchain_3",
+      "status": "fail",
+      "detail": "npm run audit:ci\n[WinError 2] El sistema no puede encontrar el archivo especificado"
+    },
+    {
+      "id": "toolchain_4",
+      "status": "fail",
+      "detail": "npm test -- --ci --runInBand course-tests/public/week-09.test.ts\n[WinError 2] El sistema no puede encontrar el archivo especificado"
     }
   ]
 }
