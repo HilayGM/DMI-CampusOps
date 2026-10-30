@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 9,
-  "commitSha": "2ede2b173648cae20fe57650eeb52f65b33a0b0f",
+  "commitSha": "5103b3a85341ea7a884e01991451d355eb42626e",
   "decision": "Implementar una política de resiliencia determinista en CampusOps que delimite tres respuestas operativas ante contingencias de red: 1) reintentar solicitudes idempotentes o transitorias (429 con Retry-After, 500 y timeouts) aplicando backoff progresivo finito acotado estrictamente a tres reintentos y exigiendo clave de idempotencia estable en métodos mutantes POST; 2) degradar a alternativa manual determinista sin coordenadas ficticias cuando el proveedor de geocodificación devuelva fallas, límites de cuota (429), timeouts o datos fuera de rango geodésico; y 3) reportar un fallo definitivo sin reintentar cuando se alcance el cuarto intento o cuando un POST carezca de identidad de idempotencia estable, previniendo saturación y duplicación de efectos en el servidor.",
   "alternatives": [
     "Reintentos continuos con espera fija: Permite insistir repetidamente hasta que el servidor o proveedor responda, pero satura la red del dispositivo, agota cuotas externas ante errores 429 y corre el riesgo de duplicar operaciones mutantes sin garantizar terminación.",
