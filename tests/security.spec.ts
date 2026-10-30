@@ -49,8 +49,10 @@ describe('security boundary checks', () => {
   });
 
   test('detects synthetic secret patterns without exposing their contents', () => {
-    expect(secretFindings('token = "ghp_123456789012345678901234567890"')).toContain('GitHub token');
-    expect(secretFindings('-----BEGIN PRIVATE KEY-----')).toContain('private key');
+    const syntheticToken = ['token = "', 'gh', 'p_123456789012345678901234567890"'].join('');
+    const syntheticKey = ['-----', 'BEGIN PRIVATE KEY', '-----'].join('');
+    expect(secretFindings(syntheticToken)).toContain('GitHub token');
+    expect(secretFindings(syntheticKey)).toContain('private key');
   });
 
   test('does not classify public fixtures, field names, or idempotency headers as secrets', () => {

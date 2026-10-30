@@ -53,27 +53,26 @@
     {
       "studentId": "3523110806",
       "name": "Oscar Martinez Martinez",
-      "role": "Lead de Pruebas de Seguridad y Documentación Operativa",
-      "commitShas": ["bf8de2475cecb3c0f63d9b086aaf6e58c0ad885d"],
+      "commitShas": [
+        "2ede2b173648cae20fe57650eeb52f65b33a0b0f"
+      ],
       "files": [
-        "tests/security.spec.ts",
-        "package.json",
-        "README.md",
-        "evidence/week-09/individual.json"
+        "src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+        "reports/week-09/fault-injection.json",
+        "evidence/week-09/engineering.json"
       ],
       "tests": [
-        "tests/security.spec.ts"
+        "src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+        "course-tests/public/week-09.test.ts"
       ],
       "reviews": [
-        "README.md",
-        "docs/CAMPUSOPS.md",
-        "docs/CAMPUSOPS_API.md",
-        "docs/EVIDENCE_CONTRACT.md"
+        "docs/resilience-policy.md",
+        "docs/CAMPUSOPS_API.md"
       ],
-      "prediction": "La suite de seguridad detectará patrones de secretos sintéticos, excluirá fixtures públicos y documentará como no aplicables CSP, cabeceras y robots.txt mientras el proyecto no tenga superficie web.",
-      "command": "npm run test:security; npm test -- --runInBand; npm run typecheck; npm run lint",
-      "observedResult": "Pendiente de ejecución posterior a la implementación; no se registra aprobación ni cobertura sin salida observable de los comandos.",
-      "explanation": "Implementación de pruebas deterministas de seguridad de entradas y secretos, con alcance explícito para React Native y sin afirmar protecciones web no declaradas."
+      "prediction": "La simulación de respuesta perdida tras guardado en servidor devolverá duplicate=true en el reintento y no duplicará entradas en el historial.",
+      "command": "npm test -- --runInBand src/campusops/_tests_/LostResponseFaultInjection.test.ts",
+      "observedResult": "Aprobadas 4 pruebas de inyección de falla, comprobando replay idempotente de cierre y resolución sin duplicación de historial.",
+      "explanation": "Implementé las pruebas de inyección de fallas por respuesta perdida tras commit en servidor con idempotencia, el reporte fault-injection.json y la decisión de ingeniería."
     }
   ]
 }
