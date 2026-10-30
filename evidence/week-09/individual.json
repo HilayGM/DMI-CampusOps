@@ -52,23 +52,28 @@
     },
     {
       "studentId": "3523110806",
-      "commitShas": [
-        "d38d3a37ec531a328239eb8b00c972c6d5e72150"
-      ],
+      "name": "Oscar Martinez Martinez",
+      "role": "Lead de Pruebas de Seguridad y Documentación Operativa",
+      "commitShas": ["bf8de2475cecb3c0f63d9b086aaf6e58c0ad885d"],
       "files": [
-        "reports/week-09/fault-injection.json",
-        "evidence/week-09/engineering.json"
+        "tests/security.spec.ts",
+        "package.json",
+        "README.md",
+        "evidence/week-09/individual.json"
       ],
       "tests": [
-        "course-tests/public/week-09.test.ts"
+        "tests/security.spec.ts"
       ],
       "reviews": [
-        "docs/resilience-policy.md"
+        "README.md",
+        "docs/CAMPUSOPS.md",
+        "docs/CAMPUSOPS_API.md",
+        "docs/EVIDENCE_CONTRACT.md"
       ],
-      "prediction": "La simulación de respuesta perdida tras guardado no duplicará efectos al reintentar con la misma clave de idempotencia.",
-      "command": "npm test -- --runInBand course-tests/public/week-09.test.ts",
-      "observedResult": "Validación de ausencia de duplicados y registro de inyección de fallas en reportes oficiales.",
-      "explanation": "Estructuración de pruebas de inyección de fallas por respuesta perdida tras commit y justificación técnica de la decisión."
+      "prediction": "La suite de seguridad detectará patrones de secretos sintéticos, excluirá fixtures públicos y documentará como no aplicables CSP, cabeceras y robots.txt mientras el proyecto no tenga superficie web.",
+      "command": "npm run test:security; npm test -- --runInBand; npm run typecheck; npm run lint",
+      "observedResult": "Pendiente de ejecución posterior a la implementación; no se registra aprobación ni cobertura sin salida observable de los comandos.",
+      "explanation": "Implementación de pruebas deterministas de seguridad de entradas y secretos, con alcance explícito para React Native y sin afirmar protecciones web no declaradas."
     }
   ]
 }
