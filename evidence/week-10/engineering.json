@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "week": 10,
+  "commitSha": "b09b75ad2e8d2456ad1e29fe3edaa1bb507febd7",
+  "decision": "Conservar únicamente identificadores técnicos válidos —correlationId, requestId, status, attempt y durationMs, además de incidentId por compatibilidad— y reemplazar por [REDACTED] todo campo sensible o valor escalar que no pueda clasificarse con seguridad. Los contenedores anidados y arrays se recorren de forma recursiva, sin ejecutar getters, para mantener observabilidad estructural sin conservar texto libre, credenciales ni datos personales.",
+  "problem": "Los errores de red y de backend pueden contener tokens, credenciales, identidad, ubicación, fotografías, comentarios internos o diagnósticos privados. Registrar el error original facilita el diagnóstico, pero puede divulgar información fuera del límite de autorización de la incidencia.",
+  "privacyRisk": "Una sanitización basada sólo en una lista corta de propiedades permite filtraciones mediante variantes de nombres, claves con separadores o texto libre bajo propiedades desconocidas. Los objetos anidados y arrays requieren la misma política que el nivel superior.",
+  "alternatives": [
+    "Conservar el objeto completo y ocultar sólo token, password y email: tiene bajo costo de implementación, pero deja expuestos nombres, ubicación, texto libre, secretos con otros nombres y valores sensibles anidados.",
+    "Eliminar todo el contexto de error y registrar sólo un evento fijo: reduce casi por completo el riesgo de privacidad, pero impide relacionar solicitudes y diagnosticar reintentos, estados o duración.",
+    "Aplicar una allowlist técnica recursiva y redactar por defecto todo valor escalar no clasificado: conserva señales útiles y limita filtraciones, a cambio de perder campos operativos no incluidos explícitamente y requerir pruebas de contrato.",
+    "Decisión seleccionada: aplicar la allowlist técnica recursiva, conservar códigos de error operativos conocidos para mantener el contrato público y redactar texto libre, secretos, datos personales y valores desconocidos."
+  ],
+  "technicalFields": {
+    "preserved": ["correlationId", "requestId", "status", "attempt", "durationMs", "incidentId"],
+    "validity": "Sólo se conservan identificadores no vacíos, status textual o numérico finito, attempt entero no negativo y durationMs numérico finito no negativo. Los valores técnicos inválidos se redactan.",
+    "userState": "La interfaz debe mostrar un error seguro y recuperable, sin cuerpo de excepción ni datos privados."
+  },
+  "sensitiveDataPolicy": "Se redactan tokens, contraseñas, API keys, secretos, cookies, nombres, correos, identificadores personales, coordenadas, ubicaciones, fotografías, evidencias, comentarios internos, diagnósticos, descripciones, mensajes, stack, causa y texto libre. La normalización cubre camelCase, snake_case, guiones, mayúsculas y acentos.",
+  "diagnosticSignal": "La señal técnica conservada es la combinación de correlationId/requestId con status, attempt y durationMs; incidentId se conserva por compatibilidad con la telemetría existente.",
+  "tradeoff": "La política reduce el riesgo de exposición y mantiene correlación, estado y temporalidad para diagnosticar. El costo es que campos operativos desconocidos y texto libre dejan de estar disponibles, por lo que cualquier nueva señal debe incorporarse explícitamente al contrato y a sus pruebas.",
+  "residualRisks": [
+    "La suite completa de Semana 10 continúa bloqueada por reduceRemoteResponses, una función fuera del alcance de Oscar.",
+    "La evidencia individual existente no se actualizó por instrucción explícita y deberá corregirse en una etapa posterior con el commit real.",
+    "La validación de evidencias contra el SHA final requiere un commit posterior, que no se creó en esta etapa."
+  ],
+  "requirementIds": ["AC-01", "AC-03", "AC-04", "AC-05"],
+  "verification": [
+    {
+      "command": "npx jest --no-cache --runInBand src/campusops/tests/SafeTelemetry.test.ts",
+      "result": "pass",
+      "evidence": "9 pruebas aprobadas para sanitización exhaustiva, inmutabilidad, estructuras recursivas, referencias circulares y objetos con getters."
+    },
+    {
+      "command": "npx jest --no-cache --runInBand course-tests/public/week-10.test.ts -t \"observable error context is sanitized\"",
+      "result": "pass",
+      "evidence": "El test público de contexto de error sanitizado aprobó."
+    },
+    {
+      "command": "npm run typecheck && npm run lint",
+      "result": "pass",
+      "evidence": "TypeScript y ESLint terminaron sin errores."
+    },
+    {
+      "command": "npx jest --no-cache --runInBand course-tests/public/week-10.test.ts",
+      "result": "fail: external dependency",
+      "evidence": "1 prueba aprobada y 1 fallida; la falla corresponde exclusivamente a reduceRemoteResponses pendiente en src/course-evaluation/index.ts."
+    }
+  ],
+  "limitations": "Esta evidencia describe la implementación y verificaciones del worktree sin commit nuevo. No acredita la función reduceRemoteResponses ni modifica la evidencia individual del equipo."
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "week": 10,
+  "commitSha": "b09b75ad2e8d2456ad1e29fe3edaa1bb507febd7",
+  "generatedAt": "2026-11-04T03:21:16.7506228-06:00",
+  "responsible": "Oscar Martinez Martinez",
+  "policy": {
+    "technicalFields": ["correlationId", "requestId", "status", "attempt", "durationMs", "incidentId"],
+    "replacement": "[REDACTED]",
+    "sensitiveCategories": [
+      "access tokens", "passwords", "API keys", "secrets", "personal names", "email addresses",
+      "coordinates", "locations", "photographs", "evidence", "internal comments", "private diagnoses",
+      "descriptions", "messages", "free text"
+    ],
+    "nestedAndArrays": true,
+    "inputIsImmutable": true
+  },
+  "checks": [
+    {
+      "id": "safe-telemetry-exhaustive-unit-tests",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npx jest --no-cache --runInBand src/campusops/tests/SafeTelemetry.test.ts",
+      "evidence": "Jest aprobó 1 suite y 9 pruebas: identificadores técnicos, campos sensibles, formatos de claves, objetos anidados, arrays, texto libre, inmutabilidad, referencias circulares y getters problemáticos."
+    },
+    {
+      "id": "public-sanitized-error-context",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npx jest --no-cache --runInBand course-tests/public/week-10.test.ts -t \"observable error context is sanitized\"",
+      "evidence": "Jest aprobó el caso público de sanitización; el accessToken se reemplazó por [REDACTED] y attempt se conservó."
+    },
+    {
+      "id": "typecheck",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm run typecheck",
+      "evidence": "tsc --noEmit terminó sin errores."
+    },
+    {
+      "id": "lint",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm run lint",
+      "evidence": "ESLint terminó sin errores."
+    },
+    {
+      "id": "public-week10-suite",
+      "status": "fail",
+      "scenarioType": "failure",
+      "command": "npx jest --no-cache --runInBand course-tests/public/week-10.test.ts",
+      "evidence": "La prueba de sanitización aprobó; la prueba de respuesta obsoleta falló porque reduceRemoteResponses sigue lanzando 'must be implemented in the assigned week'. Esta dependencia pertenece a otro integrante y no fue modificada."
+    }
+  ],
+  "verificationStatus": "partial",
+  "limitations": [
+    "La suite pública completa no puede aprobar hasta que otro integrante implemente reduceRemoteResponses.",
+    "El reporte se generó sin crear commit; commitSha identifica el HEAD actual y la implementación validada permanece en el worktree.",
+    "La validación final de evidencias requiere el SHA final y no se ejecutó para evitar generar artefactos adicionales o modificar individual.json."
+  ]
+}
