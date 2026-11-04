@@ -1,0 +1,104 @@
+stateDiagram-v2
+    [*] --> Loading: Inicio de consulta o selección de incidencia
+
+    state Loading {
+        [*] --> SolicitandoDatos
+        SolicitandoDatos --> ProcesandoRespuesta: Respuesta recibida
+    }
+    note right of Loading
+        Acción del usuario:
+        - Cancelar carga (evita espera permanente)
+    end note
+
+    Loading --> Success: Datos obtenidos exitosamente (itemCount > 0)
+    Loading --> Empty: Sin registros o resultados vacíos (itemCount == 0)
+    Loading --> Error: Falla de red, HTTP 500 o timeout
+    Loading --> Cancelled: Usuario presiona Cancelar
+    Loading --> Offline: Red no disponible al iniciar petición
+
+    state Success {
+        [*] --> VisualizandoIncidencia
+        VisualizandoIncidencia --> Editando: Iniciar edición
+        Editando --> GuardandoLocal: Guardar cambios
+    }
+    note right of Success
+        Acciones del usuario:
+        - Consultar detalles y evidencias
+        - Actualizar estado o agregar notas
+        - Refrescar listado
+    end note
+
+    state Empty {
+        [*] --> PantallaVacia
+    }
+    note right of Empty
+        Acciones del usuario:
+        - Crear nueva incidencia
+        - Refrescar listado
+    end note
+
+    state Error {
+        [*] --> FallaNotificada
+    }
+    note right of Error
+        Acciones del usuario:
+        - Reintentar operación
+        - Ver mensaje accesible de causa
+        - Volver al inicio
+    end note
+
+    state Cancelled {
+        [*] --> OperacionCancelada
+    }
+    note right of Cancelled
+        Acciones del usuario:
+        - Reintentar consulta
+        - Volver al listado anterior
+    end note
+
+    state Offline {
+        [*] --> ModoSinConexion
+        ModoSinConexion --> EdicionLocal: Registrar notas o evidencias
+    }
+    note right of Offline
+        Acciones del usuario:
+        - Consultar datos cacheados
+        - Registrar cambios en cola local
+        - Reconectar manualmente
+    end note
+
+    state PendingSync {
+        [*] --> CambiosEnCola
+    }
+    note right of PendingSync
+        Acciones del usuario:
+        - Sincronizar cola ahora
+        - Ver cambios pendientes
+    end note
+
+    state Conflict {
+        [*] --> ConflictoDetectado
+    }
+    note right of Conflict
+        Acciones del usuario:
+        - Comparar versiones
+        - Resolver adoptando remoto
+        - Resolver conservando local
+    end note
+
+    %% Transiciones de interacción y recuperación
+    Success --> Loading: Refrescar o seleccionar otra incidencia
+    Empty --> Loading: Refrescar o reintentar
+    Error --> Loading: Usuario presiona Reintentar
+    Cancelled --> Loading: Usuario reinicia consulta
+    
+    Offline --> PendingSync: Usuario guarda cambio local en cola
+    Offline --> Loading: Conexión recuperada y auto-sincronización
+    PendingSync --> Loading: Red disponible e inicio de sincronización
+    
+    Loading --> Conflict: Detección de incompatibilidad en sincronización
+    Conflict --> Loading: Aplicar resolución de conflicto
+    Conflict --> Success: Conflicto resuelto exitosamente
+
+    Success --> [*]: Sesión cerrada o navegación finalizada
+    Empty --> [*]: Salida de la aplicación
