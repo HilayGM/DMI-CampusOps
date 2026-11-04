@@ -1,11 +1,23 @@
 const REDACTED = '[REDACTED]';
-const TECHNICAL_FIELDS = new Set(['incidentid', 'status', 'attempt', 'durationms']);
+const TECHNICAL_FIELDS = new Set([
+  'correlationid',
+  'requestid',
+  'incidentid',
+  'status',
+  'attempt',
+  'durationms',
+]);
 const SENSITIVE_FIELDS = new Set([
-  // Required public contract fields.
   'token',
   'accesstoken',
   'refreshtoken',
   'authorization',
+  'apikey',
+  'secret',
+  'clientsecret',
+  'privatekey',
+  'cookie',
+  'setcookie',
   'password',
   'autorizacion',
   'email',
@@ -48,6 +60,18 @@ const SENSITIVE_FIELDS = new Set([
   'credentials',
 ]);
 
+const SAFE_ERROR_CODES = new Set([
+  'aborted',
+  'conflict',
+  'forbidden',
+  'invalid_request',
+  'network_error',
+  'not_found',
+  'rate_limited',
+  'timeout',
+  'unauthorized',
+]);
+
 function normalizeKey(key: string): string {
   return key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
@@ -55,51 +79,66 @@ function normalizeKey(key: string): string {
 function isSensitiveKey(key: string): boolean {
   const normalized = normalizeKey(key);
   if (TECHNICAL_FIELDS.has(normalized)) return false;
-  return SENSITIVE_FIELDS.has(normalized);
+  return SENSITIVE_FIELDS.has(normalized)
+    || normalized.includes('apikey')
+    || normalized.includes('secret')
+    || normalized.includes('privatekey')
+    || normalized.includes('password')
+    || normalized.includes('token')
+    || normalized.includes('credential')
+    || normalized.includes('cookie');
 }
 
-function cloneDeep(value: unknown, seen = new WeakMap<object, unknown>()): unknown {
-  if (value === null || typeof value !== 'object') return value;
+function isSafeTechnicalValue(key: string, value: unknown): boolean {
+  const normalized = normalizeKey(key);
+  if (normalized === 'attempt') return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+  if (normalized === 'durationms') return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+  if (normalized === 'status') {
+    return (typeof value === 'string' && value.trim().length > 0)
+      || (typeof value === 'number' && Number.isFinite(value));
+  }
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function sanitizeValue(
+  value: unknown,
+  key: string | undefined,
+  seen = new WeakMap<object, unknown>(),
+): unknown {
+  if (value === null || value === undefined) return value;
+
+  if (key !== undefined) {
+    const normalized = normalizeKey(key);
+    if (isSensitiveKey(key)) return REDACTED;
+    if (TECHNICAL_FIELDS.has(normalized)) return isSafeTechnicalValue(key, value) ? value : REDACTED;
+    if (normalized === 'error' && typeof value === 'string') {
+      return SAFE_ERROR_CODES.has(value) ? value : REDACTED;
+    }
+  }
+
+  if (typeof value !== 'object') return REDACTED;
   const existing = seen.get(value);
   if (existing !== undefined) return existing;
 
-  if (value instanceof Date) return new Date(value.getTime());
-
   const clone: unknown[] | Record<string, unknown> = Array.isArray(value) ? [] : {};
   seen.set(value, clone);
-  for (const [key, child] of Object.entries(value)) {
-    Object.defineProperty(clone, key, {
+  for (const propertyKey of Object.keys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, propertyKey);
+    const child = descriptor && 'value' in descriptor ? descriptor.value : undefined;
+    Object.defineProperty(clone, propertyKey, {
       configurable: true,
       enumerable: true,
       writable: true,
-      value: cloneDeep(child, seen),
+      value: descriptor && 'value' in descriptor
+        ? sanitizeValue(child, propertyKey, seen)
+        : REDACTED,
     });
   }
   return clone;
 }
 
-function redactNested(value: unknown, seen = new WeakSet<object>()): void {
-  if (value === null || typeof value !== 'object' || seen.has(value)) return;
-  seen.add(value);
-
-  for (const [key, child] of Object.entries(value)) {
-    if (isSensitiveKey(key)) {
-      Object.defineProperty(value, key, {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: REDACTED,
-      });
-    } else {
-      redactNested(child, seen);
-    }
-  }
-}
-
 export function redactForTelemetry(input: unknown): unknown {
-  const sanitized = cloneDeep(input);
-  redactNested(sanitized);
-  return sanitized;
+  return sanitizeValue(input, undefined);
 }
 
 export type SafeTelemetryEvent = Readonly<{ event: string; context: unknown }>;
