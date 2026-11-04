@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "week": 10,
-  "commitSha": "b09b75ad2e8d2456ad1e29fe3edaa1bb507febd7",
+  "commitSha": "fbf42f14e399abcfc3c3ae33416d5556693131e4",
   "decision": "Conservar únicamente identificadores técnicos válidos —correlationId, requestId, status, attempt y durationMs, además de incidentId por compatibilidad— y reemplazar por [REDACTED] todo campo sensible o valor escalar que no pueda clasificarse con seguridad. Los contenedores anidados y arrays se recorren de forma recursiva, sin ejecutar getters, para mantener observabilidad estructural sin conservar texto libre, credenciales ni datos personales.",
   "problem": "Los errores de red y de backend pueden contener tokens, credenciales, identidad, ubicación, fotografías, comentarios internos o diagnósticos privados. Registrar el error original facilita el diagnóstico, pero puede divulgar información fuera del límite de autorización de la incidencia.",
   "privacyRisk": "Una sanitización basada sólo en una lista corta de propiedades permite filtraciones mediante variantes de nombres, claves con separadores o texto libre bajo propiedades desconocidas. Los objetos anidados y arrays requieren la misma política que el nivel superior.",
