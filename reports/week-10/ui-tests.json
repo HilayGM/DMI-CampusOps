@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "week": 10,
+  "commitSha": "f008e090d7d14061f1d8c44ed18430b5636066a6",
+  "generatedAt": "2026-11-03T21:15:00.000-06:00",
+  "checks": [
+    {
+      "id": "ui-state-transitions-nominal",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+      "evidence": "Transiciones nominales completas verificadas: loading -> success ante respuestas con registros y loading -> empty cuando la lista tiene cero elementos; reinicio a empty con RESET."
+    },
+    {
+      "id": "ui-state-cancellation-prevents-infinite-loading",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+      "evidence": "La cancelación explícita por parte del usuario (CANCEL) interrumpe el spinner de carga y transiciona deterministamente a cancelled, ignorando respuestas tardías posteriores y evitando esperas indefinidas."
+    },
+    {
+      "id": "ui-state-error-recovery-retry",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+      "evidence": "Manejo de falla ante errores de red o timeout (FETCH_ERROR): la interfaz notifica con rol alert accesible y permite recuperación inmediata a loading al accionar RETRY."
+    },
+    {
+      "id": "ui-state-offline-pending-sync-conflict",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+      "evidence": "Degradación fluida a modo offline ante pérdida de red (CONNECTION_LOST), encolado de operaciones locales a pending_sync y detección de conflicto con resolución manual (RESOLVE_CONFLICT)."
+    }
+  ]
+}

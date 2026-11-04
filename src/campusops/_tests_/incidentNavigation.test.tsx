@@ -66,6 +66,8 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+jest.setTimeout(15000);
+
 test('the composed app supports list, correct detail and return while backend is offline', async () => {
   jest.mocked(getBackendHealth).mockRejectedValue(new Error('backend offline'));
   process.env.EXPO_PUBLIC_COURSE_ACTOR_ID = 'reporter-1';

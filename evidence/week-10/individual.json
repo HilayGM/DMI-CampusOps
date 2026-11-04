@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "week": 10,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "name": "Martin",
+      "commitShas": [
+        "f008e090d7d14061f1d8c44ed18430b5636066a6"
+      ],
+      "files": [
+        "docs/ui-state-machine.mmd",
+        "src/campusops/presentation/IncidentUiStateMachine.ts",
+        "src/campusops/ui/IncidentStateView.tsx",
+        "src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+        "reports/week-10/ui-tests.json"
+      ],
+      "tests": [
+        "src/campusops/_tests_/IncidentUiStateMachine.test.tsx"
+      ],
+      "reviews": [
+        "docs/CAMPUSOPS.md",
+        "docs/assignments/week-10.md"
+      ],
+      "prediction": "La máquina de estados de UI evitará cargas infinitas mediante cancelación explícita y proveerá roles y etiquetas accesibles para todos los estados de CampusOps.",
+      "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
+      "observedResult": "Aprobadas 20 pruebas unitarias de estados de interfaz, transiciones de error/offline/conflicto, roles de accesibilidad WCAG y renderizado de IncidentStateView.",
+      "explanation": "Diseñé el diagrama de estados en Mermaid docs/ui-state-machine.mmd e implementé IncidentUiStateMachine e IncidentStateView con soporte completo para carga, éxito, vacío, error, cancelación, fuera de línea, cambios pendientes y resolución de conflictos."
+    },
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora Lopez",
+      "commitShas": [
+        "34a1d4d4865caea696fed57eb4a5fdb7cef51063"
+      ],
+      "files": [
+        "src/course-evaluation/index.ts"
+      ],
+      "tests": [
+        "course-tests/public/week-10.test.ts"
+      ],
+      "reviews": [
+        "docs/CAMPUSOPS_API.md"
+      ],
+      "prediction": "El reductor de respuestas remotas descartará respuestas tardías obsoletas para que no sobrescriban la incidencia activa.",
+      "command": "npm test -- --runInBand course-tests/public/week-10.test.ts",
+      "observedResult": "Alineación de contrato para el paso 2: reducción de respuestas remotas asíncronas.",
+      "explanation": "Responsable del paso 2: reducción de respuestas fuera de orden y prevención de condiciones de carrera."
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "commitShas": [
+        "34a1d4d4865caea696fed57eb4a5fdb7cef51063"
+      ],
+      "files": [
+        "src/campusops/infrastructure/SafeTelemetry.ts"
+      ],
+      "tests": [
+        "course-tests/public/week-10.test.ts"
+      ],
+      "reviews": [
+        "docs/assignments/week-10-rubric.md"
+      ],
+      "prediction": "La sanitización de telemetría redactará cualquier campo sensible sustituyendo tokens y datos personales por [REDACTED].",
+      "command": "npm test -- --runInBand course-tests/public/week-10.test.ts",
+      "observedResult": "Alineación de contrato para el paso 3: observabilidad segura y sanitización de telemetría.",
+      "explanation": "Responsable del paso 3: observabilidad segura, sanitización de telemetría y decisión de ingeniería."
+    }
+  ]
+}
