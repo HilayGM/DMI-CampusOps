@@ -31,6 +31,20 @@
       "scenarioType": "boundary",
       "command": "npm test -- --runInBand src/campusops/_tests_/IncidentUiStateMachine.test.tsx",
       "evidence": "Degradación fluida a modo offline ante pérdida de red (CONNECTION_LOST), encolado de operaciones locales a pending_sync y detección de conflicto con resolución manual (RESOLVE_CONFLICT)."
+    },
+    {
+      "id": "remote-response-late-obsolete-result",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npx jest --no-cache --runInBand src/course-evaluation/tests/reduceRemoteResponses.test.ts",
+      "evidence": "Una respuesta tardía de request-a se descarta cuando request-b es la solicitud activa; el resultado exitoso de request-b permanece seleccionado."
+    },
+    {
+      "id": "remote-response-late-obsolete-error",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npx jest --no-cache --runInBand src/course-evaluation/tests/reduceRemoteResponses.test.ts",
+      "evidence": "El error de una solicitud obsoleta no reemplaza el resultado activo ni transforma en error una secuencia sin respuesta activa."
     }
   ]
 }
