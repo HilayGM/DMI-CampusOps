@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "week": 11,
+  "teamId": "09",
+  "members": [
+    {
+      "studentId": "3523110349",
+      "name": "Martin",
+      "commitShas": [
+        "f432b4c93d681e25c3bf2536a2020d04776396fe"
+      ],
+      "files": [
+        "src/campusops/infrastructure/RemoteResourceParser.ts",
+        "src/campusops/_tests_/RegressionDefectRelease.test.ts",
+        "reports/week-11/defect-trace.json"
+      ],
+      "tests": [
+        "src/campusops/_tests_/RegressionDefectRelease.test.ts",
+        "src/campusops/_tests_/remoteResourceParser.test.ts"
+      ],
+      "reviews": [
+        "docs/CAMPUSOPS_API.md",
+        "docs/assignments/week-11.md"
+      ],
+      "prediction": "La prueba de regresión reproducirá el fallo de extracción de propiedades en release cuando los DTOs usen prototipos o getters, y confirmará su resolución tras corregir readSafeProperty sin romper el contrato.",
+      "command": "npm test -- --runInBand src/campusops/_tests_/RegressionDefectRelease.test.ts src/campusops/_tests_/remoteResourceParser.test.ts",
+      "observedResult": "Aprobadas las 5 pruebas de regresión y las 13 pruebas de contrato existentes (18 en total), verificando paridad exacta entre debug y release.",
+      "explanation": "Identifiqué la causa raíz en RemoteResourceParser (dependencia estricta de Object.getOwnPropertyDescriptor), implementé la prueba de regresión automatizada, corregí la lectura segura de propiedades y documenté el reporte defect-trace.json."
+    },
+    {
+      "studentId": "3523110443",
+      "name": "Felipe Mora Lopez",
+      "commitShas": [
+        "6b16158788939b4b09ec4a1dcfe4be01ff199ba4"
+      ],
+      "files": [
+        "reports/week-11/debug-release.json"
+      ],
+      "tests": [
+        "course-tests/public/week-11.test.ts"
+      ],
+      "reviews": [
+        "docs/assignments/week-11-rubric.md"
+      ],
+      "prediction": "La suite de pruebas y el bundle de release confirmarán un comportamiento funcional idéntico entre variantes debug y release.",
+      "command": "npm run bundle:release",
+      "observedResult": "Alineación de contrato para el paso 2: comprobación de variantes debug/release y bundle.",
+      "explanation": "Responsable del paso 2: verificación funcional de variantes debug y release y reporte debug-release.json."
+    },
+    {
+      "studentId": "3523110806",
+      "name": "Oscar Martinez Martinez",
+      "commitShas": [
+        "6b16158788939b4b09ec4a1dcfe4be01ff199ba4"
+      ],
+      "files": [
+        "docs/test-strategy.md",
+        "evidence/week-11/engineering.json"
+      ],
+      "tests": [
+        "course-tests/public/week-11.test.ts"
+      ],
+      "reviews": [
+        "docs/CAMPUSOPS.md"
+      ],
+      "prediction": "La cobertura acumulativa cumplirá los umbrales exigidos y la estrategia justificará la mitigación de riesgos por capa.",
+      "command": "npm run test:coverage:week11",
+      "observedResult": "Alineación de contrato para el paso 3: estrategia acumulativa y decisión de ingeniería.",
+      "explanation": "Responsable del paso 3: estrategia de pruebas acumulativas, cobertura por riesgo y decisión justificada de ingeniería."
+    }
+  ]
+}
