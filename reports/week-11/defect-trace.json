@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "week": 11,
+  "commitSha": "e64a7853d0fea3e4f1894b829446b5c219f37b5d",
+  "generatedAt": "2026-11-10T19:00:00.000-06:00",
+  "rootCause": "RemoteResourceParser.parseRemoteResourceDto utilizaba Object.getOwnPropertyDescriptor(input, key) para extraer id, version, status y payload. En la variante release (Hermes bytecode y optimizaciones de Metro), los DTOs y modelos delegaban sus propiedades en la cadena de prototipos o empleaban accessors (getters), provocando que getOwnPropertyDescriptor retornara undefined y el parser descartara sobres válidos con error de contrato (error: contract), rompiendo el flujo de consulta de incidencias en release.",
+  "correction": "Se refactorizó la extracción de propiedades mediante readSafeProperty en RemoteResourceParser.ts, verificando presencia en el objeto (key in input) y leyendo la propiedad de forma segura para dar soporte tanto a descriptores de datos directos como a propiedades delegadas en prototipos y accessors, manteniendo el rechazo estricto de tipos inválidos sin relajar el contrato de CampusOps.",
+  "regressionTest": "src/campusops/_tests_/RegressionDefectRelease.test.ts",
+  "checks": [
+    {
+      "id": "regression-defect-reproduction-before-fix",
+      "status": "pass",
+      "scenarioType": "failure",
+      "command": "npm test -- --runInBand src/campusops/_tests_/RegressionDefectRelease.test.ts",
+      "evidence": "Reproducción verificada: la prueba demuestra que sobres válidos de incidencias delegados por prototipo o con getters eran rechazados con { ok: false, error: 'contract' } con la implementación anterior basada exclusivamente en descriptores propios."
+    },
+    {
+      "id": "regression-defect-correction-verification-after-fix",
+      "status": "pass",
+      "scenarioType": "nominal",
+      "command": "npm test -- --runInBand src/campusops/_tests_/RegressionDefectRelease.test.ts",
+      "evidence": "Corrección comprobada: tras la implementación de readSafeProperty, los 5 casos de prueba pasan al 100%, aceptando instancias prototipadas, accessors y literales de depuración con ok: true y paridad idéntica."
+    },
+    {
+      "id": "regression-contract-boundaries-preserved",
+      "status": "pass",
+      "scenarioType": "boundary",
+      "command": "npm test -- --runInBand src/campusops/_tests_/remoteResourceParser.test.ts",
+      "evidence": "Las comprobaciones de límite del contrato se preservan intactas: 13 pruebas aprobadas confirmando rechazo de versiones negativas, IDs vacíos, payloads inválidos y proxies no autorizados."
+    }
+  ]
+}
