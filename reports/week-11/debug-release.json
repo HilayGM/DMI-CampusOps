@@ -1,0 +1,11 @@
+{
+  "variants": ["debug", "release"],
+  "validation_checks": {
+    "functional_equivalence": true,
+    "production_breakages_detected": false,
+    "packaging_errors": false,
+    "circular_dependencies": false
+  },
+  "bundle_command_executed": "npm run bundle:release",
+  "export_platform": "android"
+}
