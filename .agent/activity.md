@@ -8,30 +8,30 @@ Tu trabajo sera dividir la tarea entre 3 personas para poder entregar todo compl
 Esta es la actividad de esta semana los archivos comprimidos ya se encuentran en el proyecto tienes aun mas contexto en agent/activity/ACTIVITY_STUDENT_FACING.md
  , agent/activity/RUBRIC_PUBLIC.MD , agent/activity/CAMPUSOPS_API.MD y agent/activity/CAMPUSOPS.MD  :
 
-# Semana 10 — Estados de interfaz y observabilidad segura (8 puntos)
+# Semana 11 — Pruebas debug/release y diagnóstico de defectos (8 puntos)
 
-Cambiar de incidencia mientras llegan respuestas atrasadas no debe mostrar información de la selección anterior. Esta semana harán que la interfaz de CampusOps represente lo que realmente está ocurriendo y ayude a recuperarse de los errores.
+Una función puede pasar sus pruebas durante el desarrollo y fallar al preparar la versión de distribución. Esta semana investigarán una regresión de CampusOps y demostrarán que la corrección resuelve la causa, no sólo mejora un porcentaje de cobertura.
 
-Trabajen en su **equipo de 3**, sobre el mismo repositorio de CampusOps con **React Native, Expo y TypeScript**. Descarguen el ZIP `week-10-estados-observabilidad.zip`; no reinicien el proyecto ni borren el trabajo anterior.
+Trabajen en su **equipo de 3**, sobre el mismo repositorio de CampusOps con **React Native, Expo y TypeScript**. Descarguen el ZIP `week-11-pruebas-diagnostico.zip`; no reinicien el proyecto ni borren el trabajo anterior.
 
 ## ¿Qué deben hacer?
 
-1. **Definan los estados de la interfaz.** Representen carga, éxito, vacío, error y cancelación, además de desconexión, cambios pendientes y conflictos. Dibujen las transiciones y qué acción puede realizar el usuario en cada estado.
-2. **Apliquen los estados a consulta y atención.** Implementen navegación coherente, mensajes y etiquetas accesibles, reintento controlado y recuperación. La app no debe mostrar una espera permanente cuando ya conoce el resultado o no tiene conexión.
-3. **Prueben respuestas fuera de orden.** Conecten reduceRemoteResponses con la lógica real. Reproduzcan una respuesta antigua que llega después de cambiar la selección: no debe reemplazar la incidencia activa ni producir un estado imposible.
-4. **Registren sólo contexto seguro.** Usen identificadores sintéticos de correlación para relacionar un error con su solicitud. Prueben la sanitización: no registren tokens, nombres, ubicación, fotografías o comentarios internos. Documenten qué señal permite diagnosticar sin exponer esos datos.
+1. **Elijan y reproduzcan el defecto.** Usen un problema reproducible de consulta, atención, sincronización o ubicación que permita contrastar debug y release. Registren condiciones, comando, resultado observado y causa; no se limiten a describir que algo falla.
+2. **Escriban una prueba de regresión.** Construyan una prueba que exponga el defecto y explique por qué detecta su causa. Corrijan el código y conserven resultados antes y después. No ignoren el test ni desactiven optimizaciones sólo para ocultar el problema.
+3. **Comprueben las variantes.** Ejecuten la suite declarada en debug y release y documenten un comportamiento equivalente. La generación del paquete release no sustituye la comprobación funcional de esas variantes.
+4. **Interpreten la cobertura por riesgo.** Ejecuten npm run test:coverage:week11 y npm run bundle:release. El umbral publicado es 60% de ramas, 65% de funciones, 70% de líneas y 70% de sentencias en el alcance configurado. Cumplirlo no demuestra por sí solo que el flujo funciona: expliquen qué riesgos cubren las pruebas.
 
 ## ¿Qué entregan?
 
 En el repositorio deben quedar el código, las pruebas y estos documentos/reportes:
 
-- `docs/ui-state-machine.mmd`: Diagrama de estados y transiciones de la interfaz en Mermaid.
-- `reports/week-10/ui-tests.json`: Pruebas de estados, navegación, accesibilidad y respuestas obsoletas.
-- `reports/week-10/log-sanitization.json`: Comprobaciones del contexto técnico registrado y de la exclusión de datos sensibles.
+- `docs/test-strategy.md`: Estrategia de pruebas acumulativas, variantes y justificación de cobertura por riesgo.
+- `reports/week-11/debug-release.json`: Evidencias de ambas variantes; incluir variants con debug y release, además del formato común de reportes.
+- `reports/week-11/defect-trace.json`: Causa, corrección y prueba de regresión en rootCause, correction y regressionTest, además del formato común y resultados antes/después.
 
-Incluyan también la justificación técnica del equipo y la evidencia de sus tres integrantes en `engineering.json` e `individual.json`, dentro de `evidence/week-10/`.
+Incluyan también la justificación técnica del equipo y la evidencia de sus tres integrantes en `engineering.json` e `individual.json`, dentro de `evidence/week-11/`.
 
-En esta tarea entreguen **enlace del repositorio, etiqueta `week-10-final` y SHA completo**. La etiqueta señala la versión final y el SHA es su identificador único. `ACTIVITY_STUDENT_FACING.md` explica los pasos y `STARTER_AND_REPOSITORY.md` contiene los comandos y el formato de evidencias.
+En esta tarea entreguen **enlace del repositorio, etiqueta `week-11-final` y SHA completo**. La etiqueta señala la versión final y el SHA es su identificador único. `ACTIVITY_STUDENT_FACING.md` explica los pasos y `STARTER_AND_REPOSITORY.md` contiene los comandos y el formato de evidencias.
 
 ## ¿Cómo se califica?
 
@@ -39,31 +39,26 @@ Reproducción: **2.5**; funcionamiento requerido: **2**; manejo de la falla: **1
 
 La calificación se obtiene a partir de evidencia: AC-01 a AC-03 son comprobaciones automáticas (6 puntos) y AC-04/AC-05 son comprobaciones semiautomáticas (2 puntos). El nivel parcial no tiene un porcentaje prefijado: se asigna según la evidencia descrita en la rúbrica. Un flag sólo solicita corroboración y no descuenta por sí mismo.
 
-**Entrega: 9 de noviembre de 2026, a las 23:59, hora de Ciudad de México.**
+**Entrega: 16 de noviembre de 2026, a las 23:59, hora de Ciudad de México.**
 
-Por separado, cada integrante responde **Quiz semanal 10 — Estados y observabilidad**: **3 preguntas, 3 puntos**, que no forman parte de los 8 de esta actividad.
-
-
+Por separado, cada integrante responde **Quiz semanal 11 — Testing y diagnóstico**: **3 preguntas, 3 puntos**, que no forman parte de los 8 de esta actividad.
 
 
 
 Actividad individual por revision de skill revision-aporte-individual-skill.md : 
 
 Integrante 1: Martín (3523110349)
-Foco: Ubicación resiliente, alternativa manual y caché de proveedor.
+
+Foco: Reproducción del defecto, prueba de regresión automatizada y corrección del código (Root Cause & Fix).
 
 Responsabilidades técnicas:
-Implementar la función adaptadora selectIncidentLocation(providerResult, manualFallbackLabel) según CAMPUSOPS_API.md:
-Validar resultado del proveedor: objeto con label no vacío y coordenadas numéricas finitas en rangos latitude: [-90, 90] y longitude: [-180, 180].
-Retornar { source: 'provider', label, latitude, longitude } si es válido.
-Retornar { source: 'manual', label: manualFallbackLabel } ante null, status 429, timeout, coordenadas fuera de rango o datos incompletos (sin inventar coordenadas).
-Implementar caché local de geocodificación para evitar saturar cuotas externas.
-Pruebas unitarias de ubicación (casos nominales, boundary con límites de latitud/longitud, y fallas de proveedor).
-Entregables:
-Código de selectIncidentLocation y caché en el proyecto.
-Pruebas unitarias de geocodificación/fallback.
-Redacción de la sección de proveedor externo y caché en 
-
-docs/resilience-policy.md
-.
-Registro individual en evidence/week-09/individual.json.
+Reproducción del defecto: Identificar y aislar una regresión reproducible en el flujo de incidencias de CampusOps (por ejemplo: fallo de serialización/deserialización o pérdida de propiedades en release ante minificación/optimizaciones del bundler).
+Prueba de regresión: Escribir una prueba unitaria automatizada (src/campusops/_tests_/RegressionDefectRelease.test.ts) que falle antes de la corrección y demuestre inequívocamente la causa raíz del defecto.
+Corrección en código: Aplicar la corrección precisa en el código fuente de CampusOps asegurando que el flujo funcione tanto en debug como en release sin deshabilitar optimizaciones.
+Reporte de trazabilidad: Elaborar reports/week-11/defect-trace.json incluyendo los campos exigidos por contrato (rootCause, correction, regressionTest, y los resultados observables antes/después).
+Evidencia individual: Registrar su ficha en evidence/week-11/individual.json.
+Archivos asignados:
+Código fuente corregido en src/campusops/
+src/campusops/_tests_/RegressionDefectRelease.test.ts
+reports/week-11/defect-trace.json
+evidence/week-11/individual.json (ficha de Martín)
