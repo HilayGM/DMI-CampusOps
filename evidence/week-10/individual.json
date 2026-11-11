@@ -58,20 +58,27 @@
       "name": "Oscar Martinez Martinez",
       "commitShas": [
         "91fa03113245731f43266ff5eb37422489a280c0"
+        "fbf42f14e399abcfc3c3ae33416d5556693131e4"
       ],
       "files": [
-        "src/campusops/infrastructure/SafeTelemetry.ts"
+        "src/campusops/infrastructure/SafeTelemetry.ts",
+        "src/campusops/tests/SafeTelemetry.test.ts",
+        "reports/week-10/log-sanitization.json",
+        "evidence/week-10/engineering.json"
       ],
       "tests": [
+        "src/campusops/tests/SafeTelemetry.test.ts",
         "course-tests/public/week-10.test.ts"
       ],
       "reviews": [
-        "docs/assignments/week-10-rubric.md"
+        "docs/assignments/week-10.md",
+        "docs/assignments/week-10-rubric.md",
+        "docs/EVIDENCE_CONTRACT.md"
       ],
-      "prediction": "La sanitización de telemetría redactará cualquier campo sensible sustituyendo tokens y datos personales por [REDACTED].",
-      "command": "npm test -- --runInBand course-tests/public/week-10.test.ts",
-      "observedResult": "Alineación de contrato para el paso 3: observabilidad segura y sanitización de telemetría.",
-      "explanation": "Responsable del paso 3: observabilidad segura, sanitización de telemetría y decisión de ingeniería."
+      "prediction": "La sanitización estricta conservará correlationId, requestId, status, attempt y durationMs, y reemplazará por [REDACTED] los datos sensibles incluso dentro de texto libre, objetos anidados y arrays.",
+      "command": "npm run typecheck; npm run lint; npx jest --no-cache --runInBand src/campusops/tests/SafeTelemetry.test.ts; npx jest --no-cache --runInBand course-tests/public/week-10.test.ts -t \"observable error context is sanitized\"",
+      "observedResult": "Verificaciones aprobadas: typecheck sin errores, lint sin errores, 9/9 pruebas de SafeTelemetry aprobadas y test público de contexto de error sanitizado aprobado. La suite pública completa de Semana 10 obtuvo 1 prueba aprobada y 1 fallida porque reduceRemoteResponses sigue pendiente de otro integrante; esa falla no corresponde a Oscar.",
+      "explanation": "Implementé el robustecimiento de redactForTelemetry con una política conservadora de allowlist técnica y redacción por defecto, protección recursiva de estructuras y arrays, inmutabilidad, referencias circulares y getters problemáticos. Añadí las pruebas específicas, generé log-sanitization.json y engineering.json, y conservé la integración pública existente mediante la exportación sanitizada. La contribución se relaciona con AC-03 por la protección de datos sensibles, AC-04 por la decisión técnica documentada y AC-05 por la evidencia atribuible del commit fbf42f14e399abcfc3c3ae33416d5556693131e4."
     }
   ]
 }
