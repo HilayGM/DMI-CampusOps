@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "week": 11,
+  "commitSha": "65b58f2a69f5053fba55bd64bcdeab8aca3c68d7",
+  "decision": "Sustentar la causa raíz del rechazo de DTO válidos mediante una regresión que diferencia propiedades propias de datos, propiedades heredadas y getters, comprueba el sobre completo y conserva casos de rechazo. El contraste con el lector histórico identifica la dependencia de descriptores propios con value; la corrección integrada cambia ese mecanismo de lectura sin eliminar la validación de valores. Las aserciones demuestran ese mecanismo causal del parser, no solo el síntoma genérico error: contract. Esta conclusión se limita a las representaciones comprobadas: la exclusividad del defecto en Android release y su atribución a Hermes/Metro permanecen pendientes de evidencia funcional.",
+  "problem": "El parser anterior rechazaba sobres con id, version, status y payload válidos cuando su representación no era un conjunto de propiedades propias de datos. El error genérico de contrato podía bloquear la consulta de incidencias sin señalar la condición causante; una cifra alta de cobertura sobre adaptadores no distingue ese defecto ni demuestra el comportamiento instalado.",
+  "rootCause": "En e64a785^:src/campusops/infrastructure/RemoteResourceParser.ts, readOwnDataProperty consultaba Object.getOwnPropertyDescriptor(input, key) y devolvía únicamente descriptor.value cuando el descriptor contenía value. Una propiedad propia de datos sí satisface esa condición. Una propiedad heredada no tiene descriptor propio en la instancia. Un getter propio puede tener descriptor, pero este es un descriptor de accessor sin value. En los dos últimos casos el lector producía undefined, y la validación posterior rechazaba el sobre. No se afirma que getOwnPropertyDescriptor siempre devuelva undefined para un getter.",
+  "correction": "La corrección de Martín ya integrada utiliza readSafeProperty en src/campusops/infrastructure/RemoteResourceParser.ts:12-18: comprueba key in input y lee input[key] con manejo de excepciones. Las líneas 32-52 mantienen el rechazo de entradas no objeto, ID/estado vacíos, versión no entera o negativa y payload distinto de objeto/null. Oscar documenta y revisa esa corrección; no se atribuye su implementación.",
+  "regressionTest": "src/campusops/_tests_/RegressionDefectRelease.test.ts",
+  "causalAssertions": [
+    "Líneas 19-34: Object.create(envelopeProto) y toEqual del resultado completo verifican la aceptación de propiedades heredadas con sus valores, no solo la ausencia de una excepción.",
+    "Líneas 39-71: getters válidos y toEqual del sobre completo distinguen un accessor de una propiedad propia de datos.",
+    "Líneas 86-93: el literal y el objeto heredado deben devolver ok: true y resultados iguales; se conserva el contenido mientras cambia la representación.",
+    "Líneas 98-120: versión negativa heredada y estado requerido ausente deben seguir devolviendo error de contrato; aceptar cualquier entrada no satisface la regresión.",
+    "src/campusops/_tests_/remoteResourceParser.test.ts:4-77 complementa aceptación, payload null, campos futuros, ocho entradas inválidas, no mutación y objetos hostiles. El rechazo controlado de un getter que lanza no demuestra ausencia de efectos secundarios."
+  ],
+  "beforeAfter": {
+    "source": "docs/test-strategy.md:125 y salida de la auditoría previa de Codex conservada en la conversación.",
+    "method": "Arnés síncrono en memoria que transpila el archivo de regresión existente sin editarlo y ejecuta sus cinco casos con describe/it mínimos y expect; no es el runner oficial de Jest ni Android.",
+    "beforeParserRef": "e64a785^:src/campusops/infrastructure/RemoteResourceParser.ts",
+    "before": {
+      "passed": 2,
+      "failed": 3,
+      "total": 5
+    },
+    "afterParserCodeCommit": "2a7ad15b9f567a7acce7838076dfc5e421958ba7",
+    "after": {
+      "passed": 5,
+      "failed": 0,
+      "total": 5
+    },
+    "interpretation": "Antes fallaron herencia, getters y paridad; ambos rechazos de límite pasaron. Después pasaron los cinco. El resultado oficial de Jest disponible es posterior a la corrección: 18/18 entre regresión y contrato.",
+    "limitation": "El contraste en memoria pertenece a la auditoría anterior; no se repitió en esta fase ni se presenta como ejecución oficial antes/después o prueba nativa debug/release."
+  },
+  "alternatives": [
+    "Usar solo cobertura global y presencia de campos en reportes: ofrece una comprobación rápida, pero no aísla la lectura de propiedades ni ejecuta las variantes. Se descarta como evidencia suficiente de causa raíz o de funcionamiento completo.",
+    "Mantener únicamente propiedades propias de datos y normalizar explícitamente en la frontera: reduce ejecución de accessors y superficie de representación, pero exige justificar la frontera y compatibilidad con los DTO aceptados. No es la corrección integrada ni se implementa como parte documental de Oscar.",
+    "Aceptar propiedades heredadas/getters, validar sus valores y conservar regresiones diferenciadoras: corresponde a la corrección existente y resuelve los casos aislados; se selecciona para explicar la causa con evidencia, aceptando mayor superficie de lectura y la necesidad de corroboración funcional en ambas variantes."
+  ],
+  "tradeoff": "La lectura por presencia y acceso permite aceptar las representaciones válidas comprobadas y mantener los límites del sobre, a cambio de ejecutar getters y consultar propiedades heredadas. Capturar excepciones evita que ciertos errores salgan del parser, pero no revierte efectos secundarios ni acredita una defensa universal ante prototipos alterados. Se acepta el costo de conservar pruebas negativas y completar evidencia funcional; un porcentaje alto no sustituye esos controles.",
+  "requirementIds": [
+    "AC-02",
+    "AC-03",
+    "AC-04"
+  ],
+  "verification": [
+    {
+      "id": "V3-regression-and-parser",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/RegressionDefectRelease.test.ts src/campusops/_tests_/remoteResourceParser.test.ts",
+      "result": "pass; exitCode=0; 2 suites y 18 pruebas aprobadas; 0 snapshots.",
+      "evidence": "docs/test-strategy.md:124 y 165; salida Jest observada en la sesión de implementación: 5 casos de regresión y 13 de contrato con el parser corregido. No ejecuta la revisión histórica ni Android."
+    },
+    {
+      "id": "V6-typecheck",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+      "result": "pass; exitCode=0; sin diagnósticos.",
+      "evidence": "docs/test-strategy.md:168 y salida TypeScript de la sesión anterior; no emitió código ni archivo incremental. Comprueba tipos, no comportamiento funcional."
+    },
+    {
+      "id": "V1-official-coverage-script",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "npm.cmd run test:coverage:week11",
+      "result": "fail; exitCode=1; error antes de ejecutar pruebas.",
+      "evidence": "docs/test-strategy.md:163 y 171: SyntaxError al interpretar coverageThreshold por el transporte de comillas del shell de npm en Windows. V1 no produjo métricas; el script original no se declara aprobado."
+    },
+    {
+      "id": "V2-equivalent-coverage",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "@'\nconst fs = require('node:fs');\nconst { parse } = require('shell-quote');\nconst { run } = require('jest');\nconst script = JSON.parse(fs.readFileSync('package.json', 'utf8')).scripts['test:coverage:week11'];\nconst args = parse(script);\nif (args.shift() !== 'jest' || args.some(arg => typeof arg !== 'string')) {\n  throw new Error('Unexpected coverage script structure');\n}\nconst threshold = args.find(arg => arg.startsWith('--coverageThreshold='));\nconsole.log('Arguments preserved from package.json:', JSON.stringify(args));\nconsole.log('Threshold JSON:', JSON.stringify(JSON.parse(threshold.slice('--coverageThreshold='.length))));\nrun(args).catch(error => { console.error(error); process.exitCode = 1; });\n'@ | node -",
+      "result": "fail; exitCode=1; 8 suites aprobadas y 3 fallidas; 22 pruebas aprobadas y 3 fallidas; 0 snapshots. Ramas 75.32%, funciones 83.33%, líneas 90.90% y sentencias 87.67%.",
+      "evidence": "Lanzador íntegro en docs/test-strategy.md:173-188; conserva los argumentos, pruebas y umbrales de package.json sin editarlo. coverage/coverage-summary.json registra 58/77 ramas, 15/18 funciones, 60/66 líneas y 64/73 sentencias sobre src/course-evaluation/index.ts. docs/test-strategy.md:209-211 conserva los fallos: reporte debug-release ausente, detector público sobre fixture sintético de SafeTelemetry y accept redactado frente al valor esperado. Superar mínimos no implica aprobar la suite."
+    },
+    {
+      "id": "V4-cumulative-risk-checks",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops src/course-evaluation tests/security.spec.ts course-tests/public/week-02-architecture.test.ts",
+      "result": "fail; exitCode=1; 19 suites aprobadas y 2 fallidas; 224 pruebas aprobadas y 2 fallidas; 0 snapshots.",
+      "evidence": "docs/test-strategy.md:166 y 212-213: fallaron el detector interno de credential assignment y el caso de navegación que excedió 15000 ms. Las suites aprobadas aportan comprobaciones por riesgo con dobles, no cobertura cuantitativa V2 ni prueba nativa."
+    },
+    {
+      "id": "V5-navigation-diagnostic-repetition",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "npm.cmd test -- --ci --runInBand src/campusops/_tests_/incidentNavigation.test.tsx",
+      "result": "pass; exitCode=0; 1 suite y 10 pruebas aprobadas; 0 snapshots.",
+      "evidence": "docs/test-strategy.md:167 y 213: repetición completa sin modificar tests ni timeout. No elimina el fallo V4 ni demuestra estabilidad; la causa de variabilidad sigue pendiente."
+    },
+    {
+      "id": "V7-global-lint",
+      "phase": "implementación documental previa, ejecución asistida por Codex",
+      "command": "node node_modules/eslint/bin/eslint.js . --no-cache",
+      "result": "fail; exitCode=1; 1 error no-var.",
+      "evidence": "docs/test-strategy.md:169 y 214: .venv/Lib/site-packages/pip/_vendor/urllib3/contrib/emscripten/emscripten_fetch_worker.js:72:7. No se aplicó --fix ni se modificaron exclusiones; el lint global sigue fallido."
+    },
+    {
+      "id": "evidence-source-commit",
+      "phase": "preparación actual de evidencias, ejecución asistida por Codex",
+      "command": "git rev-parse --verify '65b58f2a69f5053fba55bd64bcdeab8aca3c68d7^{commit}'",
+      "result": "pass; exitCode=0; resuelve exactamente a 65b58f2a69f5053fba55bd64bcdeab8aca3c68d7.",
+      "evidence": "Salida Git de esta fase. HEAD coincide con ese commit, tiene autoría Git de Oscar y contiene únicamente docs/test-strategy.md. El padre conserva el código de las comprobaciones V1-V7."
+    },
+    {
+      "id": "evidence-json-syntax",
+      "phase": "preparación actual de evidencias, ejecución asistida por Codex",
+      "command": "node -e \"for (const p of ['evidence/week-11/engineering.json','evidence/week-11/individual.json']) { JSON.parse(require('node:fs').readFileSync(p,'utf8')); console.log(p + ': JSON valido'); }\"",
+      "result": "pass; exitCode=0; ambos JSON sintácticamente válidos.",
+      "evidence": "Salida observada en esta fase para engineering.json e individual.json. La sintaxis se complementó con aserciones Node de solo lectura sobre las condiciones publicadas en tools/course_public_evaluator.py:105-170, SHA/autoría, cardinalidad y comparación de fichas contra HEAD. Esa comprobación terminó con código 0; no ejecuta los modos completos del evaluador ni acredita las variantes pendientes."
+    }
+  ],
+  "coverage": {
+    "measuredFile": "src/course-evaluation/index.ts",
+    "thresholds": {
+      "branches": 60,
+      "functions": 65,
+      "lines": 70,
+      "statements": 70
+    },
+    "observed": {
+      "branches": 75.32,
+      "functions": 83.33,
+      "lines": 90.9,
+      "statements": 87.67
+    },
+    "counts": {
+      "branches": {
+        "covered": 58,
+        "total": 77
+      },
+      "functions": {
+        "covered": 15,
+        "total": 18
+      },
+      "lines": {
+        "covered": 60,
+        "total": 66
+      },
+      "statements": {
+        "covered": 64,
+        "total": 73
+      }
+    },
+    "execution": "V2: medición alternativa con argumentos publicados; código 1. No se atribuyen porcentajes al script V1 fallido antes de pruebas.",
+    "riskInterpretation": "La selección pública no incluye la regresión interna ni mide los cuerpos de parser, SessionService, SecureStore, cola, migraciones, UI, caché o telemetría. Su aceptación funcional y los riesgos de negocio necesitan comprobaciones complementarias."
+  },
+  "residualRisks": [
+    "No hay evidencia funcional de ambas variantes ni demostración de que Hermes/Metro transformen el DTO del flujo HTTP en el objeto construido por el test.",
+    "readSafeProperty ejecuta getters; capturar su excepción no revierte efectos secundarios ni prueba una defensa universal ante cadenas de prototipos alteradas.",
+    "La integración offline, durabilidad al terminar el proceso, autorización real del servidor y proveedor externo no quedan acreditados por funciones puras ni dobles.",
+    "Persisten fallos públicos de seguridad/telemetría, el detector interno, la variabilidad de navegación y el lint global documentados.",
+    "El entorno previo usó Node v26.13.0 y debe reproducirse con 22.22.0 antes de acreditar reproducibilidad.",
+    "Un merge o cambio posterior puede invalidar la regla estricta de SHA; la integración final requiere volver a validar referencias y evidencias."
+  ],
+  "dependencies": [
+    "Martín: corroborar la relación real con release, precisar la reproducción anterior y actualizar la trazabilidad de reports/week-11/defect-trace.json; su SHA actual no es HEAD ni su padre directo.",
+    "Felipe: completar reports/week-11/debug-release.json con ejecuciones funcionales reales y casos límite/falla; el archivo continúa ausente.",
+    "Equipo: resolver los checks fallidos, conservar evidencias auténticas de los tres integrantes y validar la revisión final sin bypasses.",
+    "Oscar: conservar la atribución a su estrategia, análisis por riesgo y decisión; el segundo commit de evidencia requiere autorización y no se crea automáticamente."
+  ],
+  "limitations": "V1-V7 son resultados históricos reales de Codex en la fase documental sobre 2a7ad15b9f567a7acce7838076dfc5e421958ba7, preservados en docs/test-strategy.md y en la conversación. El commit 65b58f2a69f5053fba55bd64bcdeab8aca3c68d7 solo agrega ese documento; no cambia el código comprobado. En esta fase se validan las evidencias sin repetir Jest, cobertura, TypeScript, build ni Android. Las frases de preparación del documento describen su corte anterior al commit 1; esta evidencia registra el avance posterior sin editarlo. Los modos completos del evaluador no se ejecutan porque escriben reportes fuera del alcance. No se declara aprobada la entrega global.",
+  "aiAssistance": "Codex asistió en lectura de skills/contratos, inspección de código e historial, redacción, ejecución previa de V1-V7 y validación actual. Se contrastaron las afirmaciones con archivos, aserciones, comandos y salidas reales. Las ejecuciones asistidas no se presentan como realizadas personalmente por Oscar; la corrección y la regresión de Martín y las variantes de Felipe no se le atribuyen. Oscar conserva la responsabilidad de revisar y explicar su aportación documental."
+}
