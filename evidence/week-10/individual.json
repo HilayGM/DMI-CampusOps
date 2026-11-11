@@ -30,28 +30,34 @@
     },
     {
       "studentId": "3523110443",
-      "name": "Felipe Mora Lopez",
+      "name": "Felipe Mora López",
       "commitShas": [
         "34a1d4d4865caea696fed57eb4a5fdb7cef51063"
       ],
       "files": [
-        "src/course-evaluation/index.ts"
+        "src/course-evaluation/index.ts",
+        "src/campusops/application/RemoteResponseReducer.ts",
+        "src/course-evaluation/tests/reduceRemoteResponses.test.ts",
+        "reports/week-10/ui-tests.json",
+        "evidence/week-10/individual.json"
       ],
       "tests": [
+        "src/course-evaluation/tests/reduceRemoteResponses.test.ts",
         "course-tests/public/week-10.test.ts"
       ],
       "reviews": [
         "docs/CAMPUSOPS_API.md"
       ],
       "prediction": "El reductor de respuestas remotas descartará respuestas tardías obsoletas para que no sobrescriban la incidencia activa.",
-      "command": "npm test -- --runInBand course-tests/public/week-10.test.ts",
-      "observedResult": "Alineación de contrato para el paso 2: reducción de respuestas remotas asíncronas.",
-      "explanation": "Responsable del paso 2: reducción de respuestas fuera de orden y prevención de condiciones de carrera."
+      "command": "npx jest --no-cache --runInBand src/course-evaluation/tests/reduceRemoteResponses.test.ts course-tests/public/week-10.test.ts",
+      "observedResult": "Cuatro escenarios unitarios cubren resultado nominal, respuestas fuera de orden, ausencia de respuestas y errores obsoletos; la prueba pública confirma que una respuesta tardía no reemplaza la intención activa.",
+      "explanation": "Implementé reduceRemoteResponses y un adaptador de aplicación que descarta silenciosamente cada respuesta cuyo requestId no coincide con activeRequestId. Añadí pruebas para resultados activos, respuestas tardías y errores desfasados; actualicé el reporte de UI y este registro de evidencia."
     },
     {
       "studentId": "3523110806",
       "name": "Oscar Martinez Martinez",
       "commitShas": [
+        "91fa03113245731f43266ff5eb37422489a280c0"
         "fbf42f14e399abcfc3c3ae33416d5556693131e4"
       ],
       "files": [

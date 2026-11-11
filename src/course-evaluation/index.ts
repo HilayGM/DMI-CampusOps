@@ -8,6 +8,7 @@ import type {
 } from './contracts';
 import type { IncidentLocation } from '../campusops/contracts';
 import { resolveIncidentLocation } from '../campusops/application/IncidentLocationResolver';
+import { reduceRemoteResponse } from '../campusops/application/RemoteResponseReducer';
 import { SessionRefreshCoordinator } from '../campusops/application/SessionRefreshCoordinator';
 import { parseRemoteResourceDto } from '../campusops/infrastructure/RemoteResourceParser';
 export { redactForTelemetry } from '../campusops/infrastructure/SafeTelemetry';
@@ -174,11 +175,16 @@ export function planRetry(input: Readonly<{
   };
 }
 
-export function reduceRemoteResponses(_input: Readonly<{
+export function reduceRemoteResponses(input: Readonly<{
   activeRequestId: string;
   responses: readonly RemoteResponse[];
 }>): Readonly<{ state: 'success' | 'error' | 'loading'; value?: unknown; error?: string }> {
-  return pending('reduceRemoteResponses');
+  let result: ReturnType<typeof reduceRemoteResponse> = null;
+  for (const response of input.responses) {
+    const next = reduceRemoteResponse(input.activeRequestId, response);
+    if (next !== null) result = next;
+  }
+  return result ?? { state: 'loading' };
 }
 
 export function reducePermissionLifecycle(
