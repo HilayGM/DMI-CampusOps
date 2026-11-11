@@ -51,22 +51,29 @@
       "studentId": "3523110806",
       "name": "Oscar Martinez Martinez",
       "commitShas": [
-        "6b16158788939b4b09ec4a1dcfe4be01ff199ba4"
+        "65b58f2a69f5053fba55bd64bcdeab8aca3c68d7"
       ],
       "files": [
         "docs/test-strategy.md",
-        "evidence/week-11/engineering.json"
+        "evidence/week-11/engineering.json",
+        "evidence/week-11/individual.json"
       ],
       "tests": [
-        "course-tests/public/week-11.test.ts"
+       "PASS: Regresión (18 pruebas), TypeScript y validación JSON.",
+       "FAIL: Cobertura con 3 pruebas fallidas, aunque supera los umbrales.",
+       "FAIL: Pruebas acumulativas (2 fallidas) y ESLint; navegación aprobada en repetición."
       ],
       "reviews": [
-        "docs/CAMPUSOPS.md"
+       "docs/test-strategy.md",
+       "src/campusops/infrastructure/RemoteResourceParser.ts",
+       "src/campusops/_tests_/RegressionDefectRelease.test.ts",
+       "evidence/week-11/engineering.json",
+       "docs/assignments/week-11.md"
       ],
-      "prediction": "La cobertura acumulativa cumplirá los umbrales exigidos y la estrategia justificará la mitigación de riesgos por capa.",
-      "command": "npm run test:coverage:week11",
-      "observedResult": "Alineación de contrato para el paso 3: estrategia acumulativa y decisión de ingeniería.",
-      "explanation": "Responsable del paso 3: estrategia de pruebas acumulativas, cobertura por riesgo y decisión justificada de ingeniería."
+      "prediction": "Espero confirmar en esta última validación asistida que ambos JSON sean válidos y cumplan los campos exigidos, que el SHA 65b58f2a69f5053fba55bd64bcdeab8aca3c68d7 corresponda a mi commit documental y que se conserven los tres miembros, con cambios únicamente en mi ficha. También espero mantener claros los límites: validar la redacción y el contrato de evidencia no demuestra el funcionamiento de las variantes ni resuelve los fallos públicos o la ausencia del reporte debug/release.",
+      "command": "node -e \"for (const p of ['evidence/week-11/engineering.json','evidence/week-11/individual.json']) { JSON.parse(require('node:fs').readFileSync(p,'utf8')); console.log(p + ': JSON valido'); }\"",
+      "observedResult": "Revisé las salidas de las comprobaciones ejecutadas por Codex y registradas en docs/test-strategy.md: regresión/parser 18/18 y TypeScript sin errores, ambos con código 0. Documenté la cobertura alternativa V2: 75.32% ramas, 83.33% funciones, 90.90% líneas y 87.67% sentencias sobre src/course-evaluation/index.ts. Aunque supera los mínimos, terminó con código 1, 22 pruebas aprobadas y 3 fallidas por el reporte debug-release ausente, el detector público sobre un fixture sintético y la discrepancia de accept redactado. Distinguí esas métricas del script npm original V1, que falló antes de ejecutar pruebas por comillas/JSON. También conservé los resultados de la selección acumulativa V4, con 224 aprobadas/2 fallidas, y de navegación V5, con 10/10 en la repetición; dejé el timeout anterior como pendiente. El lint global V7 sigue fallido por .venv y el reporte funcional debug/release continúa pendiente. Al revisar la validación previa de estas evidencias, comprobé que Codex obtuvo código 0 tanto en la sintaxis de ambos JSON como en el comprobador Node de contrato/trazabilidad: SHA/autoría correctos, tres miembros, una sola ficha mía, raíz/orden conservados y fichas de Martín y Felipe intactas. Mi trabajo fue revisar, interpretar y documentar estas salidas; las comprobaciones las ejecutó Codex. No presento esta revisión como una ejecución del evaluador completo ni de nuevas pruebas funcionales.",
+      "explanation": "Me encargué de documentar la estrategia de pruebas acumulativas y la matriz de riesgos en docs/test-strategy.md, incluidas en mi commit 65b58f2a69f5053fba55bd64bcdeab8aca3c68d7, y de preparar la decisión de ingeniería y mi evidencia individual. Organicé las pruebas según los riesgos de sesión, privacidad, pérdida o duplicación de operaciones y estados de UI. Identifiqué que cumplir los porcentajes de cobertura no garantiza que el flujo completo funcione. Para justificar la decisión, analicé cómo la lectura del parser anterior rechazaba propiedades heredadas y getters válidos, y cómo las aserciones del sobre completo permiten comprobar ese mecanismo. Aclaré que el contraste histórico de 2/5 frente a 5/5 corresponde a un arnés en memoria de la auditoría previa, no a Jest oficial ni a Android. La corrección del código y la prueba de regresión corresponden a Martín; la comprobación de variantes corresponde a Felipe. Utilicé Codex como apoyo para inspeccionar, redactar y validar las evidencias, y revisé las fuentes, las aserciones y las salidas obtenidas por la herramienta. No afirmo haber ejecutado manualmente esas pruebas. Dejé documentados los fallos, las dependencias y las limitaciones sin dar por aprobada la entrega global. La referencia a individual.json en files corresponde únicamente a mi ficha."
     }
   ]
 }
